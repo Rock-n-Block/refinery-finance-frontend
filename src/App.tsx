@@ -2,6 +2,8 @@ import React from 'react';
 import logo from './assets/img/icons/logo.svg';
 import './styles/App.css';
 
+import Link from './components/Link';
+
 function App() {
   return (
     <div className="App">
@@ -10,13 +12,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
+        <Link className="App-link" href="https://reactjs.org">
           Learn React
-        </a>
+        </Link>
       </header>
     </div>
   );
