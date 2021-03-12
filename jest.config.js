@@ -7,4 +7,8 @@ module.exports = {
   "moduleFileExtensions": ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   "snapshotSerializers": ['enzyme-to-json/serializer'],
   "setupFilesAfterEnv": ['<rootDir>/src/config/setupTests.ts'],
+  moduleNameMapper: {
+    "^.+\\.svg": "<rootDir>/src/__mocks__/svgrMock.tsx",
+    "\\.(css|less|sass|scss)$": "<rootDir>/src/__mocks__/styleMock.ts",
+  },
 };
