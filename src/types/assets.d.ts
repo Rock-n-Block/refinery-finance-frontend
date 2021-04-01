@@ -1,10 +1,10 @@
 declare module '*.css' {
-  interface ClassNames {
-    [className: string]: string;
-  }
-
-  const classNames: ClassNames;
-  export default classNames;
+  const content: { [className: string]: string };
+  export default content;
+}
+declare module '*.scss' {
+  const content: { [className: string]: string };
+  export default content;
 }
 
 declare module '*.svg' {
