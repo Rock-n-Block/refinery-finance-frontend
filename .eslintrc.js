@@ -48,12 +48,13 @@ module.exports = {
     },
   ],
   rules: {
-    '@typescript-eslint/no-unused-vars': 'error',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn', // <--- THIS IS THE NEW RULE
     'prettier/prettier': ['error', prettierConfig],
     'quote-props': ['error', 'consistent-as-needed'],
     'react/prop-types': 'off',
     'react/destructuring-assignment': 'off',
-    'react/jsx-filename-extension': ['error', {extensions: ['.jsx', '.tsx']}],
+    'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-wrap-multilines': [
       'error',
@@ -84,8 +85,8 @@ module.exports = {
         tsx: 'never',
       },
     ],
-    'no-confusing-arrow': ['error', {allowParens: false}],
-    'no-underscore-dangle': ['error', {allow: ['__typename']}],
+    'no-confusing-arrow': ['error', { allowParens: false }],
+    'no-underscore-dangle': ['error', { allow: ['__typename'] }],
     'simple-import-sort/sort': [
       'error',
       {
@@ -97,7 +98,7 @@ module.exports = {
           // Packages. `react` related packages come first.
           ['^react', '^@?\\w'],
           // Internal packages.
-          ["^(@|@company|@ui|components|utils|config|vendored-lib)(/.*|$)"],
+          ['^(@|@company|@ui|components|utils|config|vendored-lib)(/.*|$)'],
           // Side effect imports.
           ['^\\u0000'],
           // Parent imports. Put `..` last.
@@ -113,6 +114,8 @@ module.exports = {
     ],
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/ban-ts-comment': 'off',
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     'no-redeclare': 'off',
