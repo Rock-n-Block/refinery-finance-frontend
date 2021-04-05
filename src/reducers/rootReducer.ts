@@ -1,9 +1,14 @@
 import { combineReducers } from 'redux';
 
+import mockReducer from '@/reducers/mockReducer';
+
 const rootReducer = combineReducers({
   // list of reducers
+  mockReducer,
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
+type RootReducerType = typeof rootReducer;
+
+export type AppStateType = ReturnType<RootReducerType>;
 
 export default rootReducer;
