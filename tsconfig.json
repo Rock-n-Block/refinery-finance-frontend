@@ -1,26 +1,14 @@
 {
   "shouldExtractLiteralValuesFromEnum": true,
-  "files": [
-    "./src/types/assets.d.ts"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/dist/**/*"
-  ],
+  "files": ["./src/types/assets.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "**/dist/**/*"],
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": true,
     "jsx": "react-jsx",
     "module": "esnext",
-    "lib": [
-      "dom",
-      "esnext",
-      "ES2015"
-    ],
+    "lib": ["dom", "esnext", "ES2015"],
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
     "noFallthroughCasesInSwitch": true,
@@ -35,6 +23,9 @@
     "sourceMap": true,
     "noImplicitThis": false,
     "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+    },
     "moduleResolution": "node",
     "target": "es5",
     "allowJs": true,
