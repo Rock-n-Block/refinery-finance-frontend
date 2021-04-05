@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface ImgWebpProps {
   loading: 'eager' | 'lazy' | undefined;
   src: string;
-  srcWebp: string;
   alt: string;
   className?: string;
 }
@@ -14,15 +13,21 @@ export interface ImgWebpProps {
  * @returns Component
  * @expample
             import picture from 'src/assets/img/space.jpg';
-            import pictureWebp from 'src/assets/img/space.webp';
-            <ImgWebp loading="lazy" src={picture} srcWebp={pictureWebp} alt="Space" />
+            <ImgWebp loading="lazy" src={picture} alt="Space" />
  */
 
-export const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, srcWebp, alt, className }) => {
+export const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, alt, className }) => {
+  const [path, setPath] = useState<string>(src);
+  const concatedResolution = (imgSrc: string) => {
+    return imgSrc.slice(0, imgSrc.lastIndexOf('.'));
+  };
+  useEffect(() => {
+    setPath(concatedResolution(path));
+  }, []);
   return (
     <>
       <picture className={className}>
-        <source type="image/webp" srcSet={`${srcWebp}`} />
+        <source type="image/webp" srcSet={`${path}.webp`} />
         <img loading={loading} src={`${src}`} alt={alt} />
       </picture>
     </>
