@@ -48,16 +48,15 @@ module.exports = {
     },
   ],
   rules: {
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn', // <--- THIS IS THE NEW RULE
-    'prettier/prettier': ['error', prettierConfig],
+    '@typescript-eslint/no-unused-vars': 'error',
+    'prettier/prettier': ['warn', prettierConfig],
     'quote-props': ['error', 'consistent-as-needed'],
     'react/prop-types': 'off',
     'react/destructuring-assignment': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-wrap-multilines': [
-      'error',
+      'warn',
       {
         declaration: 'parens-new-line',
         assignment: 'parens-new-line',
@@ -65,11 +64,16 @@ module.exports = {
         arrow: 'parens-new-line',
         condition: 'parens-new-line',
         logical: 'parens-new-line',
-        prop: 'parens-new-line',
+        prop: 'ignore',
       },
     ],
     'sort-imports': 'off',
+    "no-param-reassign": [2, {
+      "props": false
+    }],
     'import/order': 'off',
+    'import/no-cycle':'warn',
+    "no-debugger": "off",
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'error',
@@ -88,34 +92,23 @@ module.exports = {
     'no-confusing-arrow': ['error', { allowParens: false }],
     'no-underscore-dangle': ['error', { allow: ['__typename'] }],
     'simple-import-sort/sort': [
-      'error',
+      'warn',
       {
         // https://github.com/lydell/eslint-plugin-simple-import-sort/blob/master/examples/.eslintrc.js#L71
         groups: [
           [
             '^(assert|buffer|child_process|cluster|console|constants|crypto|dgram|dns|domain|events|fs|http|https|module|net|os|path|punycode|querystring|readline|repl|stream|string_decoder|sys|timers|tls|tty|url|util|vm|zlib|freelist|v8|process|async_hooks|http2|perf_hooks)(/.*|$)',
           ],
-          // Packages. `react` related packages come first.
           ['^react', '^@?\\w'],
-          // Internal packages.
-          ['^(@|@company|@ui|components|utils|config|vendored-lib)(/.*|$)'],
-          // Side effect imports.
           ['^\\u0000'],
-          // Parent imports. Put `..` last.
           ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
-          // Other relative imports. Put same-folder imports and `.` last.
           ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
-          // Style imports.
           ['^.+\\.s?css$'],
-          // img imports.
-          ['^.+\\.(png|jpe?g|gif|svg|webp)$'],
         ],
       },
     ],
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/ban-ts-comment': 'off',
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     'no-redeclare': 'off',
@@ -137,7 +130,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: {
-        map: [['@', './src/']],
+        map: [['@', './src/', './node_modules/']],
         extensions: ['.ts', '.tsx', '.json', 'js', 'jsx'],
       },
     },
