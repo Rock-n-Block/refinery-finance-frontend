@@ -12,7 +12,7 @@ import FarmsImg from '../../../assets/img/icons/farms.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
-const Menu: React.FC = () => {
+const Menu: React.FC = React.memo(() => {
   const navItems = [
     {
       text: 'Home',
@@ -21,7 +21,8 @@ const Menu: React.FC = () => {
     },
     {
       text: 'Trade',
-      link: '/trade',
+      link: '/trade/swap',
+      activePaths: ['/trade/swap', '/trade/liquidity', '/trade/bridge'],
       img: TradeImg,
     },
     {
@@ -35,7 +36,18 @@ const Menu: React.FC = () => {
       <img src={LogoImg} alt="refinery finance" className="menu__logo" />
       <div className="menu__nav">
         {navItems.map((item) => (
-          <NavLink exact to={item.link} className="menu__nav-item" key={nextId()}>
+          <NavLink
+            exact
+            to={item.link}
+            className="menu__nav-item"
+            key={nextId()}
+            isActive={(_, location) => {
+              if (item.activePaths && item.activePaths.includes(location.pathname)) {
+                return true;
+              }
+              return item.link === location.pathname;
+            }}
+          >
             <div className="menu__nav-item-box box-f-ai-c">
               <div className="menu__nav-item-img box-f-c">
                 <img src={item.img} alt="" />
@@ -59,6 +71,6 @@ const Menu: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Menu;

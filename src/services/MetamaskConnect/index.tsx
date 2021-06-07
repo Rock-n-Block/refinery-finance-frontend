@@ -34,7 +34,6 @@ class Connector extends React.Component<any, any> {
 
     this.state.provider.chainChangedObs.subscribe({
       next(err: string) {
-        debugger;
         rootStore.modals.metamaskErr.setErr(err);
       },
     });

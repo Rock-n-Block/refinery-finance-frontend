@@ -2,8 +2,9 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { Menu } from './components/organisms';
+import { Menu } from './components/sections';
 import { Button } from './components/atoms';
+import { MetamaskErrModal } from './components/molecules';
 import { TradePage } from './pages';
 import { useWalletConnectorContext } from './services/MetamaskConnect';
 import { useMst } from './store';
@@ -25,8 +26,13 @@ const App: React.FC = observer(() => {
         ''
       )}
       <Switch>
-        <Route exact path={['/trade', '/trade/swap']} component={TradePage} />
+        <Route
+          exact
+          path={['/trade', '/trade/swap', '/trade/liquidity', '/trade/bridge']}
+          component={TradePage}
+        />
       </Switch>
+      <MetamaskErrModal />
     </div>
   );
 });
