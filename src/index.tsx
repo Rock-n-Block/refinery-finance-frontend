@@ -1,14 +1,15 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line no-param-reassign
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 // import { Helmet } from 'react-helmet';
 
 import App from './App';
+import rootStore, { Provider } from './store';
 
-import './index.css';
-
-ReactDOM.render(
-  <React>
-    {/* <Helmet
+/* <Helmet
       base={{ href: '/' }}
       title="Rock`n`Block"
       meta={[
@@ -30,8 +31,12 @@ ReactDOM.render(
         { property: 'og:title', content: 'Rock`n`Block Website' },
         { property: 'og:description', content: 'Project description' },
       ]}
-    /> */}
-    <App />
-  </React>,
+    /> */
+ReactDOM.render(
+  <Provider value={rootStore}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>,
   document.getElementById('root'),
 );

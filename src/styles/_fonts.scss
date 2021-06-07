@@ -1,0 +1,5 @@
+@import './mixins/main';
+//Montserrat
+@include font-face('Rubik', '../assets/fonts/Rubik-Regular', normal);
+@include font-face('Rubik', '../assets/fonts/Rubik-Medium', 500);
+@include font-face('Rubik', '../assets/fonts/Rubik-Bold', 700);

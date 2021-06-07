@@ -1,9 +1,15 @@
 import React from 'react';
 
-const App = () => {
+import { Button } from './components/atoms';
+
+import './styles/index.scss';
+
+const App: React.FC = () => {
   return (
-    <div className="">1</div>
+    <div className="">
+      <Button>123</Button>
+    </div>
   );
-}
+};
 
 export default App;

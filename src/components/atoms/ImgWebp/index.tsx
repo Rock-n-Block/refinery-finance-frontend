@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 export interface ImgWebpProps {
   loading: 'eager' | 'lazy' | undefined;
@@ -17,7 +17,6 @@ export interface ImgWebpProps {
  */
 
 const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, alt, className }) => {
-
   const concatedResolution = (imgSrc: string) => {
     return imgSrc.slice(0, imgSrc.lastIndexOf('.'));
   };
@@ -32,4 +31,4 @@ const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, alt, className }) => {
   );
 };
 
-export default ImgWebp
+export default ImgWebp;

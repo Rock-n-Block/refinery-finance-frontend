@@ -1,0 +1,78 @@
+@import './reset';
+@import 'mixins/media';
+@import './fonts';
+@import './vars';
+@import './typography';
+
+html,
+body {
+  margin: 0;
+
+  height: max-content;
+
+  font-family: Rubik, sans-serif;
+  font-weight: 400;
+
+  color: #000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  height: 100%;
+}
+
+.ref-finance {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+
+  font-size: 14px;
+  line-height: 17px;
+}
+
+main {
+  flex-grow: 2;
+}
+
+.row {
+  margin: 0 auto;
+  padding: 0 10px;
+
+  max-width: 1145px;
+  @include b('mobile') {
+    padding: 0 20px;
+  }
+
+  &-lg {
+    max-width: 1360px;
+  }
+}
+
+.hidden {
+  display: none !important;
+
+  &-desktop {
+    display: none !important;
+    @include b('tablet') {
+      display: block !important;
+    }
+  }
+
+  &-mobile {
+    @include b('tablet') {
+      display: none !important;
+    }
+  }
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.swiper-container {
+  overflow: inherit !important;
+}
