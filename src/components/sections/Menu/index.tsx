@@ -4,7 +4,7 @@ import nextId from 'react-id-generator';
 
 import './Menu.scss';
 
-import LogoImg from '../../../assets/img/icons/logo.svg';
+import LogoImg from '@/assets/img/icons/logo.svg';
 import LogoMiniImg from '../../../assets/img/icons/logo-m.svg';
 import HomeImg from '../../../assets/img/icons/home.svg';
 import TradeImg from '../../../assets/img/icons/trade.svg';
@@ -22,7 +22,7 @@ const Menu: React.FC = React.memo(() => {
     {
       text: 'Trade',
       link: '/trade/swap',
-      activePaths: ['/trade/swap', '/trade/liquidity', '/trade/bridge'],
+      activePaths: ['/trade/swap', '/trade/liquidity', '/trade/bridge', '/trade/swap/settings'],
       img: TradeImg,
     },
     {

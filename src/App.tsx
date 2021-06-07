@@ -28,7 +28,13 @@ const App: React.FC = observer(() => {
       <Switch>
         <Route
           exact
-          path={['/trade', '/trade/swap', '/trade/liquidity', '/trade/bridge']}
+          path={[
+            '/trade',
+            '/trade/swap',
+            '/trade/liquidity',
+            '/trade/bridge',
+            '/trade/swap/settings',
+          ]}
           component={TradePage}
         />
       </Switch>

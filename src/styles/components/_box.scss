@@ -54,4 +54,10 @@
   &-purple-l {
     background: $purple-l;
   }
+  &-circle {
+    border-radius: 50%;
+  }
+  &-white {
+    background: #fff;
+  }
 }

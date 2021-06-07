@@ -25,50 +25,52 @@ export interface ButtonProps extends IColorScheme, ISize {
   icon?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  className,
-  size = 'md',
-  colorScheme = 'yellow',
-  onClick,
-  disabled = false,
-  loading = false,
-  link,
-  linkClassName,
-  icon,
-}) => {
-  const BtnContent = (
-    <>
-      {icon ? <img src={icon} alt="icon" className="btn-icon" /> : <></>}
-      {children}
-    </>
-  );
-
-  const Btn = (
-    <BtnAntd
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={classNames(
-        className || '',
-        'text text-bold btn',
-        `btn-${size}`,
-        `btn-${colorScheme}`,
-        {
-          'btn-loading': loading,
-        },
-      )}
-    >
-      {loading ? 'In progress...' : BtnContent}
-    </BtnAntd>
-  );
-  if (link) {
-    return (
-      <Link className={classNames('btn-link', linkClassName)} to={link}>
-        {Btn}
-      </Link>
+const Button: React.FC<ButtonProps> = React.memo(
+  ({
+    children,
+    className,
+    size = 'md',
+    colorScheme = 'yellow',
+    onClick,
+    disabled = false,
+    loading = false,
+    link,
+    linkClassName,
+    icon,
+  }) => {
+    const BtnContent = (
+      <>
+        {icon ? <img src={icon} alt="icon" className="btn-icon" /> : <></>}
+        {children}
+      </>
     );
-  }
-  return Btn;
-};
+
+    const Btn = (
+      <BtnAntd
+        onClick={onClick}
+        disabled={disabled || loading}
+        className={classNames(
+          className || '',
+          'text text-bold btn',
+          `btn-${size}`,
+          `btn-${colorScheme}`,
+          {
+            'btn-loading': loading,
+          },
+        )}
+      >
+        {loading ? 'In progress...' : BtnContent}
+      </BtnAntd>
+    );
+    if (link) {
+      return (
+        <Link className={classNames('btn-link', linkClassName)} to={link}>
+          {Btn}
+        </Link>
+      );
+    }
+    return Btn;
+  },
+);
 
 export default Button;

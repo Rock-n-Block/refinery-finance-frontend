@@ -1,0 +1,40 @@
+@import 'src/styles/vars';
+.input-number {
+  width: 100%;
+  &:focus {
+    box-shadow: none;
+    outline: none;
+  }
+  &-lg {
+    border-radius: 40px;
+    input {
+      padding: 25px 20px;
+      font-size: 25px;
+      line-height: 30px;
+      font-weight: 500;
+      height: auto;
+    }
+  }
+  &-gray {
+    background: $gray-l;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    &:hover,
+    &:focus {
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+
+    margin: 0;
+  }
+
+  &[type='number'] {
+    appearance: textfield;
+  }
+  .ant-input-number-handler-wrap {
+    display: none;
+  }
+}

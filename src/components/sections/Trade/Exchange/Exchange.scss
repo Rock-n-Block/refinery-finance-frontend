@@ -1,0 +1,45 @@
+@import 'src/styles/vars';
+.exchange {
+  padding: 30px;
+  margin-top: 40px;
+  &__title {
+    margin-bottom: 12px;
+  }
+  &__box {
+    &-top {
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    &-title {
+      margin-bottom: 7px;
+    }
+  }
+  &__icon {
+    & + & {
+      margin-left: 25px;
+    }
+  }
+  &__line {
+    margin: 20px 0;
+    &::before {
+      content: '';
+      display: block;
+      width: 100%;
+      background: #e0e0e0;
+      height: 1px;
+    }
+    span {
+      display: block;
+      margin-left: 13px;
+      width: 36px;
+      cursor: pointer;
+      height: 36px;
+      background: $gray-l;
+    }
+  }
+  &__btn {
+    width: 100%;
+    margin-top: 30px;
+  }
+}
