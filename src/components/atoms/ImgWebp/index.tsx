@@ -16,20 +16,20 @@ export interface ImgWebpProps {
             <ImgWebp loading="lazy" src={picture} alt="Space" />
  */
 
-export const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, alt, className }) => {
-  const [path, setPath] = useState<string>(src);
+const ImgWebp: React.FC<ImgWebpProps> = ({ loading, src, alt, className }) => {
+
   const concatedResolution = (imgSrc: string) => {
     return imgSrc.slice(0, imgSrc.lastIndexOf('.'));
   };
-  useEffect(() => {
-    setPath(concatedResolution(path));
-  }, []);
+
   return (
     <>
       <picture className={className}>
-        <source type="image/webp" srcSet={`${path}.webp`} />
+        <source type="image/webp" srcSet={`${concatedResolution(src)}.webp`} />
         <img loading={loading} src={`${src}`} alt={alt} />
       </picture>
     </>
   );
 };
+
+export default ImgWebp

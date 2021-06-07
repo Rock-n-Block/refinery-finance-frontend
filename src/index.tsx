@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Helmet } from 'react-helmet';
+// import { Helmet } from 'react-helmet';
 
-import { App } from './app';
+import App from './App';
 
 import './index.css';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Helmet
+  <React>
+    {/* <Helmet
       base={{ href: '/' }}
       title="Rock`n`Block"
       meta={[
@@ -30,8 +30,8 @@ ReactDOM.render(
         { property: 'og:title', content: 'Rock`n`Block Website' },
         { property: 'og:description', content: 'Project description' },
       ]}
-    />
+    /> */}
     <App />
-  </React.StrictMode>,
+  </React>,
   document.getElementById('root'),
 );
