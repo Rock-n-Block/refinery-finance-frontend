@@ -4,6 +4,7 @@ import { Button as BtnAntd } from 'antd';
 import classNames from 'classnames';
 
 import 'antd/lib/button/style/css';
+import './Button.scss';
 
 export interface IColorScheme {
   colorScheme?: 'green' | 'outline' | 'white';
@@ -28,7 +29,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className,
   size = 'md',
-  colorScheme = 'green',
+  colorScheme = 'yellow',
   onClick,
   disabled = false,
   loading = false,

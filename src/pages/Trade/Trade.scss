@@ -1,0 +1,7 @@
+.trade {
+  background-image: url(../../assets/img/bg-t-r.svg), url(../../assets/img/bg-b-r.svg),
+    url(../../assets/img/bg-b-l.svg), url(../../assets/img/bg-c.svg);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: auto auto, 550px auto, auto auto, auto auto;
+  background-position: 100% 0, calc(100% + 120px) calc(100% + 270px), 0 100%, center;
+}

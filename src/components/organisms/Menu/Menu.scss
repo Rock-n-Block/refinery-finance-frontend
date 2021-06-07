@@ -1,0 +1,88 @@
+@import 'src/styles/vars';
+.menu {
+  position: fixed;
+  padding-bottom: 10px;
+  left: 0;
+  top: 0;
+  background: #ffffff;
+  box-shadow: 0px 12px 40px rgba(85, 32, 142, 0.25);
+  border-radius: 0px 30px 30px 0px;
+  height: 100vh;
+  &__logo {
+    margin-left: 30px;
+    margin-bottom: 10px;
+    width: 157px;
+  }
+  &__nav {
+    flex-grow: 2;
+    &-item {
+      min-width: 227px;
+      width: 100%;
+      padding-right: 13px;
+      display: block;
+      & + & {
+        margin-top: 12px;
+      }
+      &-box {
+        position: relative;
+        border-radius: 0px 20px 20px 0px;
+        padding: 12px 12px 12px 20px;
+        transition: 0.3s;
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: 5px;
+          background: transparent;
+          transition: 0.3s;
+        }
+      }
+      &-img {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+      }
+      &:hover {
+        &::before {
+          background: $purple;
+        }
+      }
+      &.active &-box {
+        background: $purple-l;
+        &::before {
+          background: $purple;
+        }
+      }
+    }
+  }
+  &__balance {
+    padding: 9px 20px;
+    width: 100%;
+    border-radius: 0px 0px 30px 30px;
+    img {
+      margin-right: 15px;
+    }
+  }
+  &__socials {
+    margin-top: 12px;
+    padding: 0 25px 0 20px;
+    &-item {
+      width: 28px;
+      height: 28px;
+      border: 1px solid $purple;
+      border-radius: 50%;
+      & + & {
+        margin-left: 12px;
+      }
+      &-tg {
+        svg {
+          margin-left: -2px;
+          margin-bottom: -2px;
+        }
+      }
+    }
+  }
+}

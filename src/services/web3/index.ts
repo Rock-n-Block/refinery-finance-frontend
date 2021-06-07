@@ -14,7 +14,7 @@ interface INetworks {
 }
 
 interface IMetamaskService {
-  testnet: 'ropsten' | 'kovan' | 'rinkeby';
+  testnet: 'ropsten' | 'kovan' | 'rinkeby' | 'bsct';
   isProduction?: boolean;
 }
 
@@ -23,6 +23,8 @@ const networks: INetworks = {
   ropsten: '0x3',
   kovan: '0x2a',
   rinkeby: '0x4',
+  bsct: '0x61',
+  bsc: '0x38',
 };
 
 export default class MetamaskService {

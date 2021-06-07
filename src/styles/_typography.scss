@@ -25,4 +25,13 @@
     font-size: 25px;
     line-height: 30px;
   }
+  &-purple {
+    color: $purple;
+  }
+  &-bold {
+    font-weight: bold;
+  }
+  &-white {
+    color: #fff;
+  }
 }

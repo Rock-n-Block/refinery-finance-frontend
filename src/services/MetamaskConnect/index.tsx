@@ -17,7 +17,7 @@ class Connector extends React.Component<any, any> {
 
     this.state = {
       provider: new MetamaskService({
-        testnet: 'kovan',
+        testnet: 'bsct',
       }),
     };
 
@@ -53,13 +53,12 @@ class Connector extends React.Component<any, any> {
       rootStore.user.setAddress(address);
       localStorage.refFinanceMetamask = true;
     } catch (err) {
-      debugger;
       rootStore.modals.metamaskErr.setErr(err.message);
       this.disconnect();
     }
   };
 
-  disconnect() {
+  disconnect = () => {
     rootStore.user.disconnect();
 
     // if (
@@ -69,7 +68,7 @@ class Connector extends React.Component<any, any> {
     // ) {
     //   this.props.history.push('/');
     // }
-  }
+  };
 
   render() {
     return (

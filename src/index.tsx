@@ -8,6 +8,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import App from './App';
 import rootStore, { Provider } from './store';
+import Connector from './services/MetamaskConnect';
 
 /* <Helmet
       base={{ href: '/' }}
@@ -35,7 +36,9 @@ import rootStore, { Provider } from './store';
 ReactDOM.render(
   <Provider value={rootStore}>
     <Router>
-      <App />
+      <Connector>
+        <App />
+      </Connector>
     </Router>
   </Provider>,
   document.getElementById('root'),
