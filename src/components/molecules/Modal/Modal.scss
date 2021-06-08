@@ -2,4 +2,13 @@
   overflow: hidden;
   padding-bottom: 0;
   border-radius: 30px;
+  .ant-modal-close {
+    top: 5px;
+    right: 5px;
+    &-x {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }

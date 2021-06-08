@@ -1,0 +1,18 @@
+.m-select-token {
+  &__item {
+    cursor: pointer;
+    & + & {
+      margin-top: 25px;
+    }
+    img {
+      margin-right: 11px;
+      max-width: 40px;
+      max-height: 40px;
+    }
+  }
+  &__search {
+    margin: 25px 0 30px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+}

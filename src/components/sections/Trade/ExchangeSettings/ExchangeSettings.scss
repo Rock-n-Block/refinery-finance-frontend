@@ -7,6 +7,11 @@
     }
   }
   &__section {
+    &:last-of-type {
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+    }
     & + & {
       margin-top: 30px;
     }
@@ -27,5 +32,9 @@
       max-width: 128px;
       margin-right: 15px;
     }
+  }
+  &__btn {
+    width: 100%;
+    max-width: 240px;
   }
 }

@@ -10,10 +10,6 @@ interface IInputNumberProps extends InputNumberProps {
   inputSize?: 'lg' | 'md' | 'sm';
   colorScheme?: 'gray' | 'outline';
   inputPrefix?: string | React.ReactElement;
-  onChange?: (value: number | string) => void;
-  onFocus?: () => void;
-  className?: string;
-  placeholder?: string;
 }
 
 const InputNumber: React.FC<IInputNumberProps> = React.memo(

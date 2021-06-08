@@ -104,6 +104,9 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
           <div className="exch-settings__section-title text-med text-purple">Audio</div>
           <Switch colorScheme="purple" switchSize="bg" />
         </div>
+        <Button className="exch-settings__btn">
+          <span className="text-smd text-white">Save and close</span>
+        </Button>
       </div>
     );
   },
