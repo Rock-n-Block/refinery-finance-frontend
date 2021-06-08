@@ -1,7 +1,6 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
 
-import { TradeNavbar, Exchange, ExchangeSettings } from '../../components/sections/Trade';
+import { TradeNavbar, Swap } from '../../components/sections/Trade';
 
 import './Trade.scss';
 
@@ -10,10 +9,7 @@ const Trade: React.FC = React.memo(() => {
     <main className="trade box-f-c">
       <div className="trade__content">
         <TradeNavbar />
-        <Switch>
-          <Route exact path="/trade/swap" component={Exchange} />
-          <Route exact path="/trade/swap/settings" component={ExchangeSettings} />
-        </Switch>
+        <Swap />
       </div>
     </main>
   );

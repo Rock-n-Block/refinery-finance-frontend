@@ -7,7 +7,7 @@ import 'antd/lib/button/style/css';
 import './Button.scss';
 
 export interface IColorScheme {
-  colorScheme?: 'green' | 'outline' | 'white';
+  colorScheme?: 'yellow' | 'outline' | 'white';
 }
 
 export interface ISize {
@@ -49,15 +49,9 @@ const Button: React.FC<ButtonProps> = React.memo(
       <BtnAntd
         onClick={onClick}
         disabled={disabled || loading}
-        className={classNames(
-          className || '',
-          'text text-bold btn',
-          `btn-${size}`,
-          `btn-${colorScheme}`,
-          {
-            'btn-loading': loading,
-          },
-        )}
+        className={classNames(className || '', 'text btn', `btn-${size}`, `btn-${colorScheme}`, {
+          'btn-loading': loading,
+        })}
       >
         {loading ? 'In progress...' : BtnContent}
       </BtnAntd>

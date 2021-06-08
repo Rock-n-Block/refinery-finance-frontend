@@ -15,4 +15,27 @@
       background: $yellow;
     }
   }
+  &-sm {
+    min-width: 74px;
+    padding: 13px 5px 14px;
+    text-align: center;
+  }
+  &-outline {
+    background: white;
+    border: 3px solid $purple-s-l;
+    color: $gray;
+    &:hover {
+      border-color: $purple-s-l;
+      color: #000;
+    }
+    &:active,
+    &:focus {
+      color: #000;
+      border-color: $purple-s-l;
+    }
+    &.active {
+      background: $purple-s-l;
+      color: $purple;
+    }
+  }
 }
