@@ -1,0 +1,14 @@
+.lottery {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  &__content {
+    padding-top: 65px;
+  }
+  &__search {
+    padding: 7px 7px 7px 30px;
+    margin-top: -39px;
+    .btn {
+      width: 215px;
+    }
+  }
+}

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { Menu } from './components/sections';
 import { Button } from './components/atoms';
 import { MetamaskErrModal } from './components/molecules';
-import { TradePage } from './pages';
+import { TradePage, LotteryPage } from './pages';
 import { useWalletConnectorContext } from './services/MetamaskConnect';
 import { useMst } from './store';
 
@@ -38,6 +38,7 @@ const App: React.FC = observer(() => {
           ]}
           component={TradePage}
         />
+        <Route exact path={['/lottery/:id', '/lottery']} component={LotteryPage} />
       </Switch>
       <MetamaskErrModal />
     </div>

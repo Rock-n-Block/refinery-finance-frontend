@@ -47,15 +47,16 @@ body {
 
 main {
   flex-grow: 2;
+  padding-left: 227px;
 }
 
 .row {
   margin: 0 auto;
   padding: 0 10px;
 
-  max-width: 1145px;
-  @include b('mobile') {
-    padding: 0 20px;
+  max-width: 1120px;
+  &-md {
+    max-width: 990px;
   }
 
   &-lg {

@@ -6,13 +6,13 @@
   border-radius: 40px;
   width: fit-content;
   &-yellow {
-    background: $yellow;
+    background: $orange;
     &:hover {
-      background: $yellow;
+      background: $orange;
     }
     &:active,
     &:focus {
-      background: $yellow;
+      background: $orange;
     }
   }
   &-sm {

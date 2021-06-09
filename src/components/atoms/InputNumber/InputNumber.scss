@@ -36,6 +36,14 @@
       height: auto;
     }
   }
+  &-md {
+    input {
+      padding: 20px;
+      padding-left: 0;
+      font-size: 20px;
+      line-height: 24px;
+    }
+  }
   &-sm {
     &-box {
       border-radius: 30px;

@@ -9,6 +9,7 @@ import LogoMiniImg from '../../../assets/img/icons/logo-m.svg';
 import HomeImg from '../../../assets/img/icons/home.svg';
 import TradeImg from '../../../assets/img/icons/trade.svg';
 import FarmsImg from '../../../assets/img/icons/farms.svg';
+import LotteryImg from '../../../assets/img/icons/lottery.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
@@ -35,6 +36,11 @@ const Menu: React.FC = React.memo(() => {
       text: 'Farms',
       link: '/farms',
       img: FarmsImg,
+    },
+    {
+      text: 'Lottery',
+      link: '/lottery',
+      img: LotteryImg,
     },
   ];
   return (
