@@ -11,7 +11,7 @@ interface ISwitch extends SwitchProps {
   switchSize?: 'bg' | 'sm';
 }
 
-const Switch: React.FC<ISwitch> = (props) => {
+const Switch: React.FC<ISwitch> = React.memo((props) => {
   return (
     <AntdSwitch
       {...props}
@@ -22,6 +22,6 @@ const Switch: React.FC<ISwitch> = (props) => {
       )}
     />
   );
-};
+});
 
 export default Switch;

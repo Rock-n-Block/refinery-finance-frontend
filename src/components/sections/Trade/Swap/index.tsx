@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import { Exchange, ExchangeSettings } from '..';
+import { Exchange, ExchangeSettings, RecentTxs } from '..';
 import { IActiveSlippage } from '../ExchangeSettings';
 
 import BnbImg from '@/assets/img/currency/bnb.svg';
@@ -12,13 +12,19 @@ export interface IToken {
   symbol: string;
 }
 
+export interface ISettings {
+  slippage: IActiveSlippage;
+  txDeadline: number;
+}
+
 const Swap: React.FC = () => {
-  const [slippage, setSlippage] = React.useState<IActiveSlippage>({
-    type: 'btn',
-    value: 0.1,
+  const [settings, setSettings] = React.useState<ISettings>({
+    slippage: {
+      type: 'btn',
+      value: 0.1,
+    },
+    txDeadline: NaN,
   });
-  const [txDeadline, SetTxDeadline] = React.useState<number>(NaN);
-  console.log(txDeadline);
 
   const [tokenFrom, setTokenFrom] = React.useState<IToken>({
     img: BnbImg,
@@ -34,12 +40,8 @@ const Swap: React.FC = () => {
   });
   const [tokenToQuantity, setTokenToQuantity] = React.useState<number>(NaN);
 
-  const handleChangeSlippage = (data: IActiveSlippage): void => {
-    setSlippage(data);
-  };
-
-  const handleChangeTxDeadline = (value: number | string): void => {
-    SetTxDeadline(+value);
+  const handleSaveSettings = (settingsObj: ISettings): void => {
+    setSettings(settingsObj);
   };
 
   const handleChangeTokenFrom = (token: IToken): void => {
@@ -101,14 +103,9 @@ const Swap: React.FC = () => {
       <Route
         exact
         path="/trade/swap/settings"
-        render={() => (
-          <ExchangeSettings
-            activeSlippage={slippage}
-            handleChangeActiveSlippage={handleChangeSlippage}
-            handleChangeTxDeadline={handleChangeTxDeadline}
-          />
-        )}
+        render={() => <ExchangeSettings savedSettings={settings} handleSave={handleSaveSettings} />}
       />
+      <Route exact path="/trade/swap/history" component={RecentTxs} />
     </Switch>
   );
 };

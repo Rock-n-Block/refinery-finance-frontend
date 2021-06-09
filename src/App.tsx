@@ -34,6 +34,7 @@ const App: React.FC = observer(() => {
             '/trade/liquidity',
             '/trade/bridge',
             '/trade/swap/settings',
+            '/trade/swap/history',
           ]}
           component={TradePage}
         />

@@ -4,10 +4,11 @@ import cn from 'classnames';
 import nextId from 'react-id-generator';
 
 import { Button, InputNumber, Switch } from '../../../atoms';
-
-import CrossImg from '../../../../assets/img/icons/cross.svg';
+import { ISettings } from '../Swap';
 
 import './ExchangeSettings.scss';
+
+import CrossImg from '../../../../assets/img/icons/cross.svg';
 
 export interface IActiveSlippage {
   type: 'btn' | 'input';
@@ -15,19 +16,38 @@ export interface IActiveSlippage {
 }
 
 interface IExchangeSettings {
-  activeSlippage: IActiveSlippage;
-  handleChangeActiveSlippage: (data: IActiveSlippage) => void;
-  handleChangeTxDeadline: (value: number | string) => void;
+  savedSettings: ISettings;
+  handleSave: (settings: ISettings) => void;
 }
 
 const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
-  ({ activeSlippage, handleChangeActiveSlippage, handleChangeTxDeadline }) => {
-    const [slippageInputValue, setSlippageInputValue] = React.useState<number>(NaN);
+  ({ savedSettings, handleSave }) => {
+    const [slippage, setSlippage] = React.useState<IActiveSlippage>(savedSettings.slippage);
+    const [txDeadline, SetTxDeadline] = React.useState<number>(savedSettings.txDeadline);
+
+    const [slippageInputValue, setSlippageInputValue] = React.useState<number>(
+      savedSettings.slippage.type === 'input' ? savedSettings.slippage.value : NaN,
+    );
     const btns = [0.1, 0.5, 1];
+
+    const handleSaveSettings = () => {
+      handleSave({
+        slippage,
+        txDeadline,
+      });
+    };
+
+    const handleChangeSlippage = (data: IActiveSlippage): void => {
+      setSlippage(data);
+    };
+
+    const handleChangeTxDeadline = (value: number | string): void => {
+      SetTxDeadline(+value);
+    };
 
     const handleFocusSlippageInput = () => {
       if (+slippageInputValue) {
-        handleChangeActiveSlippage({
+        handleChangeSlippage({
           type: 'input',
           value: slippageInputValue,
         });
@@ -37,20 +57,22 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
     const handleChangeSlippageInput = (value: number | string) => {
       setSlippageInputValue(+value);
       if (+value) {
-        handleChangeActiveSlippage({
+        handleChangeSlippage({
           type: 'input',
           value: +value,
         });
       } else {
-        handleChangeActiveSlippage({ type: 'btn', value: 0.1 });
+        handleChangeSlippage({ type: 'btn', value: 0.1 });
       }
     };
+
+    const handleClose = (): void => {};
 
     return (
       <div className="exchange exch-settings box-shadow box-white">
         <div className="box-f-jc-sb box-f-ai-c exch-settings__box-title">
           <div className="text-med text-purple text-md">Advanced Settings</div>
-          <Link to="/trade/swap" className="exch-settings__close">
+          <Link to="/trade/swap" className="exch-settings__close" onClick={handleClose}>
             <img src={CrossImg} alt="" />
           </Link>
         </div>
@@ -64,9 +86,9 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
                 key={nextId()}
                 size="sm"
                 colorScheme="outline"
-                onClick={() => handleChangeActiveSlippage({ type: 'btn', value: btn })}
+                onClick={() => handleChangeSlippage({ type: 'btn', value: btn })}
                 className={cn('exch-settings__slippage-btn', {
-                  active: activeSlippage.type === 'btn' && activeSlippage.value === btn,
+                  active: slippage.type === 'btn' && slippage.value === btn,
                 })}
               >
                 {btn}%
@@ -80,7 +102,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
               onFocus={handleFocusSlippageInput}
               onChange={handleChangeSlippageInput}
               className={cn('exch-settings__slippage-input', {
-                active: activeSlippage.type === 'input' && activeSlippage.value,
+                active: slippage.type === 'input' && slippage.value,
               })}
             />
           </div>
@@ -93,6 +115,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
             <InputNumber
               colorScheme="outline"
               inputSize="sm"
+              value={txDeadline}
               onChange={handleChangeTxDeadline}
               className="exch-settings__txdeadline-input"
               placeholder="0"
@@ -104,7 +127,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
           <div className="exch-settings__section-title text-med text-purple">Audio</div>
           <Switch colorScheme="purple" switchSize="bg" />
         </div>
-        <Button className="exch-settings__btn">
+        <Button link="/trade/swap" className="exch-settings__btn" onClick={handleSaveSettings}>
           <span className="text-smd text-white">Save and close</span>
         </Button>
       </div>

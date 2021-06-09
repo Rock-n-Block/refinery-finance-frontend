@@ -22,7 +22,13 @@ const Menu: React.FC = React.memo(() => {
     {
       text: 'Trade',
       link: '/trade/swap',
-      activePaths: ['/trade/swap', '/trade/liquidity', '/trade/bridge', '/trade/swap/settings'],
+      activePaths: [
+        '/trade/swap',
+        '/trade/liquidity',
+        '/trade/bridge',
+        '/trade/swap/settings',
+        '/trade/swap/history',
+      ],
       img: TradeImg,
     },
     {
