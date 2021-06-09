@@ -21,6 +21,7 @@ const InputNumber: React.FC<IInputNumberProps> = React.memo(
     onFocus,
     className,
     placeholder,
+    value,
   }) => {
     return (
       <div
@@ -35,6 +36,7 @@ const InputNumber: React.FC<IInputNumberProps> = React.memo(
           type="number"
           className={cn('input-number', `input-number-${inputSize}`, `input-number-${colorScheme}`)}
           onChange={onChange}
+          value={value}
           onFocus={onFocus}
           placeholder={placeholder}
           onWheel={(e: any) => {

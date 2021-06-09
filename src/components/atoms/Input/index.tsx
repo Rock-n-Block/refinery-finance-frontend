@@ -10,11 +10,20 @@ interface IInput extends InputProps {
   colorScheme?: 'transparent';
   inputSize?: 'sm';
   ref?: React.ForwardedRef<AntdInput>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.ForwardRefExoticComponent<IInput> = React.forwardRef<AntdInput, IInput>(
   (
-    { colorScheme = 'transparent', inputSize = 'sm', value, className, placeholder, onChange },
+    {
+      colorScheme = 'transparent',
+      inputSize = 'sm',
+      value,
+      className,
+      placeholder,
+      onChange,
+      onKeyDown,
+    },
     ref,
   ) => {
     return (
@@ -27,6 +36,7 @@ const Input: React.ForwardRefExoticComponent<IInput> = React.forwardRef<AntdInpu
         )}
         ref={ref}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         placeholder={placeholder}
         value={value}
       />

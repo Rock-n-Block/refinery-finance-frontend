@@ -35,11 +35,17 @@ const Search: React.FC<ISearch> = ({
   };
 
   const handleImgClick = () => {
-    console.log(inputRef);
     if (inputValue) {
       return onChange && onChange(inputValue);
     }
     return inputRef.current && inputRef.current.focus();
+  };
+
+  const handleEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && e.currentTarget.value) {
+      return onChange && onChange(inputValue);
+    }
+    return undefined;
   };
 
   return (
@@ -61,6 +67,7 @@ const Search: React.FC<ISearch> = ({
           ref={inputRef}
           placeholder={placeholder}
           onChange={(e: any) => handleChange(e.target.value)}
+          onKeyDown={handleEnterDown}
         />
       ) : (
         ''
