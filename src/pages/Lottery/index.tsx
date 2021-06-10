@@ -1,7 +1,12 @@
 import React from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
-import { LotteryPreview, LotteryNotFound } from '../../components/sections/Lottery';
+import {
+  LotteryPreview,
+  LotteryNotFound,
+  LotteryRound,
+  WinningTicketsModal,
+} from '../../components/sections/Lottery';
 import { Search } from '../../components/atoms';
 
 import './Lottery.scss';
@@ -15,10 +20,22 @@ const Lottery: React.FC = () => {
   const { id } = useParams<ILotteryId>();
   console.log(id);
 
+  const [isWinningTikcetsModalVisible, setWinningTicketsModalVisible] = React.useState<boolean>(
+    true,
+  );
+
   const handleSearch = (value: number | string) => {
     if (value !== +id) {
       history.push(`/lottery/${value}`);
     }
+  };
+
+  const handleOpenWinningTicketsModal = (): void => {
+    setWinningTicketsModalVisible(true);
+  };
+
+  const handleCloseWinningTicketsModal = (): void => {
+    setWinningTicketsModalVisible(false);
   };
 
   return (
@@ -34,8 +51,22 @@ const Lottery: React.FC = () => {
             onChange={handleSearch}
           />
         </div>
-        <div className="lottery__content">{!id ? <LotteryNotFound /> : ''}</div>
+        <div className="lottery__content">
+          {!id ? <LotteryNotFound /> : ''}
+
+          {id ? (
+            <div>
+              <LotteryRound index={+id} handleOpenModal={handleOpenWinningTicketsModal} />
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
       </div>
+      <WinningTicketsModal
+        isVisible={isWinningTikcetsModalVisible}
+        handleClose={handleCloseWinningTicketsModal}
+      />
     </main>
   );
 };

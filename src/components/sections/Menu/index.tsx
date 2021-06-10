@@ -54,7 +54,10 @@ const Menu: React.FC = React.memo(() => {
             className="menu__nav-item"
             key={nextId()}
             isActive={(_, location) => {
-              if (item.activePaths && item.activePaths.includes(location.pathname)) {
+              if (
+                (item.activePaths && item.activePaths.includes(location.pathname)) ||
+                (item.link !== '/' && location.pathname.indexOf(item.link) > -1)
+              ) {
                 return true;
               }
               return item.link === location.pathname;

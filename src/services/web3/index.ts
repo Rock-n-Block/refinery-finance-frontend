@@ -147,7 +147,7 @@ export default class MetamaskService {
   }
 
   async checkTokenAllowance(
-    contractName: 'WETH',
+    contractName: 'ROUTER',
     tokenDecimals: number,
     approvedAddress?: string,
     walletAddress?: string,
@@ -180,7 +180,7 @@ export default class MetamaskService {
   }
 
   async approveToken(
-    contractName: 'WETH',
+    contractName: 'ROUTER',
     tokenDecimals: number,
     approvedAddress?: string,
     walletAddress?: string,
@@ -216,7 +216,7 @@ export default class MetamaskService {
   createTransaction(
     method: string,
     data: Array<any>,
-    contract: 'NFT' | 'BEP20' | 'WETH',
+    contract: 'ROUTER',
     tx?: any,
     tokenAddress?: string,
     walletAddress?: string,

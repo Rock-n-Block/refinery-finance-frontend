@@ -3,6 +3,9 @@
   padding-bottom: 25px;
   &__content {
     padding-top: 65px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: 35px;
   }
   &__search {
     padding: 7px 7px 7px 30px;

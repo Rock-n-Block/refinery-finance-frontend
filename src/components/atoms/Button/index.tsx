@@ -7,7 +7,7 @@ import 'antd/lib/button/style/css';
 import './Button.scss';
 
 export interface IColorScheme {
-  colorScheme?: 'yellow' | 'outline' | 'white';
+  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple';
 }
 
 export interface ISize {

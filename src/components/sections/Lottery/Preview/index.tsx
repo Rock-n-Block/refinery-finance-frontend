@@ -4,7 +4,7 @@ import './Preview.scss';
 
 import { ReactComponent as OpenLinkImg } from '../../../../assets/img/icons/open-link.svg';
 
-const Preview: React.FC = () => {
+const Preview: React.FC = React.memo(() => {
   return (
     <div className="lottery-preview">
       <div className="row">
@@ -23,6 +23,6 @@ const Preview: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Preview;

@@ -4,6 +4,7 @@
   padding: 20px;
   height: auto;
   border-radius: 40px;
+  display: block;
   width: fit-content;
   &-yellow {
     background: $orange;
@@ -19,6 +20,9 @@
     min-width: 74px;
     padding: 13px 5px 14px;
     text-align: center;
+  }
+  &-ssm {
+    padding: 6px 18px;
   }
   &-outline {
     background: white;
@@ -36,6 +40,20 @@
     &.active {
       background: $purple-s-l;
       color: $purple;
+    }
+    &-purple {
+      background: transparent;
+      border: 1px solid $purple;
+      color: $purple;
+      &:hover {
+        border-color: $purple;
+        color: $purple;
+      }
+      &:active,
+      &:focus {
+        color: $purple;
+        border-color: $purple;
+      }
     }
   }
 }

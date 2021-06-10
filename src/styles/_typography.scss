@@ -9,6 +9,10 @@
 .h2 {
   font-size: 30px;
   line-height: 36px;
+  &-lg {
+    font-size: 40px;
+    line-height: 47px;
+  }
 }
 .text {
   font-size: 16px;
@@ -16,6 +20,10 @@
   &-ssm {
     font-size: 14px;
     line-height: 17px;
+  }
+  &-ssmd {
+    font-size: 16px;
+    line-height: 26px;
   }
   &-sm {
     font-size: 15px;
@@ -59,5 +67,14 @@
   }
   &-green {
     color: $green;
+  }
+  &-norm {
+    font-weight: normal;
+  }
+  &-center {
+    text-align: center;
+  }
+  &-blue {
+    color: $blue;
   }
 }
