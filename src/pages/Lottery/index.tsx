@@ -6,8 +6,9 @@ import {
   LotteryNotFound,
   LotteryRound,
   WinningTicketsModal,
+  BuyTicketsModal,
 } from '../../components/sections/Lottery';
-import { Search } from '../../components/atoms';
+import { Search, Button } from '../../components/atoms';
 
 import './Lottery.scss';
 
@@ -20,14 +21,24 @@ const Lottery: React.FC = () => {
   const { id } = useParams<ILotteryId>();
   console.log(id);
 
-  const [isWinningTikcetsModalVisible, setWinningTicketsModalVisible] = React.useState<boolean>(
-    true,
+  const [isWinningTicketsModalVisible, setWinningTicketsModalVisible] = React.useState<boolean>(
+    false,
   );
+
+  const [isBuyTicketsModalVisible, setBuyTicketsModalVisible] = React.useState<boolean>(false);
 
   const handleSearch = (value: number | string) => {
     if (value !== +id) {
       history.push(`/lottery/${value}`);
     }
+  };
+
+  const handleOpenBuyTicketsModal = (): void => {
+    setBuyTicketsModalVisible(true);
+  };
+
+  const handleCloseBuyTicketsModal = (): void => {
+    setBuyTicketsModalVisible(false);
   };
 
   const handleOpenWinningTicketsModal = (): void => {
@@ -41,7 +52,7 @@ const Lottery: React.FC = () => {
   return (
     <main className="lottery">
       <LotteryPreview />
-      <div className="row row-md">
+      <div className="row row-sm">
         <div className="box-shadow box-white lottery__search">
           <Search
             btn
@@ -51,6 +62,8 @@ const Lottery: React.FC = () => {
             onChange={handleSearch}
           />
         </div>
+      </div>
+      <div className="row row-md">
         <div className="lottery__content">
           {!id ? <LotteryNotFound /> : ''}
 
@@ -61,11 +74,23 @@ const Lottery: React.FC = () => {
           ) : (
             ''
           )}
+          <div>
+            <div className="box-shadow box-white lottery__buy">
+              <div className="text-md text-purple text-med">Lottery Tickets</div>
+              <Button className="lottery__buy-btn" onClick={handleOpenBuyTicketsModal}>
+                <span className="text-white text-bold text-md">Buy Tickets</span>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
       <WinningTicketsModal
-        isVisible={isWinningTikcetsModalVisible}
+        isVisible={isWinningTicketsModalVisible}
         handleClose={handleCloseWinningTicketsModal}
+      />
+      <BuyTicketsModal
+        isVisible={isBuyTicketsModalVisible}
+        handleClose={handleCloseBuyTicketsModal}
       />
     </main>
   );

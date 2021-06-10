@@ -5,13 +5,20 @@
     padding-top: 65px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-row-gap: 35px;
+    grid-column-gap: 35px;
   }
   &__search {
     padding: 7px 7px 7px 30px;
     margin-top: -39px;
     .btn {
       width: 215px;
+    }
+  }
+  &__buy {
+    padding: 30px;
+    text-align: center;
+    &-btn {
+      margin: 30px auto 0;
     }
   }
 }
