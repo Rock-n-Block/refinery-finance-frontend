@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import cn from 'classnames';
 import nextId from 'react-id-generator';
 
@@ -22,6 +22,7 @@ interface IExchangeSettings {
 
 const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
   ({ savedSettings, handleSave }) => {
+    const history = useHistory();
     const [slippage, setSlippage] = React.useState<IActiveSlippage>(savedSettings.slippage);
     const [txDeadline, SetTxDeadline] = React.useState<number>(savedSettings.txDeadline);
 
@@ -35,6 +36,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
         slippage,
         txDeadline,
       });
+      history.push('/trade/swap');
     };
 
     const handleChangeSlippage = (data: IActiveSlippage): void => {
@@ -127,7 +129,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
           <div className="exch-settings__section-title text-med text-purple">Audio</div>
           <Switch colorScheme="purple" switchSize="bg" />
         </div>
-        <Button link="/trade/swap" className="exch-settings__btn" onClick={handleSaveSettings}>
+        <Button className="exch-settings__btn" onClick={handleSaveSettings}>
           <span className="text-smd text-white">Save and close</span>
         </Button>
       </div>

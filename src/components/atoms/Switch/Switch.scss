@@ -8,6 +8,9 @@
   &:focus {
     box-shadow: none;
   }
+  & + * {
+    margin-left: 10px;
+  }
   .ant-switch {
     &-handle {
       width: 21px;

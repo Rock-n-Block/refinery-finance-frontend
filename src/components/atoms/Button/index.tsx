@@ -6,8 +6,10 @@ import classNames from 'classnames';
 import 'antd/lib/button/style/css';
 import './Button.scss';
 
+import { ReactComponent as ArrowImg } from '../../../assets/img/icons/arrow-btn.svg';
+
 export interface IColorScheme {
-  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple';
+  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple';
 }
 
 export interface ISize {
@@ -23,6 +25,10 @@ export interface ButtonProps extends IColorScheme, ISize {
   linkClassName?: string;
   shadow?: boolean;
   icon?: string;
+  arrow?: boolean;
+  toggle?: boolean;
+  onToggle?: (value: boolean) => void;
+  isActive?: boolean | null;
 }
 
 const Button: React.FC<ButtonProps> = React.memo(
@@ -37,21 +43,41 @@ const Button: React.FC<ButtonProps> = React.memo(
     link,
     linkClassName,
     icon,
+    arrow,
+    toggle,
+    isActive = null,
+    onToggle,
   }) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (toggle && onToggle) {
+        onToggle(!isActive);
+      }
+      return onClick && onClick();
+    };
+
     const BtnContent = (
       <>
         {icon ? <img src={icon} alt="icon" className="btn-icon" /> : <></>}
         {children}
+        {arrow ? <ArrowImg className="btn__arrow" /> : ''}
       </>
     );
 
     const Btn = (
       <BtnAntd
-        onClick={onClick}
+        onClick={handleClick}
         disabled={disabled || loading}
-        className={classNames(className || '', 'text btn', `btn-${size}`, `btn-${colorScheme}`, {
-          'btn-loading': loading,
-        })}
+        className={classNames(
+          className || '',
+          'text btn box-f-c',
+          `btn-${size}`,
+          `btn-${colorScheme}`,
+          {
+            'btn-loading': loading,
+            'active': isActive,
+          },
+        )}
       >
         {loading ? 'In progress...' : BtnContent}
       </BtnAntd>

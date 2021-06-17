@@ -5,6 +5,10 @@
     font-size: 50px;
     line-height: 60px;
   }
+  &-md {
+    font-size: 60px;
+    line-height: 71px;
+  }
 }
 .h2 {
   font-size: 30px;
@@ -31,7 +35,7 @@
   }
   &-smd {
     font-size: 18px;
-    line-height: 26px;
+    line-height: 21px;
   }
   &-md {
     font-size: 20px;
@@ -58,6 +62,9 @@
   }
   &-gray-2 {
     color: $gray-2;
+  }
+  &-gray-l-2 {
+    color: $gray-l-2;
   }
   &-upper {
     text-transform: uppercase;

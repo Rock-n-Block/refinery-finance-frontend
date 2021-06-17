@@ -1,0 +1,24 @@
+@import 'src/styles/vars';
+.farms-preview {
+  border-radius: 40px;
+  overflow: hidden;
+  &__box {
+    background-color: $purple-d;
+    border-radius: 0px 0 40px 40px;
+    padding: 40px;
+    background-image: url(../../../../assets/img/sections/farms/bg-1.svg),
+      url(../../../../assets/img/sections/farms/bg-2.svg);
+    background-repeat: no-repeat;
+    background-position: 0 14px, 100%;
+    background-size: auto, auto 100%;
+  }
+  &__sibtitle {
+    margin-top: 16px;
+  }
+  &__auc {
+    padding: 21px 26px;
+    &-img {
+      margin-right: 14px;
+    }
+  }
+}

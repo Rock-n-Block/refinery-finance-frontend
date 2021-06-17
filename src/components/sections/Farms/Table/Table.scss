@@ -1,0 +1,16 @@
+@import 'src/styles/vars';
+.farms-table {
+  margin-top: 45px;
+  padding: 35px 0;
+  &__head {
+    position: sticky;
+    top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 86px 150px 220px 110px 1fr;
+    grid-column-gap: 20px;
+    align-items: center;
+    margin: 0 50px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 14px;
+  }
+}

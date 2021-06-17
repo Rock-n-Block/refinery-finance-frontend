@@ -9,18 +9,21 @@ import './Switch.scss';
 interface ISwitch extends SwitchProps {
   colorScheme?: 'white' | 'purple';
   switchSize?: 'bg' | 'sm';
+  text?: string | React.ReactElement;
 }
 
-const Switch: React.FC<ISwitch> = React.memo((props) => {
+const Switch: React.FC<ISwitch> = React.memo(({ colorScheme, switchSize, text }) => {
   return (
-    <AntdSwitch
-      {...props}
-      className={cn(
-        'switch',
-        `${props.colorScheme ? `switch-${props.colorScheme}` : ''}`,
-        `${props.switchSize ? `switch-${props.switchSize}` : ''}`,
-      )}
-    />
+    <div className="box-f-ai-c">
+      <AntdSwitch
+        className={cn(
+          'switch',
+          `${colorScheme ? `switch-${colorScheme}` : ''}`,
+          `${switchSize ? `switch-${switchSize}` : ''}`,
+        )}
+      />
+      {text}
+    </div>
   );
 });
 

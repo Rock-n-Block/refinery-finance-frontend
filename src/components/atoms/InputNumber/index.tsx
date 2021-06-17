@@ -8,7 +8,7 @@ import './InputNumber.scss';
 
 interface IInputNumberProps extends InputNumberProps {
   inputSize?: 'lg' | 'md' | 'sm';
-  colorScheme?: 'gray' | 'outline' | 'transparent';
+  colorScheme?: 'gray' | 'outline' | 'transparent' | 'white';
   inputPrefix?: string | React.ReactElement;
   inputClass?: string;
   ref?: React.ForwardedRef<HTMLInputElement>;
