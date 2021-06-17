@@ -15,10 +15,21 @@ interface ISearch {
   placeholder?: string;
   onChange?: (value: number | string) => void;
   btn?: boolean;
+  colorScheme?: 'transparent' | 'gray';
+  className?: string;
 }
 
 const Search: React.FC<ISearch> = React.memo(
-  ({ type = 'text', placeholder, size = 'sm', realtime, onChange, btn }) => {
+  ({
+    type = 'text',
+    placeholder,
+    size = 'sm',
+    realtime,
+    onChange,
+    btn,
+    colorScheme = 'transparent',
+    className,
+  }) => {
     const [inputValue, setInputValue] = React.useState<number | string>('');
 
     const inputRef = React.useRef<AntdInput>(null);
@@ -53,7 +64,7 @@ const Search: React.FC<ISearch> = React.memo(
     };
 
     return (
-      <div className={cn('search box-f-ai-c', `${size ? `input-${size}` : ''}`)}>
+      <div className={cn('search box-f-ai-c', `input-${size}`, `search-${colorScheme}`, className)}>
         <div
           className="search__img"
           onClick={handleImgClick}
@@ -82,11 +93,13 @@ const Search: React.FC<ISearch> = React.memo(
             value={inputValue}
             className={cn({
               'text-md': size === 'lg',
+              'text': size === 'sm',
             })}
             ref={inputRef}
             placeholder={placeholder}
             onChange={(e: any) => handleChange(e.target.value)}
             onKeyDown={handleEnterDown}
+            colorScheme="transparent"
           />
         ) : (
           ''

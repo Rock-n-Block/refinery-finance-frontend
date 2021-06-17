@@ -5,3 +5,5 @@ export { default as Switch } from './Switch';
 export { default as Input } from './Input';
 export { default as Search } from './Search';
 export { default as WinNumber } from './WinNumber';
+export { default as RadioGroup } from './RadioGroup';
+export { default as SortSelect } from './SortSelect';

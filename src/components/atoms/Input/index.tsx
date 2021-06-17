@@ -8,7 +8,7 @@ import './Input.scss';
 
 interface IInput extends InputProps {
   colorScheme?: 'transparent';
-  inputSize?: 'sm';
+  inputSize?: 'sm' | 'md';
   ref?: React.ForwardedRef<AntdInput>;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }

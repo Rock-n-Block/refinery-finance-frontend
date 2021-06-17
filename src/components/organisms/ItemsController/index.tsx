@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Switch } from '../../atoms';
+import { Switch, RadioGroup, Search, SortSelect } from '../../atoms';
 
 import './ItemsController.scss';
 
@@ -12,6 +12,29 @@ const ItemsController: React.FC = React.memo(() => {
           colorScheme="white"
           text={<span className="text-purple text-bold">Staked only</span>}
         />
+        <RadioGroup
+          className="i-contr__radio"
+          buttonStyle="solid"
+          defaultValue="live"
+          items={[
+            {
+              text: 'Live',
+              value: 'live',
+            },
+            {
+              text: 'Finished',
+              value: 'finished',
+            },
+            {
+              text: 'Discontinued',
+              value: 'discontinued',
+            },
+          ]}
+        />
+      </div>
+      <div className="box-f-ai-c">
+        <SortSelect label="Sort by " />
+        <Search colorScheme="gray" placeholder="Search Farms" className="i-contr__search" />
       </div>
     </div>
   );
