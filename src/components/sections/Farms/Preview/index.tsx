@@ -1,12 +1,18 @@
 import React from 'react';
 
 import { Button } from '../../../atoms';
+import { CSSTransition } from 'react-transition-group';
 
 import './Preview.scss';
 
 import AucImg from '../../../../assets/img/sections/farms/auc.svg';
 
 const Preview: React.FC = React.memo(() => {
+  const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);
+
+  const handleToggleDetails = (value: boolean) => {
+    setDetailsOpen(value);
+  };
   return (
     <div className="farms-preview box-purple-l">
       <div className="farms-preview__box">
@@ -15,16 +21,39 @@ const Preview: React.FC = React.memo(() => {
           Stake Liquidity Pool (LP) tokens to earn.
         </div>
       </div>
-      <div className="farms-preview__auc box-f-ai-c box-f-jc-sb">
-        <div className="box-f-ai-c">
-          <img src={AucImg} alt="auction" className="farms-preview__auc-img" />
-          <span className="text-upper text-bold text-purple">
-            ACTION REQUIRED for all LP token holders
-          </span>
+      <div className="farms-preview__auc">
+        <div className="box-f-ai-c box-f-jc-sb">
+          <div className="box-f-ai-c">
+            <img src={AucImg} alt="auction" className="farms-preview__auc-img" />
+            <span className="text-upper text-bold text-purple">
+              ACTION REQUIRED for all LP token holders
+            </span>
+          </div>
+          <Button
+            colorScheme="outline-purple"
+            size="smd"
+            arrow
+            toggle
+            isActive={isDetailsOpen}
+            onToggle={handleToggleDetails}
+          >
+            <span className="text-purple text-med">Details</span>
+          </Button>
         </div>
-        <Button colorScheme="outline-purple" size="smd" arrow toggle>
-          <span className="text-purple text-med">Details</span>
-        </Button>
+        <CSSTransition
+          unmountOnExit
+          mountOnEnter
+          in={isDetailsOpen}
+          addEndListener={(node, done) => {
+            node.addEventListener('transitionend', done, false);
+          }}
+          classNames="show"
+        >
+          <div className="text-smd farms-preview__details">
+            Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia
+            consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.
+          </div>
+        </CSSTransition>
       </div>
     </div>
   );

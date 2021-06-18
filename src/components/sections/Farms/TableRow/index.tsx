@@ -2,7 +2,7 @@ import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { observer } from 'mobx-react-lite';
 
-import { Button, InputNumber } from '../../../atoms';
+import { Button, InputNumber, Popover } from '../../../atoms';
 import { useMst } from '../../../../store';
 
 import './TableRow.scss';
@@ -14,7 +14,7 @@ import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 import CheckImg from '@/assets/img/icons/check.svg';
 
 const TableRow: React.FC = observer(() => {
-  const { user } = useMst();
+  const { user, modals } = useMst();
   const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
 
   const handleChangeDetails = (value: boolean): void => {
@@ -23,6 +23,22 @@ const TableRow: React.FC = observer(() => {
 
   const handleToggleDetails = (): void => {
     setOpenDetails((isOpen) => !isOpen);
+  };
+
+  const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
+    e.stopPropagation();
+    modals.roi.open([
+      {
+        timeframe: '1D',
+        roi: 0.19,
+        rf: 0.12,
+      },
+      {
+        timeframe: '1D',
+        roi: 0.19,
+        rf: 0.12,
+      },
+    ]);
   };
 
   return (
@@ -44,15 +60,38 @@ const TableRow: React.FC = observer(() => {
         </div>
         <div className="box-f-ai-c text-smd farms-table-row__item">
           <span className="farms-table-row__text-md">73.77%</span>
-          <img src={CalcImg} alt="calc" />
+          <div
+            onClick={handleOpenRoiModal}
+            onKeyDown={handleOpenRoiModal}
+            role="button"
+            tabIndex={0}
+          >
+            <img src={CalcImg} alt="calc" />
+          </div>
         </div>
         <div className="box-f-ai-c text-smd farms-table-row__item">
           <span className="farms-table-row__text text-med text-purple">$1,662,947,888</span>
-          <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
+          <Popover
+            content={
+              <span className="text-med text text-purple">
+                Total amount of NAME staked in this pool
+              </span>
+            }
+          >
+            <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
+          </Popover>
         </div>
         <div className="box-f-ai-c text-smd farms-table-row__item">
           <span className="farms-table-row__text-md text-med text-purple">1x</span>
-          <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
+          <Popover
+            content={
+              <span className="text-med text text-purple">
+                Total amount of NAME staked in this pool
+              </span>
+            }
+          >
+            <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
+          </Popover>
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
           <Button

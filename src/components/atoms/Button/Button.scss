@@ -42,6 +42,13 @@
   &-lg {
     padding: 31px 40px;
   }
+  &-lmd {
+    padding: 29.5px 35px;
+  }
+  &-gray {
+    background: $gray-l;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
   &-outline {
     background: white;
     border: 3px solid $purple-s-l;

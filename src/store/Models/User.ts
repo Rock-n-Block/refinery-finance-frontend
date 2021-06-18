@@ -1,7 +1,7 @@
 import { types } from 'mobx-state-tree';
 
 /* eslint-disable no-param-reassign */
-export const UserModel = types
+const UserModel = types
   .model({
     address: types.optional(types.string, ''),
   })
@@ -21,3 +21,4 @@ export const UserModel = types
   });
 
 /* eslint-disable no-param-reassign */
+export default UserModel;

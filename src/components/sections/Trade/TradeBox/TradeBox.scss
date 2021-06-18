@@ -1,5 +1,5 @@
 @import 'src/styles/vars';
-.exchange {
+.trade-box {
   padding: 30px;
   margin-top: 40px;
   &__title {
@@ -12,8 +12,9 @@
       border-bottom: 1px solid #e0e0e0;
     }
   }
-  &__btn {
-    width: 100%;
-    margin-top: 30px;
+  &__icon {
+    & + & {
+      margin-left: 25px;
+    }
   }
 }

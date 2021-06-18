@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Scrollbar } from 'react-scrollbars-custom';
 
 import { useMst } from '../../../../store';
@@ -13,6 +13,7 @@ import BnbImg from '@/assets/img/currency/bnb.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 
 const RecentTxs: React.FC = observer(() => {
+  const history = useHistory();
   const { user } = useMst();
   console.log(user);
   const txs = [
@@ -30,13 +31,22 @@ const RecentTxs: React.FC = observer(() => {
       },
     },
   ];
+  const handleClose = (): void => {
+    history.goBack();
+  };
   return (
     <div className="exchange recent-txs box-shadow box-white">
       <div className="box-f-jc-sb box-f-ai-c">
         <div className="text-med text-purple text-md">Recent transactions</div>
-        <Link to="/trade/swap" className="exch-settings__close">
+        <div
+          className="exch-settings__close"
+          onClick={handleClose}
+          onKeyDown={handleClose}
+          role="link"
+          tabIndex={0}
+        >
           <img src={CrossImg} alt="" />
-        </Link>
+        </div>
       </div>
       {!user.address ? (
         <div className="recent-txs__err">

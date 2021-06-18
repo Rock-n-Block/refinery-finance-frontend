@@ -1,4 +1,7 @@
 .m-select-token {
+  &__content {
+    padding: 20px;
+  }
   &__item {
     cursor: pointer;
     & + & {

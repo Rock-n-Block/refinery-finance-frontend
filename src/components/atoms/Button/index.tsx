@@ -9,7 +9,7 @@ import './Button.scss';
 import { ReactComponent as ArrowImg } from '../../../assets/img/icons/arrow-btn.svg';
 
 export interface IColorScheme {
-  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple';
+  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple' | 'gray';
 }
 
 export interface ISize {
@@ -49,7 +49,7 @@ const Button: React.FC<ButtonProps> = React.memo(
     onToggle,
   }) => {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
+      if (!link) e.stopPropagation();
       if (toggle && onToggle) {
         onToggle(!isActive);
       }

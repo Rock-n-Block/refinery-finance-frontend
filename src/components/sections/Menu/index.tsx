@@ -10,6 +10,7 @@ import HomeImg from '../../../assets/img/icons/home.svg';
 import TradeImg from '../../../assets/img/icons/trade.svg';
 import FarmsImg from '../../../assets/img/icons/farms.svg';
 import LotteryImg from '../../../assets/img/icons/lottery.svg';
+import PoolsImg from '../../../assets/img/icons/pools.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
@@ -26,6 +27,9 @@ const Menu: React.FC = React.memo(() => {
       activePaths: [
         '/trade/swap',
         '/trade/liquidity',
+        '/trade/liquidity/settings',
+        '/trade/liquidity/history',
+        '/trade/liquidity/find',
         '/trade/bridge',
         '/trade/swap/settings',
         '/trade/swap/history',
@@ -41,6 +45,11 @@ const Menu: React.FC = React.memo(() => {
       text: 'Lottery',
       link: '/lottery',
       img: LotteryImg,
+    },
+    {
+      text: 'Pools',
+      link: '/pools',
+      img: PoolsImg,
     },
   ];
   return (

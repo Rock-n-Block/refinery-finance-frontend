@@ -1,0 +1,41 @@
+@import 'src/styles/vars';
+.choose-tokens {
+  &__box {
+    &-top {
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    &-title {
+      margin-bottom: 7px;
+    }
+  }
+  &__currency {
+    cursor: pointer;
+    margin-right: 20px;
+    &-arrow {
+      margin-left: 12px;
+    }
+  }
+  &__line {
+    margin: 20px 0;
+    &::before {
+      content: '';
+      display: block;
+      width: 100%;
+      background: #e0e0e0;
+      height: 1px;
+    }
+    div {
+      display: block;
+      margin-left: 13px;
+      min-width: 36px;
+      cursor: pointer;
+      height: 36px;
+      background: $gray-l;
+    }
+  }
+  &__select {
+    width: 100%;
+  }
+}

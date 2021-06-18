@@ -7,3 +7,4 @@ export { default as Search } from './Search';
 export { default as WinNumber } from './WinNumber';
 export { default as RadioGroup } from './RadioGroup';
 export { default as SortSelect } from './SortSelect';
+export { default as Popover } from './Popover';

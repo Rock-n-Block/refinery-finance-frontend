@@ -1,8 +1,7 @@
 import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
-import { UserModel } from './User';
-import { ModalsModel } from './Modals';
+import { UserModel, ModalsModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
@@ -15,6 +14,9 @@ export const Store = RootModel.create({
   modals: {
     metamaskErr: {
       errMsg: '',
+    },
+    roi: {
+      items: [],
     },
   },
 });

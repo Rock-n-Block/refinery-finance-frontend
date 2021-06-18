@@ -16,6 +16,9 @@
   &__scroll {
     margin-top: 25px;
   }
+  &__close {
+    cursor: pointer;
+  }
   &__item {
     background: $gray-l;
     border: 1px solid rgba(0, 0, 0, 0.1);

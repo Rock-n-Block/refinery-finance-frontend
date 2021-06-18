@@ -2,19 +2,25 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { Exchange, ExchangeSettings, RecentTxs } from '..';
+import { IToken } from '../ChooseTokens';
 import { IActiveSlippage } from '../ExchangeSettings';
 
 import BnbImg from '@/assets/img/currency/bnb.svg';
 
-export interface IToken {
-  img: string;
-  name: string;
-  symbol: string;
-}
-
 export interface ISettings {
   slippage: IActiveSlippage;
   txDeadline: number;
+}
+
+export interface ITokens {
+  from: {
+    token: IToken | undefined;
+    amount: number;
+  };
+  to: {
+    token: IToken | undefined;
+    amount: number;
+  };
 }
 
 const Swap: React.FC = () => {
@@ -26,62 +32,32 @@ const Swap: React.FC = () => {
     txDeadline: NaN,
   });
 
-  const [tokenFrom, setTokenFrom] = React.useState<IToken>({
-    img: BnbImg,
-    name: 'Binance',
-    symbol: 'BNB',
+  const [tokensData, setTokensData] = React.useState<ITokens>({
+    from: {
+      token: {
+        img: BnbImg,
+        name: 'Binance',
+        symbol: 'BNB',
+      },
+      amount: NaN,
+    },
+    to: {
+      token: {
+        img: BnbImg,
+        name: 'Ethereum',
+        symbol: 'ETH',
+      },
+      amount: NaN,
+    },
   });
-  const [tokenFromQuantity, setTokenFromQuantity] = React.useState<number>(NaN);
-
-  const [tokenTo, setTokenTo] = React.useState<IToken>({
-    img: BnbImg,
-    name: 'Ethereum',
-    symbol: 'ETH',
-  });
-  const [tokenToQuantity, setTokenToQuantity] = React.useState<number>(NaN);
+  console.log(tokensData);
 
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
 
-  const handleChangeTokenFrom = (token: IToken): void => {
-    if (token) {
-      if (token.symbol === tokenTo.symbol) {
-        setTokenTo(tokenFrom);
-        setTokenToQuantity(tokenFromQuantity);
-        setTokenFromQuantity(tokenToQuantity);
-      }
-      setTokenFrom(token);
-    }
-  };
-
-  const handleChangeTokenTo = (token: IToken): void => {
-    if (token) {
-      if (token.symbol === tokenFrom.symbol) {
-        setTokenFrom(tokenTo);
-        setTokenFromQuantity(tokenToQuantity);
-        setTokenToQuantity(tokenFromQuantity);
-      }
-      setTokenTo(token);
-    }
-  };
-
-  const handleChangeToken = (type: 'from' | 'to', token: IToken) => {
-    if (type === 'from') {
-      handleChangeTokenFrom(token);
-    }
-    if (type === 'to') {
-      handleChangeTokenTo(token);
-    }
-  };
-
-  const handleChangeTokensQuantity = (type: 'from' | 'to', quantity: number) => {
-    if (type === 'from') {
-      setTokenFromQuantity(quantity);
-    }
-    if (type === 'to') {
-      setTokenToQuantity(quantity);
-    }
+  const handleSetTokens = (tokens: ITokens) => {
+    setTokensData(tokens);
   };
 
   return (
@@ -90,14 +66,7 @@ const Swap: React.FC = () => {
         exact
         path="/trade/swap"
         render={() => (
-          <Exchange
-            tokenFrom={tokenFrom}
-            tokenFromQuantity={tokenFromQuantity}
-            tokenTo={tokenTo}
-            tokenToQuantity={tokenToQuantity}
-            handleChangeTokensQuantity={handleChangeTokensQuantity}
-            handleChangeToken={handleChangeToken}
-          />
+          <Exchange handleChangeTokens={handleSetTokens} initialTokenData={tokensData} />
         )}
       />
       <Route

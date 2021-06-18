@@ -1,0 +1,38 @@
+.pools-preview {
+  padding: 30px 30px 30px 40px;
+  background: #3f1e7e;
+  border-radius: 40px;
+  background-image: url(../../../../assets/img/sections/pools/bg-1.svg);
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: 100% 0;
+  position: relative;
+  &__title {
+    margin-bottom: 15px;
+    z-index: 2;
+    position: relative;
+  }
+  &__bg {
+    position: absolute;
+    top: 15px;
+    left: -12px;
+    z-index: 1;
+  }
+  &__bounty {
+    padding: 20px 15px 20px 24px;
+    &-title {
+      span {
+        margin-right: 7px;
+      }
+    }
+    &-btn {
+      margin-left: 63px;
+    }
+    &-box {
+      margin-top: 11px;
+    }
+    &-usd {
+      margin-top: 5px;
+    }
+  }
+}

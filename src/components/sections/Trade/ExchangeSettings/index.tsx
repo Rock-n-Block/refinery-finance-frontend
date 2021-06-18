@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import cn from 'classnames';
 import nextId from 'react-id-generator';
 
@@ -36,7 +36,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
         slippage,
         txDeadline,
       });
-      history.push('/trade/swap');
+      history.goBack();
     };
 
     const handleChangeSlippage = (data: IActiveSlippage): void => {
@@ -68,15 +68,23 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
       }
     };
 
-    const handleClose = (): void => {};
+    const handleClose = (): void => {
+      history.goBack();
+    };
 
     return (
       <div className="exchange exch-settings box-shadow box-white">
         <div className="box-f-jc-sb box-f-ai-c exch-settings__box-title">
           <div className="text-med text-purple text-md">Advanced Settings</div>
-          <Link to="/trade/swap" className="exch-settings__close" onClick={handleClose}>
+          <div
+            className="exch-settings__close"
+            onClick={handleClose}
+            onKeyDown={handleClose}
+            role="link"
+            tabIndex={0}
+          >
             <img src={CrossImg} alt="" />
-          </Link>
+          </div>
         </div>
         <div className="exch-settings__section">
           <div className="exch-settings__section-title text-med text-purple">
