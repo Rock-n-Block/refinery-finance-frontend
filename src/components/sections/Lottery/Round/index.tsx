@@ -18,7 +18,6 @@ interface IRound {
 const Round: React.FC<IRound> = observer(({ index, handleOpenModal }) => {
   const connector = useWalletConnectorContext();
   const { user } = useMst();
-  console.log(user);
   const numbers = [4, 11, 13, 2];
   const statistic = {
     matched: [

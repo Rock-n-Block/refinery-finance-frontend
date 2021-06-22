@@ -101,4 +101,11 @@
       border: 1px solid $purple;
     }
   }
+  &[disabled] {
+    color: rgba(0, 0, 0, 0.1) !important;
+    background: rgba(197, 196, 195, 0.5);
+    span {
+      color: rgba(0, 0, 0, 0.1) !important;
+    }
+  }
 }

@@ -9,3 +9,5 @@ export { default as YourLiquidity } from './YourLiquidity';
 export { default as Liquidity } from './Liquidity';
 export { default as ImportPool } from './ImportPool';
 export { default as ChooseTokens } from './ChooseTokens';
+export { default as ManageTokensModal } from './ManageTokensModal';
+export { default as ImportTokensModal } from './ImportTokensModal';

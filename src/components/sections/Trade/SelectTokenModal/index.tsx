@@ -3,7 +3,8 @@ import { Scrollbar } from 'react-scrollbars-custom';
 
 import { Modal } from '../../../molecules';
 import { Search } from '../../../atoms';
-import { IToken } from '../Swap';
+import { IToken } from '../ChooseTokens';
+import { ManageTokensModal } from '..';
 
 import './SelectTokenModal.scss';
 
@@ -12,8 +13,10 @@ import BnbImg from '@/assets/img/currency/bnb.svg';
 interface ISelectTokenModal {
   isVisible?: boolean;
   handleClose: () => void;
+  handleOpen: () => void;
   handleChangeToken: (type: 'from' | 'to', token: IToken) => void;
   tokenType: 'from' | 'to';
+  isManageTokens?: boolean;
 }
 
 const SelectTokenModal: React.FC<ISelectTokenModal> = ({
@@ -21,6 +24,8 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = ({
   handleClose,
   handleChangeToken,
   tokenType,
+  isManageTokens,
+  handleOpen,
 }) => {
   const initTokens = [
     {
@@ -34,6 +39,8 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = ({
       symbol: 'ETH',
     },
   ];
+
+  const [isManageModalVisible, setManageModalVisible] = React.useState<boolean>(true);
 
   const [tokens, setTokens] = React.useState(initTokens);
 
@@ -60,47 +67,86 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = ({
     handleClose();
   };
 
+  const handleCloseManageModal = (): void => {
+    setManageModalVisible(false);
+  };
+
+  const handleOpenManageModal = (): void => {
+    handleClose();
+    setManageModalVisible(true);
+  };
+
+  const handleBackToSelectTokenModal = (): void => {
+    handleCloseManageModal();
+    handleOpen();
+  };
+
   return (
-    <Modal
-      isVisible={!!isVisible}
-      className="m-select-token"
-      handleCancel={handleClose}
-      width={300}
-      closeIcon
-    >
-      <div className="m-select-token__content">
-        <div className="m-select-token__title text-purple text-bold text-smd">Select a token</div>
+    <>
+      <Modal
+        isVisible={!!isVisible}
+        className="m-select-token"
+        handleCancel={handleClose}
+        width={300}
+        closeIcon
+      >
+        <div className="m-select-token__content">
+          <div className="m-select-token__title text-purple text-bold text-smd">Select a token</div>
 
-        <div className="m-select-token__search">
-          <Search placeholder="Search" realtime onChange={handleSearch} />
-        </div>
+          <div className="m-select-token__search">
+            <Search placeholder="Search" realtime onChange={handleSearch} />
+          </div>
 
-        <Scrollbar
-          className="m-select-token__scroll"
-          style={{
-            width: '100%',
-            height: tokens.length > 8 ? '65vh' : `${tokens.length * 60}px`,
-          }}
-        >
-          {tokens.map((token) => (
-            <div
-              className="m-select-token__item box-f-ai-c"
-              key={token.symbol}
-              onClick={() => handleTokenClick(token)}
-              onKeyDown={() => handleTokenClick(token)}
-              role="button"
-              tabIndex={-2}
-            >
-              <img src={token.img} alt="" />
-              <div>
-                <div>{token.name}</div>
-                <div className="text-ssm text-gray-2">{token.symbol}</div>
+          <Scrollbar
+            className="m-select-token__scroll"
+            style={{
+              width: '100%',
+              height: tokens.length > 8 ? '65vh' : `${tokens.length * 60}px`,
+            }}
+          >
+            {tokens.map((token) => (
+              <div
+                className="m-select-token__item box-f-ai-c"
+                key={token.symbol}
+                onClick={() => handleTokenClick(token)}
+                onKeyDown={() => handleTokenClick(token)}
+                role="button"
+                tabIndex={-2}
+              >
+                <img src={token.img} alt="" />
+                <div>
+                  <div>{token.name}</div>
+                  <div className="text-ssm text-gray-2">{token.symbol}</div>
+                </div>
               </div>
+            ))}
+          </Scrollbar>
+          {isManageTokens ? (
+            <div
+              className="m-select-token__manage text-purple text-med text-center box-pointer"
+              onClick={handleOpenManageModal}
+              onKeyDown={handleOpenManageModal}
+              role="button"
+              tabIndex={0}
+            >
+              Manage Tokens
             </div>
-          ))}
-        </Scrollbar>
-      </div>
-    </Modal>
+          ) : (
+            ''
+          )}
+        </div>
+      </Modal>
+      {isManageTokens ? (
+        <ManageTokensModal
+          isVisible={isManageModalVisible}
+          handleClose={handleCloseManageModal}
+          handleBack={handleBackToSelectTokenModal}
+          handleOpen={handleOpenManageModal}
+        />
+      ) : (
+        ''
+      )}
+    </>
   );
 };
 

@@ -7,12 +7,13 @@ import 'antd/lib/switch/style/css';
 import './Switch.scss';
 
 interface ISwitch extends SwitchProps {
-  colorScheme?: 'white' | 'purple';
+  colorScheme?: 'white' | 'purple' | 'white-purple';
   switchSize?: 'bg' | 'sm';
   text?: string | React.ReactElement;
 }
 
-const Switch: React.FC<ISwitch> = React.memo(({ colorScheme, switchSize, text }) => {
+const Switch: React.FC<ISwitch> = React.memo((props) => {
+  const { colorScheme, switchSize, text, ...otherProps } = props;
   return (
     <div className="box-f-ai-c">
       <AntdSwitch
@@ -21,6 +22,7 @@ const Switch: React.FC<ISwitch> = React.memo(({ colorScheme, switchSize, text })
           `${colorScheme ? `switch-${colorScheme}` : ''}`,
           `${switchSize ? `switch-${switchSize}` : ''}`,
         )}
+        {...otherProps}
       />
       {text}
     </div>

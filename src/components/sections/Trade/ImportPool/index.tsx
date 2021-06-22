@@ -33,7 +33,6 @@ const ImportPool: React.FC = () => {
       amount: NaN,
     },
   });
-  console.log(tokensData);
 
   const handleSetTokens = (tokens: ITokens) => {
     setTokensData(tokens);
@@ -46,8 +45,16 @@ const ImportPool: React.FC = () => {
       subtitle="Import an existing pool"
       settingsLink="/trade/liquidity/settings"
       recentTxLink="/trade/liquidity/history"
+      titleBackLink
     >
-      <ChooseTokens handleChangeTokens={handleSetTokens} initialTokenData={tokensData} />
+      <ChooseTokens
+        handleChangeTokens={handleSetTokens}
+        initialTokenData={tokensData}
+        isManageTokens
+      />
+      <div className="text-gray import-pool__text text-center">
+        Select a token to find your liquidity.
+      </div>
     </TradeBox>
   );
 };

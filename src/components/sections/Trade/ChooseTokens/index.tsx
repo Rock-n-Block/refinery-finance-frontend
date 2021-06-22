@@ -17,10 +17,11 @@ export interface IToken {
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens) => void;
   initialTokenData?: ITokens;
+  isManageTokens?: boolean;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = React.memo(
-  ({ handleChangeTokens, initialTokenData }) => {
+  ({ handleChangeTokens, initialTokenData, isManageTokens }) => {
     const [tokenFrom, setTokenFrom] = React.useState<IToken | undefined>(
       initialTokenData ? initialTokenData.from.token : undefined,
     );
@@ -216,8 +217,10 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
         <SelectTokenModal
           isVisible={isModalVisible}
           handleClose={handleCloseSelectTokenModal}
+          handleOpen={() => handleOpenSelectTokenModal(tokenType)}
           handleChangeToken={handleChangeToken}
           tokenType={tokenType}
+          isManageTokens={isManageTokens}
         />
       </>
     );

@@ -50,7 +50,6 @@ const Swap: React.FC = () => {
       amount: NaN,
     },
   });
-  console.log(tokensData);
 
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);

@@ -4,6 +4,7 @@
   margin-top: 40px;
   &__title {
     margin-bottom: 12px;
+    width: fit-content;
   }
   &__box {
     &-top {
@@ -16,5 +17,10 @@
     & + & {
       margin-left: 25px;
     }
+  }
+  &__back {
+    transform: rotate(90deg);
+    margin-right: 12px;
+    width: 12px;
   }
 }

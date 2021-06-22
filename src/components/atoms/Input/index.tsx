@@ -7,25 +7,14 @@ import 'antd/lib/input/style/css';
 import './Input.scss';
 
 interface IInput extends InputProps {
-  colorScheme?: 'transparent';
-  inputSize?: 'sm' | 'md';
+  colorScheme?: 'transparent' | 'outline';
+  inputSize?: 'sm' | 'md' | 'lg';
   ref?: React.ForwardedRef<AntdInput>;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const Input: React.ForwardRefExoticComponent<IInput> = React.forwardRef<AntdInput, IInput>(
-  (
-    {
-      colorScheme = 'transparent',
-      inputSize = 'sm',
-      value,
-      className,
-      placeholder,
-      onChange,
-      onKeyDown,
-    },
-    ref,
-  ) => {
+const Input: React.ForwardRefExoticComponent<IInput> = React.memo(
+  React.forwardRef<AntdInput, IInput>((props, ref) => {
+    const { colorScheme = 'transparent', inputSize = 'sm', className, ...therProps } = props;
     return (
       <AntdInput
         className={cn(
@@ -35,13 +24,10 @@ const Input: React.ForwardRefExoticComponent<IInput> = React.forwardRef<AntdInpu
           className,
         )}
         ref={ref}
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-        placeholder={placeholder}
-        value={value}
+        {...therProps}
       />
     );
-  },
+  }),
 );
 
 export default Input;

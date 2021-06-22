@@ -54,6 +54,21 @@
       }
     }
   }
+  &-white-purple {
+    &.ant-switch {
+      &-checked {
+        background: white;
+        border-color: transparent;
+      }
+      &-checked .ant-switch-handle {
+        left: calc(100% - 21px + 1px) !important;
+        border-color: $purple;
+        &::before {
+          background: $purple;
+        }
+      }
+    }
+  }
   &-bg {
     height: 35px;
     width: 61px;

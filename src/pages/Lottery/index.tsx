@@ -19,7 +19,6 @@ interface ILotteryId {
 const Lottery: React.FC = () => {
   const history = useHistory();
   const { id } = useParams<ILotteryId>();
-  console.log(id);
 
   const [isWinningTicketsModalVisible, setWinningTicketsModalVisible] = React.useState<boolean>(
     false,

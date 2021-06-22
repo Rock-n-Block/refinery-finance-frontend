@@ -15,7 +15,6 @@ import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 const RecentTxs: React.FC = observer(() => {
   const history = useHistory();
   const { user } = useMst();
-  console.log(user);
   const txs = [
     {
       type: 'Swap',
