@@ -2,26 +2,22 @@ import React from 'react';
 
 import { InputNumber, Button } from '../../../atoms';
 import { SelectTokenModal } from '..';
-import { ITokens } from '../Swap';
+import { ITokens, IToken } from '../../../../types';
 
 import './ChooseTokens.scss';
 
 import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
 
-export interface IToken {
-  img: string;
-  name: string;
-  symbol: string;
-}
-
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens) => void;
   initialTokenData?: ITokens;
   isManageTokens?: boolean;
+  textFrom?: string;
+  textTo?: string;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = React.memo(
-  ({ handleChangeTokens, initialTokenData, isManageTokens }) => {
+  ({ handleChangeTokens, initialTokenData, isManageTokens, textFrom, textTo }) => {
     const [tokenFrom, setTokenFrom] = React.useState<IToken | undefined>(
       initialTokenData ? initialTokenData.from.token : undefined,
     );
@@ -81,7 +77,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
 
         handleChangeTokens({
           from: {
-            token: tokenTo,
+            token: tokenFrom,
             amount: tokenFromQuantity,
           },
           to: {
@@ -138,7 +134,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             <>
               <div className="box-f-jc-sb box-f choose-tokens__box-title">
                 <div className="text-upper text-purple text-med">{tokenFrom.symbol}</div>
-                <div className="text-sm text-gray text-med">From</div>
+                <div className="text-sm text-gray text-med">{textFrom || 'From'}</div>
               </div>
               <div className="box-f box-f-jc-sb">
                 <div
@@ -183,7 +179,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             <>
               <div className="box-f-jc-sb box-f choose-tokens__box-title">
                 <div className="text-upper text-purple text-med">{tokenTo.symbol}</div>
-                <div className="text-sm text-gray text-med">To</div>
+                <div className="text-sm text-gray text-med">{textTo || 'To'}</div>
               </div>
               <div className="box-f box-f-jc-sb">
                 <div

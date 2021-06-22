@@ -2,11 +2,14 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import cn from 'classnames';
 
+import { Popover } from '../../../atoms';
+
 import './TradeBox.scss';
 
 import SettingsImg from '@/assets/img/icons/settings.svg';
 import RecentTxImg from '@/assets/img/icons/recent-tx.svg';
 import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
+import InfoImg from '@/assets/img/icons/info.svg';
 
 interface ITradeBox {
   title: string;
@@ -15,6 +18,7 @@ interface ITradeBox {
   recentTxLink: string;
   className?: string;
   titleBackLink?: boolean;
+  info?: string;
 }
 
 const TradeBox: React.FC<ITradeBox> = ({
@@ -25,6 +29,7 @@ const TradeBox: React.FC<ITradeBox> = ({
   children,
   className,
   titleBackLink,
+  info,
 }) => {
   const history = useHistory();
 
@@ -50,7 +55,17 @@ const TradeBox: React.FC<ITradeBox> = ({
             {titleBackLink ? <img src={ArrowImg} alt="" className="trade-box__back" /> : ''}
             <span>{title}</span>
           </div>
-          <div className="trade-box__subtitle text-gray">{subtitle}</div>
+          <div className="trade-box__subtitle text-gray box-f-ai-c">
+            <span>{subtitle}</span>
+
+            {info ? (
+              <Popover content={<span className="text-med text text-purple">{info}</span>}>
+                <img src={InfoImg} alt="" />
+              </Popover>
+            ) : (
+              ''
+            )}
+          </div>
         </div>
         <div className="box-f-ai-c">
           <Link to={settingsLink} className="trade-box__icon">

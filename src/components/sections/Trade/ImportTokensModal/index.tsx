@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Modal } from '../../../molecules';
 import { Switch, Button } from '../../../atoms';
-import { IToken } from '../ChooseTokens';
+import { IToken } from '../../../../types';
 
 import './ImportTokensModal.scss';
 

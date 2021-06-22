@@ -5,7 +5,7 @@ import { Scrollbar } from 'react-scrollbars-custom';
 
 import { Modal } from '../../../molecules';
 import { RadioGroup, Input, Switch, Button } from '../../../atoms';
-import { IToken } from '../ChooseTokens';
+import { IToken } from '../../../../types';
 import { ImportTokensModal } from '..';
 
 import './ManageTokensModal.scss';

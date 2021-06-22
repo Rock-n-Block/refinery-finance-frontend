@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { Exchange, ExchangeSettings, RecentTxs } from '..';
-import { IToken } from '../ChooseTokens';
+import { ITokens } from '../../../../types';
 import { IActiveSlippage } from '../ExchangeSettings';
 
 import BnbImg from '@/assets/img/currency/bnb.svg';
@@ -10,17 +10,6 @@ import BnbImg from '@/assets/img/currency/bnb.svg';
 export interface ISettings {
   slippage: IActiveSlippage;
   txDeadline: number;
-}
-
-export interface ITokens {
-  from: {
-    token: IToken | undefined;
-    amount: number;
-  };
-  to: {
-    token: IToken | undefined;
-    amount: number;
-  };
 }
 
 const Swap: React.FC = () => {

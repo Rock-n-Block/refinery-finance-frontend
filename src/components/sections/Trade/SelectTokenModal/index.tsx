@@ -3,7 +3,7 @@ import { Scrollbar } from 'react-scrollbars-custom';
 
 import { Modal } from '../../../molecules';
 import { Search } from '../../../atoms';
-import { IToken } from '../ChooseTokens';
+import { IToken } from '../../../../types';
 import { ManageTokensModal } from '..';
 
 import './SelectTokenModal.scss';
@@ -40,7 +40,7 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = ({
     },
   ];
 
-  const [isManageModalVisible, setManageModalVisible] = React.useState<boolean>(true);
+  const [isManageModalVisible, setManageModalVisible] = React.useState<boolean>(false);
 
   const [tokens, setTokens] = React.useState(initTokens);
 

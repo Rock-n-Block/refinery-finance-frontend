@@ -38,6 +38,7 @@ const App: React.FC = observer(() => {
             '/trade/liquidity/settings',
             '/trade/liquidity/history',
             '/trade/liquidity/find',
+            '/trade/liquidity/add',
           ]}
           component={TradePage}
         />

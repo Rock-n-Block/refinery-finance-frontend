@@ -33,7 +33,7 @@ const YourLiquidity: React.FC = observer(() => {
           </div>
         )}
       </div>
-      <Button className="y-liquidity__btn">
+      <Button className="y-liquidity__btn" link="/trade/liquidity/add">
         <span className="text-md text-white text-bold">Add liquidity</span>
       </Button>
     </TradeBox>

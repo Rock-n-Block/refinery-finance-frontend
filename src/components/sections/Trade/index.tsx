@@ -11,3 +11,4 @@ export { default as ImportPool } from './ImportPool';
 export { default as ChooseTokens } from './ChooseTokens';
 export { default as ManageTokensModal } from './ManageTokensModal';
 export { default as ImportTokensModal } from './ImportTokensModal';
+export { default as AddLiquidity } from './AddLiquidity';

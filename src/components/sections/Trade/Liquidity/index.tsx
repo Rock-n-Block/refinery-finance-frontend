@@ -1,14 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import { YourLiquidity, ExchangeSettings, RecentTxs, ImportPool } from '..';
+import { YourLiquidity, ExchangeSettings, RecentTxs, ImportPool, AddLiquidity } from '..';
 import { IActiveSlippage } from '../ExchangeSettings';
-
-export interface IToken {
-  img: string;
-  name: string;
-  symbol: string;
-}
 
 export interface ISettings {
   slippage: IActiveSlippage;
@@ -32,6 +26,7 @@ const Liquidity: React.FC = () => {
     <Switch>
       <Route exact path="/trade/liquidity" render={() => <YourLiquidity />} />
       <Route exact path="/trade/liquidity/find" render={() => <ImportPool />} />
+      <Route exact path="/trade/liquidity/add" render={() => <AddLiquidity />} />
       <Route
         exact
         path="/trade/liquidity/settings"
