@@ -19,6 +19,7 @@ interface IManageTokensModal {
   handleClose: () => void;
   handleBack: () => void;
   handleOpen: () => void;
+  handleChangeSwitch: (extendedValue: boolean, topValue: boolean) => void;
 }
 
 const ManageTokensModal: React.FC<IManageTokensModal> = ({
@@ -26,6 +27,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
   handleClose,
   handleOpen,
   handleBack,
+  handleChangeSwitch,
 }) => {
   const [acitveTab, setActiveTab] = React.useState<'lists' | 'tokens'>('lists');
   const [isExtendedTokensActive, setExtendedTokensActive] = React.useState<boolean>(false);
@@ -38,10 +40,12 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
   };
 
   const handleChangeExtendedTokensSwitch = (value: boolean): void => {
+    handleChangeSwitch(value, isTopTokensActive);
     setExtendedTokensActive(value);
   };
 
   const handleChangeTopTokensSwitch = (value: boolean): void => {
+    handleChangeSwitch(isExtendedTokensActive, value);
     setTopTokensActive(value);
   };
 
@@ -64,27 +68,27 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
     if (target.value) {
       setUnknowTokens([
         {
-          img: UnknownImg,
+          logoURI: UnknownImg,
           name: 'NameToken',
           symbol: 'NTK1',
         },
         {
-          img: UnknownImg,
+          logoURI: UnknownImg,
           name: 'NameToken',
           symbol: 'NTK2',
         },
         {
-          img: UnknownImg,
+          logoURI: UnknownImg,
           name: 'NameToken',
           symbol: 'NTK3',
         },
         {
-          img: UnknownImg,
+          logoURI: UnknownImg,
           name: 'NameToken',
           symbol: 'NTK4',
         },
         {
-          img: UnknownImg,
+          logoURI: UnknownImg,
           name: 'NameToken',
           symbol: 'NTK5',
         },
@@ -216,7 +220,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
                     >
                       <div className="box-f-ai-c">
                         <img
-                          src={token.img}
+                          src={token.logoURI}
                           alt={token.name}
                           className="m-manage-tokens__token-img"
                         />

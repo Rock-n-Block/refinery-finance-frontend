@@ -1,11 +1,12 @@
 import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
-import { UserModel, ModalsModel } from './Models';
+import { UserModel, ModalsModel, TokensModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
   modals: ModalsModel,
+  tokens: TokensModel,
 });
 export const Store = RootModel.create({
   user: {
@@ -18,6 +19,11 @@ export const Store = RootModel.create({
     roi: {
       items: [],
     },
+  },
+  tokens: {
+    default: [],
+    top: [],
+    extended: [],
   },
 });
 

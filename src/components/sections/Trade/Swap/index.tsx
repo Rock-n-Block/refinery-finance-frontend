@@ -24,7 +24,7 @@ const Swap: React.FC = () => {
   const [tokensData, setTokensData] = React.useState<ITokens>({
     from: {
       token: {
-        img: BnbImg,
+        logoURI: BnbImg,
         name: 'Binance',
         symbol: 'BNB',
       },
@@ -32,7 +32,7 @@ const Swap: React.FC = () => {
     },
     to: {
       token: {
-        img: BnbImg,
+        logoURI: BnbImg,
         name: 'Ethereum',
         symbol: 'ETH',
       },

@@ -13,6 +13,7 @@ interface ISearch {
   realtime?: boolean;
   type?: 'text' | 'number';
   placeholder?: string;
+  value?: string;
   onChange?: (value: number | string) => void;
   btn?: boolean;
   colorScheme?: 'transparent' | 'gray';
@@ -29,17 +30,17 @@ const Search: React.FC<ISearch> = React.memo(
     btn,
     colorScheme = 'transparent',
     className,
+    value,
   }) => {
-    const [inputValue, setInputValue] = React.useState<number | string>('');
+    const [inputValue, setInputValue] = React.useState<number | string>(value || '');
 
     const inputRef = React.useRef<AntdInput>(null);
     const inputNumberRef = React.useRef<HTMLInputElement>(null);
-    // const inputRef = React.useRef<AntdInputnumber>(null);
 
-    const handleChange = (value: number | string) => {
-      setInputValue(value);
+    const handleChange = (impValue: number | string) => {
+      setInputValue(impValue);
       if (realtime && onChange) {
-        onChange(value);
+        onChange(impValue);
       }
     };
 
@@ -81,6 +82,7 @@ const Search: React.FC<ISearch> = React.memo(
             colorScheme="transparent"
             ref={inputNumberRef}
             inputSize={size}
+            value={inputValue}
             inputClass={cn({
               'text-md': size === 'lg',
             })}

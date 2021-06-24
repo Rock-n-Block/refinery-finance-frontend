@@ -11,7 +11,7 @@ const ImportPool: React.FC = () => {
   const [tokensData, setTokensData] = React.useState<ITokens>({
     from: {
       token: {
-        img: BnbImg,
+        logoURI: BnbImg,
         name: 'Binance',
         symbol: 'BNB',
       },

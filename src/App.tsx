@@ -13,7 +13,13 @@ import './styles/index.scss';
 
 const App: React.FC = observer(() => {
   const connector = useWalletConnectorContext();
-  const { user } = useMst();
+  const { user, tokens } = useMst();
+
+  React.useEffect(() => {
+    tokens.getTokens('default');
+    tokens.getTokens('top');
+    tokens.getTokens('extended');
+  }, [tokens]);
 
   return (
     <div className="ref-finance">

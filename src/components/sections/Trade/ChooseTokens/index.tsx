@@ -144,7 +144,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                   tabIndex={0}
                   role="button"
                 >
-                  <img src={tokenFrom.img} alt="" className="choose-tokens__currency-img" />
+                  <img src={tokenFrom.logoURI} alt="" className="choose-tokens__currency-img" />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
                 <InputNumber
@@ -189,7 +189,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                   tabIndex={0}
                   role="button"
                 >
-                  <img src={tokenTo.img} alt="" className="choose-tokens__currency-img" />
+                  <img src={tokenTo.logoURI} alt="" className="choose-tokens__currency-img" />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
                 <InputNumber

@@ -18,6 +18,7 @@
       "esnext",
       "ES2015"
     ],
+    "downlevelIteration": true,
     "emitDecoratorMetadata": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -33,7 +34,7 @@
     "baseUrl": "./",
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
