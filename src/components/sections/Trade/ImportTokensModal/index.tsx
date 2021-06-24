@@ -15,6 +15,7 @@ interface IImportTokensModal {
   handleClose: () => void;
   handleBack: () => void;
   token?: IToken;
+  handleImport: (token: IToken) => void;
 }
 
 const ImportTokensModal: React.FC<IImportTokensModal> = ({
@@ -22,11 +23,19 @@ const ImportTokensModal: React.FC<IImportTokensModal> = ({
   handleClose,
   handleBack,
   token,
+  handleImport,
 }) => {
   const [isUnderstand, setUnderstand] = React.useState<boolean>(false);
 
   const handleChangeUnderstand = (value: boolean): void => {
     setUnderstand(value);
+  };
+
+  const handleEnd = () => {
+    if (token) {
+      handleImport(token);
+    }
+    handleClose();
   };
 
   return (
@@ -77,7 +86,7 @@ const ImportTokensModal: React.FC<IImportTokensModal> = ({
           <Switch onChange={handleChangeUnderstand} defaultChecked={isUnderstand} />
           <span className="text-bold text-purple">I Understand</span>
         </div>
-        <Button className="m-import-tokens__btn" disabled={!isUnderstand}>
+        <Button className="m-import-tokens__btn" disabled={!isUnderstand} onClick={handleEnd}>
           <span className="text-bold text-white text-md">Import</span>
         </Button>
       </div>

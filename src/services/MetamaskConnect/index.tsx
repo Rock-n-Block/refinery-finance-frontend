@@ -5,9 +5,18 @@ import { observer } from 'mobx-react';
 import rootStore from '../../store';
 import MetamaskService from '../web3';
 
-const walletConnectorContext = createContext<any>({
-  MetamaskService: {},
+const metamaskService = new MetamaskService({
+  testnet: 'kovan',
+});
+
+export const walletConnectorContext = createContext<{
+  metamaskService: MetamaskService;
+  connect: () => void;
+  disconnect: () => void;
+}>({
+  metamaskService,
   connect: (): void => {},
+  disconnect: (): void => {},
 });
 
 @observer
@@ -16,9 +25,7 @@ class Connector extends React.Component<any, any> {
     super(props);
 
     this.state = {
-      provider: new MetamaskService({
-        testnet: 'bsct',
-      }),
+      provider: metamaskService,
     };
 
     this.connect = this.connect.bind(this);

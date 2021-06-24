@@ -6,23 +6,21 @@ import { Button } from '../../../atoms';
 
 import './AddLiquidity.scss';
 
-const AddLiquidity: React.FC = () => {
-  const [tokensData, setTokensData] = React.useState<ITokens>({
-    from: {
-      token: undefined,
-      amount: NaN,
-    },
-    to: {
-      token: undefined,
-      amount: NaN,
-    },
-  });
-  console.log(tokensData);
+interface IAddLiquidity {
+  tokensData: ITokens;
+  setTokensData: (value: ITokens) => void;
+  setAllowanceFrom: (value: boolean) => void;
+  isAllowanceFrom: boolean;
+  handleApproveTokens: () => void;
+}
 
-  const handleSetTokens = (tokens: ITokens) => {
-    setTokensData(tokens);
-  };
-
+const AddLiquidity: React.FC<IAddLiquidity> = ({
+  tokensData,
+  setTokensData,
+  setAllowanceFrom,
+  isAllowanceFrom,
+  handleApproveTokens,
+}) => {
   return (
     <TradeBox
       className="add-liquidity"
@@ -34,11 +32,12 @@ const AddLiquidity: React.FC = () => {
       titleBackLink
     >
       <ChooseTokens
-        handleChangeTokens={handleSetTokens}
+        handleChangeTokens={setTokensData}
         initialTokenData={tokensData}
         isManageTokens
         textFrom="Input"
         textTo="Input"
+        changeTokenFromAllowance={(value: boolean) => setAllowanceFrom(value)}
       />
       {tokensData.from.token && tokensData.to.token ? (
         <div className="add-liquidity__info">
@@ -69,17 +68,32 @@ const AddLiquidity: React.FC = () => {
       ) : (
         ''
       )}
-      <Button
-        className="add-liquidity__btn"
-        disabled={
-          !tokensData.from.token ||
-          !tokensData.to.token ||
-          !tokensData.from.amount ||
-          !tokensData.to.amount
-        }
-      >
-        <span className="text-white text-bold text-smd">Add</span>
-      </Button>
+      {isAllowanceFrom && tokensData.from.token && tokensData.to.token ? (
+        <Button
+          className="add-liquidity__btn"
+          disabled={!tokensData.from.amount || !tokensData.to.amount}
+        >
+          <span className="text-white text-bold text-smd">
+            {!tokensData.from.amount || !tokensData.to.amount ? 'Enter an amount' : 'Add'}
+          </span>
+        </Button>
+      ) : (
+        ''
+      )}
+      {!isAllowanceFrom && tokensData.from.token && tokensData.to.token ? (
+        <Button className="add-liquidity__btn" onClick={handleApproveTokens}>
+          <span className="text-white text-bold text-smd">Approve tokens</span>
+        </Button>
+      ) : (
+        ''
+      )}
+      {!tokensData.from.token || !tokensData.to.token ? (
+        <Button disabled className="add-liquidity__btn" onClick={handleApproveTokens}>
+          <span className="text-white text-bold text-smd">Select a Tokens</span>
+        </Button>
+      ) : (
+        ''
+      )}
     </TradeBox>
   );
 };

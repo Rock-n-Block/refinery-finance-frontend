@@ -1,0 +1,24 @@
+.p-card {
+  max-width: 355px;
+  width: 100%;
+  &__head {
+    padding: 20px 18px 10px 31px;
+    min-height: 115px;
+    background: linear-gradient(98.94deg, #efdfff -22.87%, #f9f9f9 94.67%);
+  }
+  &__title {
+    margin-bottom: 6px;
+  }
+  &__icons {
+    position: relative;
+    img {
+      width: 62px;
+    }
+    img + img {
+      position: absolute;
+      width: 32px;
+      bottom: -8px;
+      right: -8px;
+    }
+  }
+}

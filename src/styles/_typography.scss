@@ -45,6 +45,10 @@
     font-size: 20px;
     line-height: 24px;
   }
+  &-slg {
+    font-size: 24px;
+    line-height: 28px;
+  }
   &-lg {
     font-size: 25px;
     line-height: 30px;
@@ -87,5 +91,8 @@
   }
   &-blue {
     color: $blue;
+  }
+  &-capitalize {
+    text-transform: capitalize;
   }
 }

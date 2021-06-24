@@ -7,6 +7,8 @@ import { Modal } from '../../../molecules';
 import { RadioGroup, Input, Switch, Button } from '../../../atoms';
 import { IToken } from '../../../../types';
 import { ImportTokensModal } from '..';
+import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
+import contractsConfig from '../../../../services/web3/config';
 
 import './ManageTokensModal.scss';
 
@@ -20,6 +22,7 @@ interface IManageTokensModal {
   handleBack: () => void;
   handleOpen: () => void;
   handleChangeSwitch: (extendedValue: boolean, topValue: boolean) => void;
+  selectToken: (token: IToken) => void;
 }
 
 const ManageTokensModal: React.FC<IManageTokensModal> = ({
@@ -28,7 +31,10 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
   handleOpen,
   handleBack,
   handleChangeSwitch,
+  selectToken,
 }) => {
+  const { metamaskService } = useWalletConnectorContext();
+
   const [acitveTab, setActiveTab] = React.useState<'lists' | 'tokens'>('lists');
   const [isExtendedTokensActive, setExtendedTokensActive] = React.useState<boolean>(false);
   const [isTopTokensActive, setTopTokensActive] = React.useState<boolean>(false);
@@ -63,34 +69,15 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
     handleOpen();
   };
 
-  const handleChangeTokensInput = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChangeTokensInput = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     console.log(target.value);
     if (target.value) {
+      const token = await metamaskService.getTokenInfo(target.value, contractsConfig.ERC20.ABI);
+      console.log(token);
       setUnknowTokens([
         {
+          ...token,
           logoURI: UnknownImg,
-          name: 'NameToken',
-          symbol: 'NTK1',
-        },
-        {
-          logoURI: UnknownImg,
-          name: 'NameToken',
-          symbol: 'NTK2',
-        },
-        {
-          logoURI: UnknownImg,
-          name: 'NameToken',
-          symbol: 'NTK3',
-        },
-        {
-          logoURI: UnknownImg,
-          name: 'NameToken',
-          symbol: 'NTK4',
-        },
-        {
-          logoURI: UnknownImg,
-          name: 'NameToken',
-          symbol: 'NTK5',
         },
       ]);
     } else {
@@ -252,6 +239,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = ({
         handleClose={handleCloseImportTokensModal}
         handleBack={handleBackToManageTokensModal}
         token={selectedToken}
+        handleImport={selectToken}
       />
     </>
   );

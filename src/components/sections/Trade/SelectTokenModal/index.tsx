@@ -169,6 +169,7 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
             handleBack={handleBackToSelectTokenModal}
             handleOpen={handleOpenManageModal}
             handleChangeSwitch={handleChangeSwitch}
+            selectToken={handleTokenClick}
           />
         ) : (
           ''

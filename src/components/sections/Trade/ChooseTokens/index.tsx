@@ -3,6 +3,8 @@ import React from 'react';
 import { InputNumber, Button } from '../../../atoms';
 import { SelectTokenModal } from '..';
 import { ITokens, IToken } from '../../../../types';
+import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
+import config from '../../../../services/web3/config';
 
 import './ChooseTokens.scss';
 
@@ -14,10 +16,20 @@ export interface IChooseTokens {
   isManageTokens?: boolean;
   textFrom?: string;
   textTo?: string;
+  changeTokenFromAllowance?: (value: boolean) => void;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = React.memo(
-  ({ handleChangeTokens, initialTokenData, isManageTokens, textFrom, textTo }) => {
+  ({
+    handleChangeTokens,
+    initialTokenData,
+    isManageTokens,
+    textFrom,
+    textTo,
+    changeTokenFromAllowance,
+  }) => {
+    const { metamaskService } = useWalletConnectorContext();
+
     const [tokenFrom, setTokenFrom] = React.useState<IToken | undefined>(
       initialTokenData ? initialTokenData.from.token : undefined,
     );
@@ -50,8 +62,20 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           setTokenTo(tokenFrom);
           setTokenToQuantity(tokenFromQuantity);
           setTokenFromQuantity(tokenToQuantity);
+          setTokenFrom(token);
+
+          handleChangeTokens({
+            from: {
+              token,
+              amount: tokenFromQuantity,
+            },
+            to: {
+              token: tokenTo,
+              amount: tokenToQuantity,
+            },
+          });
+          return;
         }
-        setTokenFrom(token);
 
         handleChangeTokens({
           from: {
@@ -59,10 +83,11 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             amount: tokenFromQuantity,
           },
           to: {
-            token: tokenFrom,
+            token: tokenTo,
             amount: tokenToQuantity,
           },
         });
+        setTokenFrom(token);
       }
     };
 
@@ -72,8 +97,20 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           setTokenFrom(tokenTo);
           setTokenFromQuantity(tokenToQuantity);
           setTokenToQuantity(tokenFromQuantity);
+          setTokenTo(token);
+
+          handleChangeTokens({
+            from: {
+              token: tokenTo,
+              amount: tokenToQuantity,
+            },
+            to: {
+              token,
+              amount: tokenToQuantity,
+            },
+          });
+          return;
         }
-        setTokenTo(token);
 
         handleChangeTokens({
           from: {
@@ -85,6 +122,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             amount: tokenToQuantity,
           },
         });
+        setTokenTo(token);
       }
     };
 
@@ -97,7 +135,23 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
       }
     };
 
-    const handleChangeTokensQuantity = (type: 'from' | 'to', quantity: number) => {
+    const handleCheckAllowance = async (inputValue: number | string) => {
+      try {
+        const result = await metamaskService.checkTokenAllowance({
+          contractName: 'ERC20',
+          approvedAddress: config.ROUTER.ADDRESS,
+          tokenAddress: '0xcfcd0fe9edbbc4a246825e0cd003e48573cc920e',
+          approveSum: +inputValue,
+        });
+
+        return result;
+      } catch (err) {
+        console.log(err, 'err check token allowance');
+        return '';
+      }
+    };
+
+    const handleChangeTokensQuantity = async (type: 'from' | 'to', quantity: number) => {
       if (type === 'from') {
         setTokenFromQuantity(quantity);
 
@@ -111,6 +165,18 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             amount: tokenToQuantity,
           },
         });
+        handleCheckAllowance(quantity)
+          .then((res: boolean | '') => {
+            console.log(res);
+            if (changeTokenFromAllowance) {
+              changeTokenFromAllowance(!!res);
+            }
+          })
+          .catch(() => {
+            if (changeTokenFromAllowance) {
+              changeTokenFromAllowance(false);
+            }
+          });
       }
       if (type === 'to') {
         setTokenToQuantity(quantity);
@@ -127,6 +193,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
         });
       }
     };
+
     return (
       <>
         <div className="choose-tokens">

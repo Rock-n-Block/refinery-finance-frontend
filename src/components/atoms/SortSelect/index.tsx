@@ -32,7 +32,7 @@ const SortSelect: React.FC<ISortSelect> = (props) => {
       {items
         .filter((item) => item !== activeValue)
         .map((item) => (
-          <Option value={item}>
+          <Option value={item} key={item}>
             <div>{item}</div>
           </Option>
         ))}
