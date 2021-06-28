@@ -10,7 +10,9 @@ interface IAddLiquidity {
   tokensData: ITokens;
   setTokensData: (value: ITokens) => void;
   setAllowanceFrom: (value: boolean) => void;
+  setAllowanceTo: (value: boolean) => void;
   isAllowanceFrom: boolean;
+  isAllowanceTo: boolean;
   handleApproveTokens: () => void;
 }
 
@@ -18,8 +20,10 @@ const AddLiquidity: React.FC<IAddLiquidity> = ({
   tokensData,
   setTokensData,
   setAllowanceFrom,
+  setAllowanceTo,
   isAllowanceFrom,
   handleApproveTokens,
+  isAllowanceTo,
 }) => {
   return (
     <TradeBox
@@ -38,6 +42,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = ({
         textFrom="Input"
         textTo="Input"
         changeTokenFromAllowance={(value: boolean) => setAllowanceFrom(value)}
+        changeTokenToAllowance={(value: boolean) => setAllowanceTo(value)}
       />
       {tokensData.from.token && tokensData.to.token ? (
         <div className="add-liquidity__info">
@@ -68,7 +73,24 @@ const AddLiquidity: React.FC<IAddLiquidity> = ({
       ) : (
         ''
       )}
-      {isAllowanceFrom && tokensData.from.token && tokensData.to.token ? (
+      {isAllowanceFrom &&
+      isAllowanceTo &&
+      tokensData.from.token &&
+      tokensData.to.token &&
+      tokensData.to.amount &&
+      tokensData.from.amount ? (
+        <Button
+          className="add-liquidity__btn"
+          disabled={!tokensData.from.amount || !tokensData.to.amount}
+        >
+          <span className="text-white text-bold text-smd">Add</span>
+        </Button>
+      ) : (
+        ''
+      )}
+      {tokensData.from.token &&
+      tokensData.to.token &&
+      (!tokensData.to.amount || !tokensData.from.amount) ? (
         <Button
           className="add-liquidity__btn"
           disabled={!tokensData.from.amount || !tokensData.to.amount}
@@ -80,7 +102,11 @@ const AddLiquidity: React.FC<IAddLiquidity> = ({
       ) : (
         ''
       )}
-      {!isAllowanceFrom && tokensData.from.token && tokensData.to.token ? (
+      {(!isAllowanceFrom || !isAllowanceTo) &&
+      tokensData.from.token &&
+      tokensData.to.token &&
+      tokensData.to.amount &&
+      tokensData.from.amount ? (
         <Button className="add-liquidity__btn" onClick={handleApproveTokens}>
           <span className="text-white text-bold text-smd">Approve tokens</span>
         </Button>
@@ -88,7 +114,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = ({
         ''
       )}
       {!tokensData.from.token || !tokensData.to.token ? (
-        <Button disabled className="add-liquidity__btn" onClick={handleApproveTokens}>
+        <Button disabled className="add-liquidity__btn">
           <span className="text-white text-bold text-smd">Select a Tokens</span>
         </Button>
       ) : (

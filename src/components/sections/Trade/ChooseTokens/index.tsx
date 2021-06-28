@@ -17,6 +17,7 @@ export interface IChooseTokens {
   textFrom?: string;
   textTo?: string;
   changeTokenFromAllowance?: (value: boolean) => void;
+  changeTokenToAllowance?: (value: boolean) => void;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = React.memo(
@@ -27,6 +28,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
     textFrom,
     textTo,
     changeTokenFromAllowance,
+    changeTokenToAllowance,
   }) => {
     const { metamaskService } = useWalletConnectorContext();
 
@@ -137,12 +139,28 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
 
     const handleCheckAllowance = async (inputValue: number | string) => {
       try {
-        const result = await metamaskService.checkTokenAllowance({
-          contractName: 'ERC20',
-          approvedAddress: config.ROUTER.ADDRESS,
-          tokenAddress: '0xcfcd0fe9edbbc4a246825e0cd003e48573cc920e',
-          approveSum: +inputValue,
-        });
+        const promises: any[] = [];
+        if (tokenFrom?.address) {
+          promises.push(
+            metamaskService.checkTokenAllowance({
+              contractName: 'ERC20',
+              approvedAddress: config.ROUTER.ADDRESS,
+              tokenAddress: tokenFrom?.address,
+              approveSum: +inputValue,
+            }),
+          );
+        }
+        if (tokenTo?.address) {
+          promises.push(
+            metamaskService.checkTokenAllowance({
+              contractName: 'ERC20',
+              approvedAddress: config.ROUTER.ADDRESS,
+              tokenAddress: tokenTo?.address,
+              approveSum: +inputValue,
+            }),
+          );
+        }
+        const result = await Promise.all(promises);
 
         return result;
       } catch (err) {
@@ -165,18 +183,6 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
             amount: tokenToQuantity,
           },
         });
-        handleCheckAllowance(quantity)
-          .then((res: boolean | '') => {
-            console.log(res);
-            if (changeTokenFromAllowance) {
-              changeTokenFromAllowance(!!res);
-            }
-          })
-          .catch(() => {
-            if (changeTokenFromAllowance) {
-              changeTokenFromAllowance(false);
-            }
-          });
       }
       if (type === 'to') {
         setTokenToQuantity(quantity);
@@ -192,6 +198,23 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           },
         });
       }
+      handleCheckAllowance(quantity)
+        .then((res: any[] | '') => {
+          if (changeTokenFromAllowance) {
+            changeTokenFromAllowance(!!res[0]);
+          }
+          if (changeTokenToAllowance) {
+            changeTokenToAllowance(!!res[1]);
+          }
+        })
+        .catch(() => {
+          if (changeTokenFromAllowance) {
+            changeTokenFromAllowance(false);
+          }
+          if (changeTokenToAllowance) {
+            changeTokenToAllowance(false);
+          }
+        });
     };
 
     return (

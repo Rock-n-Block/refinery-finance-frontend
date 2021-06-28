@@ -127,7 +127,7 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
               {[...tokens, ...storeTokens.imported].map((token: IToken) => (
                 <div
                   className="m-select-token__item box-f-ai-c"
-                  key={token.name}
+                  key={token.address}
                   onClick={() => handleTokenClick(token)}
                   onKeyDown={() => handleTokenClick(token)}
                   role="button"

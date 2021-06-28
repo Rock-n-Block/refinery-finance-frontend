@@ -2,13 +2,27 @@ import React from 'react';
 
 import { useWalletConnectorContext } from '../services/MetamaskConnect';
 import config from '../services/web3/config';
+import { IToken, ITokens } from '../types';
 
-import { ITokens } from '../types';
+interface ITradeWrapper {
+  isAllowanceFrom: boolean;
+  isAllowanceTo: boolean;
+  tokensData: {
+    from: {
+      token: IToken | undefined;
+      amount: number;
+    };
+    to: {
+      token: IToken | undefined;
+      amount: number;
+    };
+  };
+}
 
 const TradeWrapper = (Component: React.FC<any>) => {
   const connector = useWalletConnectorContext();
 
-  return class TradeWrapperComponent extends React.Component<any, any> {
+  return class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
     constructor(props: any) {
       super(props);
 
@@ -24,11 +38,13 @@ const TradeWrapper = (Component: React.FC<any>) => {
           },
         },
         isAllowanceFrom: true,
+        isAllowanceTo: true,
       };
 
       this.handleChangeTokensData = this.handleChangeTokensData.bind(this);
       this.handleApproveTokens = this.handleApproveTokens.bind(this);
       this.handleChangeAllowanceFrom = this.handleChangeAllowanceFrom.bind(this);
+      this.handleChangeAllowanceTo = this.handleChangeAllowanceTo.bind(this);
     }
 
     handleChangeTokensData(tokensData: ITokens) {
@@ -39,19 +55,30 @@ const TradeWrapper = (Component: React.FC<any>) => {
 
     async handleApproveTokens() {
       try {
-        if (!this.state.isAllowanceFrom) {
+        if (!this.state.isAllowanceFrom && this.state.tokensData.from.token) {
           await connector.metamaskService.approveToken({
             contractName: 'ERC20',
             approvedAddress: config.ROUTER.ADDRESS,
-            tokenAddress: '0xcfcd0fe9edbbc4a246825e0cd003e48573cc920e',
+            tokenAddress: this.state.tokensData.from.token.address,
           });
           this.setState({
             isAllowanceFrom: true,
           });
         }
+        if (!this.state.isAllowanceTo && this.state.tokensData.to.token) {
+          await connector.metamaskService.approveToken({
+            contractName: 'ERC20',
+            approvedAddress: config.ROUTER.ADDRESS,
+            tokenAddress: this.state.tokensData.to.token.address,
+          });
+          this.setState({
+            isAllowanceTo: true,
+          });
+        }
       } catch (err) {
         this.setState({
           isAllowanceFrom: false,
+          isAllowanceTo: false,
         });
         console.log('err approve tokens', err);
       }
@@ -63,6 +90,12 @@ const TradeWrapper = (Component: React.FC<any>) => {
       });
     }
 
+    handleChangeAllowanceTo(value: boolean) {
+      this.setState({
+        isAllowanceTo: value,
+      });
+    }
+
     render() {
       return (
         <Component
@@ -70,7 +103,9 @@ const TradeWrapper = (Component: React.FC<any>) => {
           tokensData={this.state.tokensData}
           setTokensData={this.handleChangeTokensData}
           setAllowanceFrom={this.handleChangeAllowanceFrom}
+          setAllowanceTo={this.handleChangeAllowanceTo}
           isAllowanceFrom={this.state.isAllowanceFrom}
+          isAllowanceTo={this.state.isAllowanceFrom}
           handleApproveTokens={this.handleApproveTokens}
         />
       );
