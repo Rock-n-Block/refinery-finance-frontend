@@ -1,8 +1,10 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import { Modal } from '../../../molecules';
 import { Switch, Button } from '../../../atoms';
 import { IToken } from '../../../../types';
+import { useMst } from '../../../../store';
 
 import './ImportTokensModal.scss';
 
@@ -18,80 +20,89 @@ interface IImportTokensModal {
   handleImport: (token: IToken) => void;
 }
 
-const ImportTokensModal: React.FC<IImportTokensModal> = ({
-  isVisible,
-  handleClose,
-  handleBack,
-  token,
-  handleImport,
-}) => {
-  const [isUnderstand, setUnderstand] = React.useState<boolean>(false);
+const ImportTokensModal: React.FC<IImportTokensModal> = observer(
+  ({ isVisible, handleClose, handleBack, token, handleImport }) => {
+    const { tokens } = useMst();
+    const [isUnderstand, setUnderstand] = React.useState<boolean>(false);
 
-  const handleChangeUnderstand = (value: boolean): void => {
-    setUnderstand(value);
-  };
+    const handleChangeUnderstand = (value: boolean): void => {
+      setUnderstand(value);
+    };
 
-  const handleEnd = () => {
-    if (token) {
-      handleImport(token);
-    }
-    handleClose();
-  };
+    const handleEnd = () => {
+      if (token) {
+        handleImport(token);
 
-  return (
-    <Modal
-      isVisible={!!isVisible}
-      className="m-import-tokens"
-      handleCancel={handleClose}
-      width={390}
-      closeIcon
-    >
-      <div className="m-import-tokens__content">
-        <div
-          className="m-import-tokens__title box-f-ai-c box-pointer"
-          onClick={handleBack}
-          onKeyDown={handleBack}
-          role="button"
-          tabIndex={0}
-        >
-          <img src={ArrowImg} alt="arrow" />
-          <span className="text-bold text-purple text-smd">Import Tokens</span>
-        </div>
-        <div className="m-import-tokens__text text-smd">
-          <p>
-            Anyone can create a BEP20 token on BSC with any name, including creating fake versions
-            of existing tokens and tokens that claim to represent projects that do not have a token.
-          </p>
-          <p>If you purchase an arbitrary token, you may be unable to sell it back.</p>
-        </div>
-        <div className="m-import-tokens__alert box-f-ai-c">
-          <img src={InfoRImg} alt="" />
-          <span className="text-smd">Unknown Source</span>
-        </div>
-        {token ? (
-          <div className="m-import-tokens__token box-f box-f-ai-e box-f-jc-sb">
-            <div>
-              <div className="text m-import-tokens__token-name">{`${token.name} (${token.symbol})`}</div>
-              <div className="text-gray text-ssm">0x0000..00000</div>
-            </div>
-            <a href="/" className="m-import-tokens__token-link text-purple text-ssm box-f-ai-c">
-              <span>View BscScan</span>
-              <img src={LinkImg} alt="" />
-            </a>
+        if (localStorage.importTokens) {
+          localStorage.importTokens = JSON.stringify([
+            ...JSON.parse(localStorage.importTokens),
+            token,
+          ]);
+          tokens.setTokens('imported', [...tokens.imported, token]);
+        } else {
+          localStorage.importTokens = JSON.stringify([token]);
+          tokens.setTokens('imported', [token]);
+        }
+      }
+      handleClose();
+    };
+
+    return (
+      <Modal
+        isVisible={!!isVisible}
+        className="m-import-tokens"
+        handleCancel={handleClose}
+        width={390}
+        closeIcon
+      >
+        <div className="m-import-tokens__content">
+          <div
+            className="m-import-tokens__title box-f-ai-c box-pointer"
+            onClick={handleBack}
+            onKeyDown={handleBack}
+            role="button"
+            tabIndex={0}
+          >
+            <img src={ArrowImg} alt="arrow" />
+            <span className="text-bold text-purple text-smd">Import Tokens</span>
           </div>
-        ) : (
-          ''
-        )}
-        <div className="m-import-tokens__switch box-f-ai-c">
-          <Switch onChange={handleChangeUnderstand} defaultChecked={isUnderstand} />
-          <span className="text-bold text-purple">I Understand</span>
+          <div className="m-import-tokens__text text-smd">
+            <p>
+              Anyone can create a BEP20 token on BSC with any name, including creating fake versions
+              of existing tokens and tokens that claim to represent projects that do not have a
+              token.
+            </p>
+            <p>If you purchase an arbitrary token, you may be unable to sell it back.</p>
+          </div>
+          <div className="m-import-tokens__alert box-f-ai-c">
+            <img src={InfoRImg} alt="" />
+            <span className="text-smd">Unknown Source</span>
+          </div>
+          {token ? (
+            <div className="m-import-tokens__token box-f box-f-ai-e box-f-jc-sb">
+              <div>
+                <div className="text m-import-tokens__token-name">{`${token.name} (${token.symbol})`}</div>
+                <div className="text-gray text-ssm">0x0000..00000</div>
+              </div>
+              <a href="/" className="m-import-tokens__token-link text-purple text-ssm box-f-ai-c">
+                <span>View BscScan</span>
+                <img src={LinkImg} alt="" />
+              </a>
+            </div>
+          ) : (
+            ''
+          )}
+          <div className="m-import-tokens__switch box-f-ai-c">
+            <Switch onChange={handleChangeUnderstand} defaultChecked={isUnderstand} />
+            <span className="text-bold text-purple">I Understand</span>
+          </div>
+          <Button className="m-import-tokens__btn" disabled={!isUnderstand} onClick={handleEnd}>
+            <span className="text-bold text-white text-md">Import</span>
+          </Button>
         </div>
-        <Button className="m-import-tokens__btn" disabled={!isUnderstand} onClick={handleEnd}>
-          <span className="text-bold text-white text-md">Import</span>
-        </Button>
-      </div>
-    </Modal>
-  );
-};
+      </Modal>
+    );
+  },
+);
 
 export default ImportTokensModal;

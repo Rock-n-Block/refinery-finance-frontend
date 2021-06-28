@@ -124,7 +124,7 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
                 height: tokens.length > 8 ? '55vh' : `${tokens.length * 60}px`,
               }}
             >
-              {tokens.map((token: IToken) => (
+              {[...tokens, ...storeTokens.imported].map((token: IToken) => (
                 <div
                   className="m-select-token__item box-f-ai-c"
                   key={token.name}

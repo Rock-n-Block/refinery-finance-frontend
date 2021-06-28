@@ -58,7 +58,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
 
     const handleChangeTokenFrom = async (token: IToken | undefined) => {
       if (token) {
-        if (tokenTo && token.symbol === tokenTo.symbol) {
+        if (tokenTo && token.address === tokenTo.address) {
           setTokenTo(tokenFrom);
           setTokenToQuantity(tokenFromQuantity);
           setTokenFromQuantity(tokenToQuantity);
@@ -93,7 +93,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
 
     const handleChangeTokenTo = (token: IToken | undefined): void => {
       if (token) {
-        if (tokenFrom && token.symbol === tokenFrom.symbol) {
+        if (tokenFrom && token.address === tokenFrom.address) {
           setTokenFrom(tokenTo);
           setTokenFromQuantity(tokenToQuantity);
           setTokenToQuantity(tokenFromQuantity);

@@ -24,6 +24,7 @@ export const Store = RootModel.create({
     default: [],
     top: [],
     extended: [],
+    imported: [],
   },
 });
 

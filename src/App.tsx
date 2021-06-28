@@ -19,6 +19,7 @@ const App: React.FC = observer(() => {
     tokens.getTokens('default');
     tokens.getTokens('top');
     tokens.getTokens('extended');
+    tokens.getTokens('imported');
   }, [tokens]);
 
   return (

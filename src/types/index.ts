@@ -1,10 +1,10 @@
 export interface IToken {
-  logoURI: string;
+  logoURI?: string;
   name: string;
   symbol: string;
-  address?: string;
+  address: string;
   chainId?: number;
-  decimals?: number;
+  decimals?: number | string;
 }
 
 export interface ITokens {

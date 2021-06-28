@@ -157,6 +157,7 @@ export default class MetamaskService {
         name,
         decimals,
         symbol,
+        address,
       };
     } catch (err) {
       throw new Error('err get token info');
