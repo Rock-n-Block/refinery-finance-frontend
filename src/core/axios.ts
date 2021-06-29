@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 export const localApi = axios.create({
-  baseURL: 'http://localhost:3000/',
-});
-
-export const herokuApi = axios.create({
-  baseURL: 'https://refinery-finance.herokuapp.com/',
+  baseURL:
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/'
+      : 'https://refinery-finance.herokuapp.com/',
 });
