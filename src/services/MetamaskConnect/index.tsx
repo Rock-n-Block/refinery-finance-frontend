@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 
 import rootStore from '../../store';
 import MetamaskService from '../web3';
+import configWeb3 from '../web3/config';
 
 const metamaskService = new MetamaskService({
   testnet: 'kovan',
@@ -38,6 +39,14 @@ class Connector extends React.Component<any, any> {
     if (localStorage.refFinanceMetamask) {
       this.connect();
     }
+
+    this.state.provider.createContract(
+      'FACTORY',
+      configWeb3.FACTORY.ADDRESS,
+      configWeb3.FACTORY.ABI,
+    );
+    this.state.provider.createContract('PAIR', configWeb3.PAIR.ADDRESS, configWeb3.PAIR.ABI);
+    this.state.provider.createContract('ROUTER', configWeb3.ROUTER.ADDRESS, configWeb3.ROUTER.ABI);
 
     this.state.provider.chainChangedObs.subscribe({
       next(err: string) {

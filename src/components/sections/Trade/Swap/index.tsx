@@ -2,15 +2,9 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import { Exchange, ExchangeSettings, RecentTxs } from '..';
-import { ITokens } from '../../../../types';
-import { IActiveSlippage } from '../ExchangeSettings';
+import { ITokens, ISettings } from '../../../../types';
 
 import BnbImg from '@/assets/img/currency/bnb.svg';
-
-export interface ISettings {
-  slippage: IActiveSlippage;
-  txDeadline: number;
-}
 
 const Swap: React.FC = () => {
   const [settings, setSettings] = React.useState<ISettings>({
@@ -19,6 +13,7 @@ const Swap: React.FC = () => {
       value: 0.1,
     },
     txDeadline: NaN,
+    txDeadlineUtc: NaN,
   });
 
   const [tokensData, setTokensData] = React.useState<ITokens>({
@@ -28,6 +23,7 @@ const Swap: React.FC = () => {
         name: 'Binance',
         symbol: 'BNB',
         address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+        decimals: 8,
       },
       amount: NaN,
     },
@@ -37,6 +33,7 @@ const Swap: React.FC = () => {
         name: 'Ethereum',
         symbol: 'ETH',
         address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+        decimals: 8,
       },
       amount: NaN,
     },

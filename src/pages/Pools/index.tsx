@@ -35,7 +35,12 @@ const Pools: React.FC = () => {
         <ItemsController />
         <div className="pools__content box-f box-f-jc-sb">
           {pools.map((pool) => (
-            <PoolCard {...pool} type="earn" apr={10} />
+            <PoolCard
+              {...pool}
+              key={`${pool.tokenEarn.address}${pool.tokenStake.address}`}
+              type="earn"
+              apr={10}
+            />
           ))}
         </div>
       </div>

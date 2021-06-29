@@ -46,6 +46,8 @@ export default class MetamaskService {
 
   public usedChain: string;
 
+  public contracts: any = {};
+
   constructor({ testnet, isProduction = false }: IMetamaskService) {
     this.wallet = window.ethereum;
     this.web3Provider = new Web3(this.wallet);
@@ -119,6 +121,17 @@ export default class MetamaskService {
         reject(new Error(`Please choose ${this.usedNetwork} network in metamask wallet.`));
       }
     });
+  }
+
+  createContract(contractName: string, tokenAddress: string, abi: Array<any>) {
+    const contract = this.getContract(tokenAddress, abi);
+
+    if (!this.contracts[contractName]) {
+      this.contracts = {
+        ...this.contracts,
+        [contractName]: contract,
+      };
+    }
   }
 
   getContract(tokenAddress: string, abi: Array<any>) {
@@ -249,16 +262,28 @@ export default class MetamaskService {
     return new BigNumber(amount).times(new BigNumber(10).pow(tokenDecimal)).toString(10);
   }
 
-  createTransaction(
-    method: string,
-    data: Array<any>,
-    contract: 'ROUTER',
-    tx?: any,
-    tokenAddress?: string,
-    walletAddress?: string,
-    value?: any,
-  ) {
-    const transactionMethod = MetamaskService.getMethodInterface(config[contract].ABI, method);
+  static amountFromGwei(amount: number | string, tokenDecimal: number) {
+    return new BigNumber(amount).dividedBy(new BigNumber(10).pow(tokenDecimal)).toString(10);
+  }
+
+  createTransaction({
+    method,
+    data,
+    contractName,
+    tx,
+    toAddress,
+    fromAddress,
+    value,
+  }: {
+    method: string;
+    data: Array<any>;
+    contractName: 'ROUTER' | 'FACTORY';
+    tx?: any;
+    toAddress?: string;
+    fromAddress?: string;
+    value?: any;
+  }) {
+    const transactionMethod = MetamaskService.getMethodInterface(config[contractName].ABI, method);
 
     let signature;
     if (transactionMethod.inputs.length) {
@@ -266,14 +291,14 @@ export default class MetamaskService {
     }
 
     if (tx) {
-      tx.from = walletAddress || this.walletAddress;
+      tx.from = fromAddress || this.walletAddress;
       tx.data = signature;
 
       return this.sendTransaction(tx);
     }
     return this.sendTransaction({
-      from: walletAddress || this.walletAddress,
-      to: tokenAddress || config[contract].ADDRESS,
+      from: fromAddress || this.walletAddress,
+      to: toAddress || config[contractName].ADDRESS,
       data: signature || '',
       value: value || '',
     });
@@ -281,6 +306,40 @@ export default class MetamaskService {
 
   signMsg(msg: string) {
     return this.web3Provider.eth.personal.sign(msg, this.walletAddress, '');
+  }
+
+  async callContractMethod(contractName: string, methodName: string, data?: any[]) {
+    try {
+      if (this.contracts[contractName]) {
+        const method = await this.contracts[contractName].methods[methodName];
+        if (data) {
+          return await method(...data).call();
+        }
+        return await method().call();
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
+    return new Error(`contract ${contractName} didn't created`);
+  }
+
+  async callContractMethodFromNewContract(
+    contractAddress: string,
+    abi: any[],
+    methodName: string,
+    data?: any[],
+  ) {
+    try {
+      const contract = this.getContract(contractAddress, abi);
+      const method = contract.methods[methodName];
+
+      if (data) {
+        return await method(...data).call();
+      }
+      return await method().call();
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   sendTransaction(transactionConfig: any) {

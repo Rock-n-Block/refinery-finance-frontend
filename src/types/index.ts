@@ -4,7 +4,7 @@ export interface IToken {
   symbol: string;
   address: string;
   chainId?: number;
-  decimals?: number | string;
+  decimals: number | string;
 }
 
 export interface ITokens {
@@ -16,4 +16,15 @@ export interface ITokens {
     token: IToken | undefined;
     amount: number;
   };
+}
+
+export interface ISettings {
+  slippage: IActiveSlippage;
+  txDeadline: number;
+  txDeadlineUtc: number;
+}
+
+export interface IActiveSlippage {
+  type: 'btn' | 'input';
+  value: number;
 }

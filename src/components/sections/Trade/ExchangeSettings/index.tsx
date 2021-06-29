@@ -2,9 +2,10 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import cn from 'classnames';
 import nextId from 'react-id-generator';
+import moment from 'moment';
 
 import { Button, InputNumber, Switch } from '../../../atoms';
-import { ISettings } from '../Swap';
+import { ISettings } from '../../../../types';
 
 import './ExchangeSettings.scss';
 
@@ -18,13 +19,15 @@ export interface IActiveSlippage {
 interface IExchangeSettings {
   savedSettings: ISettings;
   handleSave: (settings: ISettings) => void;
+  isSlippage?: boolean;
 }
 
 const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
-  ({ savedSettings, handleSave }) => {
+  ({ savedSettings, handleSave, isSlippage = true }) => {
     const history = useHistory();
     const [slippage, setSlippage] = React.useState<IActiveSlippage>(savedSettings.slippage);
-    const [txDeadline, SetTxDeadline] = React.useState<number>(savedSettings.txDeadline);
+    const [txDeadline, setTxDeadline] = React.useState<number>(savedSettings.txDeadline);
+    const [txDeadlineUtc, setTxDeadlineUtc] = React.useState<number>(savedSettings.txDeadlineUtc);
 
     const [slippageInputValue, setSlippageInputValue] = React.useState<number>(
       savedSettings.slippage.type === 'input' ? savedSettings.slippage.value : NaN,
@@ -35,6 +38,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
       handleSave({
         slippage,
         txDeadline,
+        txDeadlineUtc,
       });
       history.goBack();
     };
@@ -44,7 +48,8 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
     };
 
     const handleChangeTxDeadline = (value: number | string): void => {
-      SetTxDeadline(+value);
+      setTxDeadlineUtc(moment.utc().add(value, 'm').valueOf());
+      setTxDeadline(+value);
     };
 
     const handleFocusSlippageInput = () => {
@@ -86,37 +91,41 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
             <img src={CrossImg} alt="" />
           </div>
         </div>
-        <div className="exch-settings__section">
-          <div className="exch-settings__section-title text-med text-purple">
-            Slippage tolerance
-          </div>
-          <div className="box-f box-f-jc-sb">
-            {btns.map((btn) => (
-              <Button
-                key={nextId()}
-                size="sm"
+        {isSlippage ? (
+          <div className="exch-settings__section">
+            <div className="exch-settings__section-title text-med text-purple">
+              Slippage tolerance
+            </div>
+            <div className="box-f box-f-jc-sb">
+              {btns.map((btn) => (
+                <Button
+                  key={nextId()}
+                  size="sm"
+                  colorScheme="outline"
+                  onClick={() => handleChangeSlippage({ type: 'btn', value: btn })}
+                  className={cn('exch-settings__slippage-btn', {
+                    active: slippage.type === 'btn' && slippage.value === btn,
+                  })}
+                >
+                  {btn}%
+                </Button>
+              ))}
+              <InputNumber
+                value={slippageInputValue}
                 colorScheme="outline"
-                onClick={() => handleChangeSlippage({ type: 'btn', value: btn })}
-                className={cn('exch-settings__slippage-btn', {
-                  active: slippage.type === 'btn' && slippage.value === btn,
+                inputSize="sm"
+                inputPrefix="%"
+                onFocus={handleFocusSlippageInput}
+                onChange={handleChangeSlippageInput}
+                className={cn('exch-settings__slippage-input', {
+                  active: slippage.type === 'input' && slippage.value,
                 })}
-              >
-                {btn}%
-              </Button>
-            ))}
-            <InputNumber
-              value={slippageInputValue}
-              colorScheme="outline"
-              inputSize="sm"
-              inputPrefix="%"
-              onFocus={handleFocusSlippageInput}
-              onChange={handleChangeSlippageInput}
-              className={cn('exch-settings__slippage-input', {
-                active: slippage.type === 'input' && slippage.value,
-              })}
-            />
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          ''
+        )}
         <div className="exch-settings__section">
           <div className="exch-settings__section-title text-med text-purple">
             Transaction deadline

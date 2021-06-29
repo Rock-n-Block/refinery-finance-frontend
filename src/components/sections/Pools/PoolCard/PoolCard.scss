@@ -21,4 +21,22 @@
       right: -8px;
     }
   }
+  &__box {
+    padding: 25px 30px;
+    & + & {
+      border-top: 1px solid #e6e6e6;
+    }
+  }
+  &__arp {
+    &-percent {
+      img {
+        margin-left: 10px;
+      }
+    }
+  }
+  &__unlock {
+    &-text {
+      margin-bottom: 10px;
+    }
+  }
 }

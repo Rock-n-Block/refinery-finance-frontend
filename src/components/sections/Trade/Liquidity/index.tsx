@@ -1,14 +1,10 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import moment from 'moment';
 
 import { YourLiquidity, ExchangeSettings, RecentTxs, ImportPool, AddLiquidity } from '..';
-import { IActiveSlippage } from '../ExchangeSettings';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
-
-export interface ISettings {
-  slippage: IActiveSlippage;
-  txDeadline: number;
-}
+import { ISettings } from '../../../../types';
 
 const Liquidity: React.FC = () => {
   const [settings, setSettings] = React.useState<ISettings>({
@@ -16,13 +12,14 @@ const Liquidity: React.FC = () => {
       type: 'btn',
       value: 0.1,
     },
-    txDeadline: NaN,
+    txDeadline: 20,
+    txDeadlineUtc: moment.utc().add(20, 'm').valueOf(),
   });
 
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
-  const AddLiquidityComp = TradeWrapper(AddLiquidity);
+  const AddLiquidityComp = TradeWrapper(AddLiquidity, settings);
 
   return (
     <Switch>
@@ -32,7 +29,13 @@ const Liquidity: React.FC = () => {
       <Route
         exact
         path="/trade/liquidity/settings"
-        render={() => <ExchangeSettings savedSettings={settings} handleSave={handleSaveSettings} />}
+        render={() => (
+          <ExchangeSettings
+            savedSettings={settings}
+            handleSave={handleSaveSettings}
+            isSlippage={false}
+          />
+        )}
       />
       <Route exact path="/trade/liquidity/history" component={RecentTxs} />
     </Switch>

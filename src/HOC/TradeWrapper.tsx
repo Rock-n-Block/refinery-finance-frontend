@@ -19,7 +19,7 @@ interface ITradeWrapper {
   };
 }
 
-const TradeWrapper = (Component: React.FC<any>) => {
+const TradeWrapper = (Component: React.FC<any>, compProps?: any) => {
   const connector = useWalletConnectorContext();
 
   return class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
@@ -100,6 +100,7 @@ const TradeWrapper = (Component: React.FC<any>) => {
       return (
         <Component
           {...this.props}
+          {...compProps}
           tokensData={this.state.tokensData}
           setTokensData={this.handleChangeTokensData}
           setAllowanceFrom={this.handleChangeAllowanceFrom}
