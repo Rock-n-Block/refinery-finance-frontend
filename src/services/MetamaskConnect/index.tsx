@@ -45,7 +45,6 @@ class Connector extends React.Component<any, any> {
       configWeb3.FACTORY.ADDRESS,
       configWeb3.FACTORY.ABI,
     );
-    this.state.provider.createContract('PAIR', configWeb3.PAIR.ADDRESS, configWeb3.PAIR.ABI);
     this.state.provider.createContract('ROUTER', configWeb3.ROUTER.ADDRESS, configWeb3.ROUTER.ABI);
 
     this.state.provider.chainChangedObs.subscribe({

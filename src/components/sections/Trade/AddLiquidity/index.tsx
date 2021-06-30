@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import BigNumber from 'bignumber.js/bignumber';
 
 import { TradeBox, ChooseTokens } from '..';
 import { ITokens } from '../../../../types';
@@ -22,6 +23,12 @@ interface IAddLiquidity {
   txDeadlineUtc: number;
 }
 
+interface IPrices {
+  first?: number;
+  second?: number;
+  share?: number;
+}
+
 const AddLiquidity: React.FC<IAddLiquidity> = observer(
   ({
     tokensData,
@@ -36,7 +43,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     const { metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
 
-    const [exchange, setExchange] = React.useState<undefined | boolean>(undefined);
+    const [exchange, setExchange] = React.useState<IPrices | undefined>(undefined);
+    const [tokensResurves, setTokensResurves] = React.useState<any>(null);
 
     const handleCreatePair = async () => {
       try {
@@ -81,10 +89,9 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             tokens.to.token?.address,
           ]);
           if (pairAddr === '0x0000000000000000000000000000000000000000') {
-            setExchange(false);
+            setExchange(undefined);
             return;
           }
-          setExchange(true);
 
           const token0 = await metamaskService.callContractMethodFromNewContract(
             pairAddr,
@@ -103,6 +110,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             Web3Config.PAIR.ABI,
             'getReserves',
           );
+          setTokensResurves(resurves);
 
           if (type === 'from') {
             let resurve1: number;
@@ -170,16 +178,108 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     };
 
     const handleChangeTokensData = (tokens: ITokens, type?: 'from' | 'to'): void => {
-      if (tokens.from.token && tokens.to.token && (tokens.from.amount || tokens.to.amount)) {
+      if (tokens.from.amount === 0 || tokens.to.amount === 0) {
+        setTokensData({
+          from: {
+            token: tokens.from.token,
+            amount: 0,
+          },
+          to: {
+            token: tokens.to.token,
+            amount: 0,
+          },
+        });
+      } else if (tokens.from.token && tokens.to.token && (tokens.from.amount || tokens.to.amount)) {
         handleGetExchange(tokens, type);
       }
     };
 
-    // React.useEffect(() => {
-    //   if (tokensData.from.token && tokensData.to.token && tokensData.from.amount) {
-    //     handleGetExchange();
-    //   }
-    // }, [tokensData.from.token, tokensData.to.token, handleGetExchange, tokensData.from.amount]);
+    React.useEffect(() => {
+      if (
+        tokensData.from.amount &&
+        tokensData.to.amount &&
+        tokensResurves &&
+        tokensData.from.token &&
+        tokensData.to.token
+      ) {
+        try {
+          const token1 = new BigNumber(
+            MetamaskService.calcTransactionAmount(
+              tokensData.from.amount,
+              +tokensData.from.token.decimals,
+            ),
+          ).toString(10);
+          const token2 = new BigNumber(
+            MetamaskService.calcTransactionAmount(
+              tokensData.to.amount,
+              +tokensData.to.token.decimals,
+            ),
+          ).toString(10);
+          const share1 = new BigNumber(token1)
+            .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token1))
+            .toString(10);
+          const share2 = new BigNumber(token2)
+            .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token2))
+            .toString(10);
+          const min = BigNumber.min(share1, share2).toString(10);
+
+          setExchange((ex) => ({
+            ...ex,
+            share: +min,
+          }));
+
+          metamaskService
+            .callContractMethod('ROUTER', 'getAmountsOut', [
+              MetamaskService.calcTransactionAmount(
+                tokensData.from.amount,
+                +tokensData.from.token.decimals,
+              ),
+              [tokensData.to.token.address, tokensData.from.token.address],
+            ])
+            .then((res) => {
+              if (tokensData.from.token) {
+                const amount = +MetamaskService.amountFromGwei(
+                  res[1],
+                  +tokensData.from.token?.decimals,
+                );
+                setExchange((data) => ({
+                  ...data,
+                  first: amount,
+                }));
+              }
+            });
+          metamaskService
+            .callContractMethod('ROUTER', 'getAmountsOut', [
+              MetamaskService.calcTransactionAmount(
+                tokensData.to.amount,
+                +tokensData.to.token.decimals,
+              ),
+              [tokensData.from.token.address, tokensData.to.token.address],
+            ])
+            .then((res) => {
+              if (tokensData.to.token) {
+                const amount = +MetamaskService.amountFromGwei(
+                  res[1],
+                  +tokensData.to.token?.decimals,
+                );
+                setExchange((data) => ({
+                  ...data,
+                  second: amount,
+                }));
+              }
+            });
+        } catch (err) {
+          console.log(err, 'err');
+        }
+      }
+    }, [
+      tokensData.from.token,
+      tokensData.to.token,
+      tokensData.from.amount,
+      tokensData.to.amount,
+      tokensResurves,
+      metamaskService,
+    ]);
 
     return (
       <TradeBox
@@ -200,7 +300,12 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
           changeTokenFromAllowance={(value: boolean) => setAllowanceFrom(value)}
           changeTokenToAllowance={(value: boolean) => setAllowanceTo(value)}
         />
-        {tokensData.from.token && tokensData.to.token && exchange ? (
+        {tokensData.from.token &&
+        tokensData.to.token &&
+        exchange &&
+        (exchange.first || exchange.first === 0) &&
+        (exchange.second || exchange.second === 0) &&
+        (exchange.share || exchange.share === 0) ? (
           <div className="add-liquidity__info">
             <div className="add-liquidity__info-title text-smd text-purple text-center">
               Prices and pool share
@@ -208,19 +313,23 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             <div className="add-liquidity__info-content">
               <div className="add-liquidity__info-item">
                 <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  19.2704
+                  {new BigNumber(exchange.first).toString(10)}
                 </div>
-                <div className="text-ssm text-center text-purple">BUNNY per BNB</div>
+                <div className="text-ssm text-center text-purple">
+                  {tokensData.from.token.symbol} per {tokensData.to.token.symbol}
+                </div>
               </div>
               <div className="add-liquidity__info-item">
                 <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  19.2704
+                  {new BigNumber(exchange.second).toString(10)}
                 </div>
-                <div className="text-ssm text-center text-purple">BNB per BUNNY</div>
+                <div className="text-ssm text-center text-purple">
+                  {tokensData.to.token.symbol} per {tokensData.from.token.symbol}
+                </div>
               </div>
               <div className="add-liquidity__info-item">
                 <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  0%
+                  {exchange.share < 0.001 ? 0 : new BigNumber(exchange.share).toString(10)}%
                 </div>
                 <div className="text-ssm text-center text-purple">Share of Pool</div>
               </div>

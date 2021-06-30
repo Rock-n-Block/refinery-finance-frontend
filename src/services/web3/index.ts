@@ -318,6 +318,7 @@ export default class MetamaskService {
         return await method().call();
       }
     } catch (err) {
+      debugger;
       throw new Error(err);
     }
     return new Error(`contract ${contractName} didn't created`);
