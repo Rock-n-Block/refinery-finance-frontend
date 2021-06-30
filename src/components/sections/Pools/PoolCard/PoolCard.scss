@@ -39,4 +39,43 @@
       margin-bottom: 10px;
     }
   }
+  &__earned {
+    margin-bottom: 30px;
+    &-numb {
+      margin: 10px 0 5px;
+    }
+  }
+  &__details {
+    padding-top: 30px;
+    overflow: hidden;
+    &-item {
+      margin-left: auto;
+      & + & {
+        margin-top: 10px;
+      }
+      img {
+        width: 19px;
+        margin-top: -2px;
+        margin-left: 5px;
+      }
+    }
+  }
+  .show-enter {
+    padding-top: 0;
+    max-height: 0;
+  }
+  .show-enter-active {
+    padding-top: 30px;
+    max-height: 132px;
+    transition: padding-top 300ms, max-height 300ms;
+  }
+  .show-exit {
+    padding-top: 30px;
+    max-height: 132px;
+  }
+  .show-exit-active {
+    padding-top: 0;
+    max-height: 0;
+    transition: padding-top 300ms, max-height 300ms;
+  }
 }

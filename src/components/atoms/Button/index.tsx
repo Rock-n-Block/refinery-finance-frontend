@@ -29,6 +29,7 @@ export interface ButtonProps extends IColorScheme, ISize {
   toggle?: boolean;
   onToggle?: (value: boolean) => void;
   isActive?: boolean | null;
+  noclick?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = React.memo(
@@ -47,6 +48,7 @@ const Button: React.FC<ButtonProps> = React.memo(
     toggle,
     isActive = null,
     onToggle,
+    noclick,
   }) => {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (!link) e.stopPropagation();
@@ -76,6 +78,7 @@ const Button: React.FC<ButtonProps> = React.memo(
           {
             'btn-loading': loading,
             'active': isActive,
+            noclick,
           },
         )}
       >

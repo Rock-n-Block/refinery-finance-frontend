@@ -2,7 +2,7 @@
 .btn {
   border: none;
   padding: 20px;
-  height: auto;
+  height: fit-content;
   border-radius: 40px;
   display: block;
   width: fit-content;
@@ -20,6 +20,7 @@
   }
   &-yellow {
     background: $orange;
+    box-shadow: 0px 12px 40px rgba(255, 162, 55, 0.25);
     &:hover {
       background: $orange;
     }
@@ -87,6 +88,17 @@
           transform: rotate(-180deg);
           path {
             stroke: #fff;
+          }
+        }
+      }
+      &.noclick {
+        cursor: default;
+        &:active,
+        &.active {
+          background: transparent;
+          color: $purple !important;
+          span {
+            color: $purple !important;
           }
         }
       }

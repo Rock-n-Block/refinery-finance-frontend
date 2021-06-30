@@ -86,11 +86,11 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           {
             from: {
               token,
-              amount: tokenFromQuantity,
+              amount: initialTokenData?.from.amount || NaN,
             },
             to: {
-              token: tokenTo,
-              amount: tokenToQuantity,
+              token: initialTokenData?.to.token,
+              amount: initialTokenData?.to.amount || NaN,
             },
           },
           'from',
