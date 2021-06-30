@@ -38,11 +38,7 @@ const ImportPool: React.FC = () => {
       recentTxLink="/trade/liquidity/history"
       titleBackLink
     >
-      <ChooseTokens
-        handleChangeTokens={handleSetTokens}
-        initialTokenData={tokensData}
-        isManageTokens
-      />
+      <ChooseTokens handleChangeTokens={handleSetTokens} initialTokenData={tokensData} />
       <div className="text-gray import-pool__text text-center">
         Select a token to find your liquidity.
       </div>

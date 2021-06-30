@@ -302,7 +302,6 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         <ChooseTokens
           handleChangeTokens={handleChangeTokensData}
           initialTokenData={tokensData}
-          isManageTokens
           textFrom="Input"
           textTo="Input"
           changeTokenFromAllowance={(value: boolean) => setAllowanceFrom(value)}

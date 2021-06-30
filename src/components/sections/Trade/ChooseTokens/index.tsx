@@ -13,7 +13,6 @@ import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens, type?: 'from' | 'to') => void;
   initialTokenData?: ITokens;
-  isManageTokens?: boolean;
   textFrom?: string;
   textTo?: string;
   changeTokenFromAllowance?: (value: boolean) => void;
@@ -24,7 +23,6 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
   ({
     handleChangeTokens,
     initialTokenData,
-    isManageTokens,
     textFrom,
     textTo,
     changeTokenFromAllowance,
@@ -384,7 +382,6 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           handleOpen={() => handleOpenSelectTokenModal(tokenType)}
           handleChangeToken={handleChangeToken}
           tokenType={tokenType}
-          isManageTokens={isManageTokens}
         />
       </>
     );

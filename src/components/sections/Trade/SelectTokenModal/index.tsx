@@ -18,11 +18,10 @@ interface ISelectTokenModal {
   handleOpen: () => void;
   handleChangeToken: (type: 'from' | 'to', token: IToken) => void;
   tokenType: 'from' | 'to';
-  isManageTokens?: boolean;
 }
 
 const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
-  ({ isVisible, handleClose, handleChangeToken, tokenType, isManageTokens, handleOpen }) => {
+  ({ isVisible, handleClose, handleChangeToken, tokenType, handleOpen }) => {
     const { tokens: storeTokens } = useMst();
 
     const [isManageModalVisible, setManageModalVisible] = React.useState<boolean>(false);
@@ -94,9 +93,9 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
     };
 
     React.useEffect(() => {
-      setInitTokens(storeTokens.default);
-      setTokens(storeTokens.default);
-    }, [storeTokens.default]);
+      setInitTokens([...storeTokens.default, ...storeTokens.imported]);
+      setTokens([...storeTokens.default, ...storeTokens.imported]);
+    }, [storeTokens.default, storeTokens.imported]);
 
     return (
       <>
@@ -147,33 +146,25 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
                 </div>
               ))}
             </Scrollbar>
-            {isManageTokens ? (
-              <div
-                className="m-select-token__manage text-purple text-med text-center box-pointer"
-                onClick={handleOpenManageModal}
-                onKeyDown={handleOpenManageModal}
-                role="button"
-                tabIndex={0}
-              >
-                Manage Tokens
-              </div>
-            ) : (
-              ''
-            )}
+            <div
+              className="m-select-token__manage text-purple text-med text-center box-pointer"
+              onClick={handleOpenManageModal}
+              onKeyDown={handleOpenManageModal}
+              role="button"
+              tabIndex={0}
+            >
+              Manage Tokens
+            </div>
           </div>
         </Modal>
-        {isManageTokens ? (
-          <ManageTokensModal
-            isVisible={isManageModalVisible}
-            handleClose={handleCloseManageModal}
-            handleBack={handleBackToSelectTokenModal}
-            handleOpen={handleOpenManageModal}
-            handleChangeSwitch={handleChangeSwitch}
-            selectToken={handleTokenClick}
-          />
-        ) : (
-          ''
-        )}
+        <ManageTokensModal
+          isVisible={isManageModalVisible}
+          handleClose={handleCloseManageModal}
+          handleBack={handleBackToSelectTokenModal}
+          handleOpen={handleOpenManageModal}
+          handleChangeSwitch={handleChangeSwitch}
+          selectToken={handleTokenClick}
+        />
       </>
     );
   },
