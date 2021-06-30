@@ -43,7 +43,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     const { metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
 
-    const [exchange, setExchange] = React.useState<IPrices | undefined>(undefined);
+    const [exchange, setExchange] = React.useState<IPrices | undefined | null>(undefined);
     const [tokensResurves, setTokensResurves] = React.useState<any>(null);
 
     const handleCreatePair = async () => {
@@ -83,16 +83,21 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
 
     const handleGetExchange = async (tokens: ITokens, type?: 'from' | 'to') => {
       try {
-        if (tokens.from.token && tokens.to.token) {
-          const pairAddr = await metamaskService.callContractMethod('FACTORY', 'getPair', [
-            tokens.from.token?.address,
-            tokens.to.token?.address,
-          ]);
-          if (pairAddr === '0x0000000000000000000000000000000000000000') {
-            setExchange(undefined);
-            return;
-          }
+        const pairAddr = await metamaskService.callContractMethod('FACTORY', 'getPair', [
+          tokens.from.token?.address,
+          tokens.to.token?.address,
+        ]);
+        if (pairAddr === '0x0000000000000000000000000000000000000000') {
+          setExchange(null);
+          return;
+        }
 
+        if (
+          tokens.from.token &&
+          tokens.to.token &&
+          (tokens.from.amount || tokens.to.amount) &&
+          pairAddr
+        ) {
           const token0 = await metamaskService.callContractMethodFromNewContract(
             pairAddr,
             Web3Config.PAIR.ABI,
@@ -183,7 +188,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
       }
     };
 
-    const handleChangeTokensData = (tokens: ITokens, type?: 'from' | 'to'): void => {
+    const handleChangeTokensData = async (tokens: ITokens, type?: 'from' | 'to') => {
       if (tokens.from.amount === 0 || tokens.to.amount === 0) {
         setTokensData({
           from: {
@@ -195,7 +200,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             amount: 0,
           },
         });
-      } else if (tokens.from.token && tokens.to.token && (tokens.from.amount || tokens.to.amount)) {
+      } else if (tokens.from.token && tokens.to.token) {
         handleGetExchange(tokens, type);
       } else {
         setTokensData(tokens);
@@ -299,6 +304,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         info="info"
         titleBackLink
       >
+        {exchange === null ? 'your first provider' : ''}
         <ChooseTokens
           handleChangeTokens={handleChangeTokensData}
           initialTokenData={tokensData}
