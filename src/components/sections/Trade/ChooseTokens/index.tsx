@@ -209,43 +209,89 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
     const handleChangeTokensQuantity = async (type: 'from' | 'to', quantity: number) => {
       if (type === 'from') {
         setTokenFromQuantity(quantity);
-
-        handleChangeTokens(
-          {
-            from: {
-              token: tokenFrom,
-              amount: quantity,
-            },
-            to: {
-              token: tokenTo,
-              amount: initialTokenData?.to.amount || NaN,
-            },
-          },
-          'from',
-        );
+        if (time) {
+          clearTimeout(time);
+          setTime(
+            setTimeout(() => {
+              handleCheckAllowance(quantity);
+              handleChangeTokens(
+                {
+                  from: {
+                    token: tokenFrom,
+                    amount: quantity,
+                  },
+                  to: {
+                    token: tokenTo,
+                    amount: initialTokenData?.to.amount || NaN,
+                  },
+                },
+                'from',
+              );
+            }, 500),
+          );
+        } else {
+          setTime(
+            setTimeout(() => {
+              handleCheckAllowance(quantity);
+              handleChangeTokens(
+                {
+                  from: {
+                    token: tokenFrom,
+                    amount: quantity,
+                  },
+                  to: {
+                    token: tokenTo,
+                    amount: initialTokenData?.to.amount || NaN,
+                  },
+                },
+                'from',
+              );
+            }, 500),
+          );
+        }
       }
       if (type === 'to') {
         setTokenToQuantity(quantity);
-
-        handleChangeTokens(
-          {
-            from: {
-              token: tokenFrom,
-              amount: initialTokenData?.from.amount || NaN,
-            },
-            to: {
-              token: tokenTo,
-              amount: quantity,
-            },
-          },
-          'to',
-        );
-      }
-      if (time) {
-        clearTimeout(time);
-        setTime(setTimeout(() => handleCheckAllowance(quantity), 1000));
-      } else {
-        setTime(setTimeout(() => handleCheckAllowance(quantity), 1000));
+        if (time) {
+          clearTimeout(time);
+          setTime(
+            setTimeout(() => {
+              handleCheckAllowance(quantity);
+              handleChangeTokens(
+                {
+                  from: {
+                    token: tokenFrom,
+                    amount: initialTokenData?.from.amount || NaN,
+                  },
+                  to: {
+                    token: tokenTo,
+                    amount: quantity,
+                  },
+                },
+                'to',
+              );
+            }, 500),
+          );
+        } else {
+          setTime(
+            setTimeout(() => {
+              handleCheckAllowance(quantity);
+              handleChangeTokens(
+                {
+                  from: {
+                    token: tokenFrom,
+                    amount: initialTokenData?.from.amount || NaN,
+                  },
+                  to: {
+                    token: tokenTo,
+                    amount: quantity,
+                  },
+                },
+                'to',
+              );
+            }, 500),
+          );
+        }
       }
     };
 

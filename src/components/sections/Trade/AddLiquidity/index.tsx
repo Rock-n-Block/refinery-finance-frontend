@@ -112,7 +112,10 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
           );
           setTokensResurves(resurves);
 
-          if (type === 'from') {
+          if (
+            (type === 'from' && tokens.from.amount) ||
+            (tokens.from.token && tokens.from.amount && !tokens.to.amount)
+          ) {
             let resurve1: number;
             let resurve2: number;
             if (tokens.from.token.address.toLowerCase() === token0.toLowerCase()) {
@@ -142,7 +145,10 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
                 amount: +MetamaskService.amountFromGwei(+quote, +tokens.to.token.decimals),
               },
             });
-          } else if (type === 'to') {
+          } else if (
+            (type === 'to' && tokens.to.amount) ||
+            (tokens.to.token && tokens.to.amount && !tokens.from.amount)
+          ) {
             let resurve1: number;
             let resurve2: number;
             if (tokens.to.token.address.toLowerCase() === token1.toLowerCase()) {
@@ -191,6 +197,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         });
       } else if (tokens.from.token && tokens.to.token && (tokens.from.amount || tokens.to.amount)) {
         handleGetExchange(tokens, type);
+      } else {
+        setTokensData(tokens);
       }
     };
 
