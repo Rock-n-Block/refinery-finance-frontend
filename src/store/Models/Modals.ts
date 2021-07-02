@@ -15,8 +15,8 @@ const MetamaskErrModal = types
 
 const RoiItem = types.model({
   timeframe: types.string,
-  roi: types.number,
-  rf: types.number,
+  roi: types.union(types.number, types.string),
+  rf: types.union(types.number, types.string),
 });
 
 const RoiModal = types

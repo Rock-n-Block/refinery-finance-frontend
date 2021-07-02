@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import moment from 'moment';
 
 import { Exchange, ExchangeSettings, RecentTxs } from '..';
-import { ITokens, ISettings } from '../../../../types';
-
-import BnbImg from '@/assets/img/currency/bnb.svg';
+import { ISettings } from '../../../../types';
+import TradeWrapper from '../../../../HOC/TradeWrapper';
 
 const Swap: React.FC = () => {
   const [settings, setSettings] = React.useState<ISettings>({
@@ -12,50 +12,19 @@ const Swap: React.FC = () => {
       type: 'btn',
       value: 0.1,
     },
-    txDeadline: NaN,
-    txDeadlineUtc: NaN,
-  });
-
-  const [tokensData, setTokensData] = React.useState<ITokens>({
-    from: {
-      token: {
-        logoURI: BnbImg,
-        name: 'Binance',
-        symbol: 'BNB',
-        address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
-        decimals: 8,
-      },
-      amount: NaN,
-    },
-    to: {
-      token: {
-        logoURI: BnbImg,
-        name: 'Ethereum',
-        symbol: 'ETH',
-        address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
-        decimals: 8,
-      },
-      amount: NaN,
-    },
+    txDeadline: 20,
+    txDeadlineUtc: moment.utc().add(20, 'm').valueOf(),
   });
 
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
 
-  const handleSetTokens = (tokens: ITokens) => {
-    setTokensData(tokens);
-  };
+  const ExchangeComp = TradeWrapper(Exchange, settings);
 
   return (
     <Switch>
-      <Route
-        exact
-        path="/trade/swap"
-        render={() => (
-          <Exchange handleChangeTokens={handleSetTokens} initialTokenData={tokensData} />
-        )}
-      />
+      <Route exact path="/trade/swap" render={() => <ExchangeComp />} />
       <Route
         exact
         path="/trade/swap/settings"

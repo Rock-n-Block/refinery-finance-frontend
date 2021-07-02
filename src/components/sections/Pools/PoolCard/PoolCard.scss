@@ -1,6 +1,8 @@
 .p-card {
   max-width: 355px;
   width: 100%;
+  height: fit-content;
+  margin: 0 11px;
   &__head {
     padding: 20px 18px 10px 31px;
     min-height: 115px;
@@ -58,6 +60,11 @@
         margin-top: -2px;
         margin-left: 5px;
       }
+    }
+  }
+  &__auto {
+    &-profit {
+      margin: 15px 0 30px;
     }
   }
   .show-enter {

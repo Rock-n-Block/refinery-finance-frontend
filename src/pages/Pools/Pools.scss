@@ -2,6 +2,7 @@
   padding-top: 25px;
   padding-bottom: 25px;
   &__content {
-    margin-top: 40px;
+    margin: 40px -11px 0;
+    flex-wrap: wrap;
   }
 }

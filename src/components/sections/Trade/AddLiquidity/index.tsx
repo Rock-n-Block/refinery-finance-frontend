@@ -8,7 +8,6 @@ import { Button } from '../../../atoms';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
 import MetamaskService from '../../../../services/web3';
-import Web3Config from '../../../../services/web3/config';
 
 import './AddLiquidity.scss';
 
@@ -21,6 +20,7 @@ interface IAddLiquidity {
   isAllowanceTo: boolean;
   handleApproveTokens: () => void;
   txDeadlineUtc: number;
+  tokensResurves: any;
 }
 
 interface IPrices {
@@ -39,12 +39,12 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     handleApproveTokens,
     isAllowanceTo,
     txDeadlineUtc,
+    tokensResurves,
   }) => {
     const { metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
 
     const [exchange, setExchange] = React.useState<IPrices | undefined | null>(undefined);
-    const [tokensResurves, setTokensResurves] = React.useState<any>(null);
 
     const handleCreatePair = async () => {
       try {
@@ -78,132 +78,6 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         }
       } catch (err) {
         console.log(err);
-      }
-    };
-
-    const handleGetExchange = async (tokens: ITokens, type?: 'from' | 'to') => {
-      try {
-        const pairAddr = await metamaskService.callContractMethod('FACTORY', 'getPair', [
-          tokens.from.token?.address,
-          tokens.to.token?.address,
-        ]);
-        if (pairAddr === '0x0000000000000000000000000000000000000000') {
-          setExchange(null);
-          return;
-        }
-
-        if (
-          tokens.from.token &&
-          tokens.to.token &&
-          (tokens.from.amount || tokens.to.amount) &&
-          pairAddr
-        ) {
-          const token0 = await metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            Web3Config.PAIR.ABI,
-            'token0',
-          );
-
-          const token1 = await metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            Web3Config.PAIR.ABI,
-            'token1',
-          );
-
-          const resurves = await metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            Web3Config.PAIR.ABI,
-            'getReserves',
-          );
-          setTokensResurves(resurves);
-
-          if (
-            (type === 'from' && tokens.from.amount) ||
-            (tokens.from.token && tokens.from.amount && !tokens.to.amount)
-          ) {
-            let resurve1: number;
-            let resurve2: number;
-            if (tokens.from.token.address.toLowerCase() === token0.toLowerCase()) {
-              resurve1 = resurves['0'];
-              resurve2 = resurves['1'];
-            } else {
-              resurve1 = resurves['1'];
-              resurve2 = resurves['0'];
-            }
-
-            const quote = await metamaskService.callContractMethod('ROUTER', 'quote', [
-              MetamaskService.calcTransactionAmount(
-                tokens.from.amount,
-                +tokens.from.token.decimals,
-              ),
-              resurve1,
-              resurve2,
-            ]);
-
-            setTokensData({
-              from: {
-                token: tokens.from.token,
-                amount: tokens.from.amount,
-              },
-              to: {
-                token: tokens.to.token,
-                amount: +MetamaskService.amountFromGwei(+quote, +tokens.to.token.decimals),
-              },
-            });
-          } else if (
-            (type === 'to' && tokens.to.amount) ||
-            (tokens.to.token && tokens.to.amount && !tokens.from.amount)
-          ) {
-            let resurve1: number;
-            let resurve2: number;
-            if (tokens.to.token.address.toLowerCase() === token1.toLowerCase()) {
-              resurve1 = resurves['1'];
-              resurve2 = resurves['0'];
-            } else {
-              resurve1 = resurves['0'];
-              resurve2 = resurves['1'];
-            }
-            const quote = await metamaskService.callContractMethod('ROUTER', 'quote', [
-              MetamaskService.calcTransactionAmount(tokens.to.amount, +tokens.to.token.decimals),
-              resurve1,
-              resurve2,
-            ]);
-
-            setTokensData({
-              from: {
-                token: tokens.from.token,
-                amount: +MetamaskService.amountFromGwei(+quote, +tokens.from.token.decimals),
-              },
-              to: {
-                token: tokens.to.token,
-                amount: tokens.to.amount,
-              },
-            });
-          } else {
-            setTokensData(tokens);
-          }
-        }
-      } catch (err) {
-        console.log('get pair', err);
-      }
-    };
-
-    const handleChangeTokensData = async (tokens: ITokens, type?: 'from' | 'to') => {
-      if (tokens.from.amount === 0 || tokens.to.amount === 0) {
-        setTokensData({
-          from: {
-            token: tokens.from.token,
-            amount: 0,
-          },
-          to: {
-            token: tokens.to.token,
-            amount: 0,
-          },
-        });
-      } else if (tokens.from.token && tokens.to.token) {
-        handleGetExchange(tokens, type);
-      } else {
-        setTokensData(tokens);
       }
     };
 
@@ -306,7 +180,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
       >
         {exchange === null ? 'your first provider' : ''}
         <ChooseTokens
-          handleChangeTokens={handleChangeTokensData}
+          handleChangeTokens={setTokensData}
           initialTokenData={tokensData}
           textFrom="Input"
           textTo="Input"

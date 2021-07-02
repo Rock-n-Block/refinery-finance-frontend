@@ -14,11 +14,20 @@ import RefreshImg from '@/assets/img/icons/refresh.svg';
 import InfoImg from '@/assets/img/icons/info.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 
-interface IPoolCard {
-  tokenEarn: IToken;
+interface IAPR {
+  timeframe: string;
+  roi: number | string;
+  rf: number | string;
+}
+
+export interface IPoolCard {
+  tokenEarn?: IToken;
   tokenStake: IToken;
   type: 'earn' | 'manual' | 'auto';
-  apr: number | string;
+  apr: {
+    value: number | string;
+    items: IAPR[];
+  };
 }
 
 const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, apr }) => {
@@ -28,18 +37,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, a
   const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);
 
   const handleOpenArp = (): void => {
-    modals.roi.open([
-      {
-        timeframe: '1D',
-        roi: 0.19,
-        rf: 0.12,
-      },
-      {
-        timeframe: '1D',
-        roi: 0.19,
-        rf: 0.12,
-      },
-    ]);
+    modals.roi.open(apr.items);
   };
 
   return (
@@ -48,10 +46,15 @@ const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, a
         <div>
           <div className="p-card__title text-slg text-purple text-bold">
             <span className="text-capitalize">{type}</span>{' '}
-            <span className="text-upper">{tokenEarn.name}</span>
+            {type === 'manual' && tokenEarn ? (
+              <span className="text-upper">{tokenEarn.name}</span>
+            ) : (
+              ''
+            )}
+            {type === 'auto' ? <span className="text-upper">{tokenStake.name}</span> : ''}
           </div>
           <div className="p-card__subtitle text-smd text-purple text-med">
-            {type === 'manual' ? (
+            {type === 'manual' && tokenEarn ? (
               <>
                 <span className="capitalize">Earn</span> <span>{tokenEarn.name}</span>,{' '}
                 <span>stake</span> <span className="text-upper">{tokenStake.name}</span>
@@ -64,7 +67,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, a
           </div>
         </div>
         <div className="p-card__icons">
-          <img src={tokenEarn.logoURI} alt="" />
+          {tokenEarn ? <img src={tokenEarn.logoURI} alt="" /> : ''}
           <img src={tokenStake.logoURI} alt="" />
         </div>
       </div>
@@ -79,12 +82,24 @@ const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, a
           role="button"
           tabIndex={0}
         >
-          <span className="text-smd">{apr}%</span>
+          <span className="text-smd">{apr.value}%</span>
           <img src={CalcImg} alt="" />
         </div>
       </div>
       <div className="p-card__box p-card__content">
-        {user.address ? (
+        {user.address && type === 'auto' ? (
+          <div className="p-card__auto">
+            <div className="p-card__auto-title text-purple text-smd text-med">
+              Recent {tokenStake.name} profit:
+            </div>
+            <div className="p-card__auto-profit text-smd text-blue-d">
+              0.1% unstaking fee if withdrawn within 72h
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
+        {user.address && type === 'earn' && tokenEarn ? (
           <>
             <div className="p-card__earned box-f box-f-jc-sb">
               <div>
@@ -96,6 +111,12 @@ const PoolCard: React.FC<IPoolCard> = observer(({ tokenEarn, tokenStake, type, a
                 <span className="text-white text">Collect</span>
               </Button>
             </div>
+          </>
+        ) : (
+          ''
+        )}
+        {user.address ? (
+          <>
             <div className="text-purple text-med text-smd p-card__unlock-text">Start Farming</div>
             <Button className="p-card__unlock-btn">
               <span className="text-white text-smd text-bold">Enable</span>
