@@ -1,0 +1,25 @@
+@import 'src/styles/vars';
+.collectibles-preview {
+  background-color: $purple-d;
+  border-radius: 40px;
+  padding: 40px 42px 75px;
+  background-image: url(../../../../assets/img/sections/collectibles/bg-1.svg);
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  position: relative;
+  background-size: auto 100%;
+  &__title {
+    position: relative;
+  }
+  &__img {
+    position: absolute;
+    &-1 {
+      top: -10px;
+      left: -25px;
+    }
+    &-2 {
+      left: 230px;
+      bottom: -22px;
+    }
+  }
+}
