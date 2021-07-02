@@ -160,7 +160,9 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                       <div className="text-med text-purple m-manage-tokens__item-title text">
                         Refinery.Finance Extended
                       </div>
-                      <div className="text-med text-gray text-ssm text">195 tokens</div>
+                      <div className="text-med text-gray text-ssm text">
+                        {tokens.extended.length} tokens
+                      </div>
                     </div>
                   </div>
                   <Switch
@@ -185,7 +187,9 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                       <div className="text-med text-purple m-manage-tokens__item-title text">
                         Refinery.Finance Top 100
                       </div>
-                      <div className="text-med text-gray text-ssm text">195 tokens</div>
+                      <div className="text-med text-gray text-ssm text">
+                        {tokens.top.length} tokens
+                      </div>
                     </div>
                   </div>
                   <Switch

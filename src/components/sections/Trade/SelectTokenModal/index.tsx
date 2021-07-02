@@ -68,33 +68,25 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
     };
 
     const handleChangeSwitch = (extendedValue: boolean, topValue: boolean): void => {
+      let arr: IToken[] = storeTokens.default;
       if (extendedValue && topValue) {
-        setInitTokens([...storeTokens.extended, ...storeTokens.top]);
-
-        setTokens([...storeTokens.extended, ...storeTokens.top]);
-        return;
+        arr = [...storeTokens.extended, ...storeTokens.top];
       }
       if (extendedValue) {
-        setInitTokens(storeTokens.extended);
-
-        setTokens(storeTokens.extended);
-        return;
+        arr = storeTokens.extended;
       }
       if (topValue) {
-        setInitTokens([...storeTokens.default, ...storeTokens.top]);
-
-        setTokens([...storeTokens.default, ...storeTokens.top]);
-        return;
+        arr = [...storeTokens.default, ...storeTokens.top];
       }
 
-      setInitTokens(storeTokens.default);
+      setInitTokens([...storeTokens.imported, ...arr]);
 
-      setTokens(storeTokens.default);
+      setTokens([...storeTokens.imported, ...arr]);
     };
 
     React.useEffect(() => {
-      setInitTokens([...storeTokens.default, ...storeTokens.imported]);
-      setTokens([...storeTokens.default, ...storeTokens.imported]);
+      setInitTokens([...storeTokens.imported, ...storeTokens.default]);
+      setTokens([...storeTokens.imported, ...storeTokens.default]);
     }, [storeTokens.default, storeTokens.imported]);
 
     return (
