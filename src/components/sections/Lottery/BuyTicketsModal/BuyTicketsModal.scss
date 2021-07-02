@@ -1,5 +1,8 @@
 @import 'src/styles/vars';
 .m-buy-tickets {
+  &__content {
+    padding: 30px;
+  }
   &__counter {
     margin: 50px auto 30px;
     width: fit-content;
