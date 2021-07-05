@@ -2,6 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 
 import { Button } from '../../../atoms';
+import NumberWithCommas from '../../../../utils/NumberWithCommas';
 
 import './TeamCard.scss';
 
@@ -18,38 +19,47 @@ interface ITeamCard {
   id: number | string;
 }
 
-const TeamCard: React.FC<ITeamCard> = ({ place, name, details, win, members, id, img }) => {
+const TeamCard: React.FC<ITeamCard> = (props) => {
   return (
     <div className="teams-card box-shadow box-f-ai-c box-f-jc-sb">
       <div className="box-f">
         <div
           className={cn('teams-card__numb box-f-c', {
-            active: place === 1,
+            active: props.place === 1,
           })}
         >
-          <span className="text-bold text-smd">{place}.</span>
+          <span className="text-bold text-smd">{props.place}.</span>
         </div>
         <div>
-          <div className="text-purple text-bold text-slg">{name}</div>
-          <div className="teams-card__details text-smd text-purple">{details}</div>
+          <div className="text-purple text-bold text-slg">{props.name}</div>
+          <div className="teams-card__details text-smd text-purple">{props.details}</div>
           <div className="box-f-ai-c">
             <div className="teams-card__elem box-f-ai-c">
               <img src={WinImg} alt="" />
-              <span className="text-bold text-slg text-purple">{win}</span>
+              <span className="text-bold text-slg text-purple">{props.win}</span>
             </div>
             <div className="teams-card__elem box-f-ai-c">
               <img src={MemberImg} alt="" />
-              <span className="text-bold text-slg text-purple">{members}</span>
+              <span className="text-bold text-slg text-purple">
+                {NumberWithCommas(props.members)}
+              </span>
             </div>
           </div>
         </div>
       </div>
       <div className="box-f-ai-c">
-        <Button colorScheme="outline-purple" size="smd" link={`/teams/${id}`}>
+        <Button
+          colorScheme="outline-purple"
+          size="smd"
+          link={{
+            pathname: `/team/${props.id}`,
+            state: props,
+          }}
+        >
           <span>See more</span>
         </Button>
         <div className="teams-card__img">
-          <img src={img} alt="" />
+          <img src={props.img} alt="" />
         </div>
       </div>
     </div>

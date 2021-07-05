@@ -28,3 +28,13 @@ export interface IActiveSlippage {
   type: 'btn' | 'input';
   value: number;
 }
+
+export interface ITeamCard {
+  place: number;
+  name: string;
+  details: string;
+  members: number;
+  win: number;
+  img: string;
+  id: number | string;
+}

@@ -21,7 +21,7 @@ export interface ButtonProps extends IColorScheme, ISize {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
-  link?: string;
+  link?: any;
   linkClassName?: string;
   shadow?: boolean;
   icon?: string;

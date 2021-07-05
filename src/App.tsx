@@ -5,7 +5,15 @@ import { observer } from 'mobx-react-lite';
 import { Menu } from './components/sections';
 import { Button } from './components/atoms';
 import { MetamaskErrModal, RoiModal } from './components/molecules';
-import { TradePage, LotteryPage, FarmsPage, PoolsPage, CollectiblesPage, TeamsPage } from './pages';
+import {
+  TradePage,
+  LotteryPage,
+  FarmsPage,
+  PoolsPage,
+  CollectiblesPage,
+  TeamsPage,
+  TeamPage,
+} from './pages';
 import { useWalletConnectorContext } from './services/MetamaskConnect';
 import { useMst } from './store';
 
@@ -54,6 +62,7 @@ const App: React.FC = observer(() => {
         <Route exact path="/pools" component={PoolsPage} />
         <Route exact path="/collectibles" component={CollectiblesPage} />
         <Route exact path="/teams" component={TeamsPage} />
+        <Route exact path="/team/:id" component={TeamPage} />
       </Switch>
       <MetamaskErrModal />
       <RoiModal />
