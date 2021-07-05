@@ -17,6 +17,8 @@ export interface IChooseTokens {
   textTo?: string;
   changeTokenFromAllowance?: (value: boolean) => void;
   changeTokenToAllowance?: (value: boolean) => void;
+  maxFrom?: number | string;
+  maxTo?: number | string;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = React.memo(
@@ -27,6 +29,8 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
     textTo,
     changeTokenFromAllowance,
     changeTokenToAllowance,
+    maxFrom,
+    maxTo,
   }) => {
     const { metamaskService } = useWalletConnectorContext();
 
@@ -293,6 +297,11 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
       }
     };
 
+    React.useEffect(() => {
+      setTokenFromQuantity(initialTokenData?.from.amount || NaN);
+      setTokenToQuantity(initialTokenData?.to.amount || NaN);
+    }, [initialTokenData?.from.amount, initialTokenData?.to.amount]);
+
     return (
       <>
         <div className="choose-tokens">
@@ -313,11 +322,21 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                   <img src={tokenFrom.logoURI} alt="" className="choose-tokens__currency-img" />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
-                <InputNumber
-                  value={initialTokenData?.from.amount}
-                  placeholder="0"
-                  onChange={(value: number | string) => handleChangeTokensQuantity('from', +value)}
-                />
+                <div className="choose-tokens__err-wrapper">
+                  <InputNumber
+                    value={tokenFromQuantity}
+                    placeholder="0"
+                    max={maxFrom}
+                    onChange={(value: number | string) =>
+                      handleChangeTokensQuantity('from', +value)
+                    }
+                  />
+                  {maxFrom && tokenFromQuantity > maxFrom ? (
+                    <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxFrom}`}</div>
+                  ) : (
+                    ''
+                  )}
+                </div>
               </div>
             </>
           ) : (
@@ -358,11 +377,19 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                   <img src={tokenTo.logoURI} alt="" className="choose-tokens__currency-img" />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
-                <InputNumber
-                  value={initialTokenData?.to.amount}
-                  placeholder="0"
-                  onChange={(value: number | string) => handleChangeTokensQuantity('to', +value)}
-                />
+                <div className="choose-tokens__err-wrapper">
+                  <InputNumber
+                    value={tokenToQuantity}
+                    placeholder="0"
+                    onChange={(value: number | string) => handleChangeTokensQuantity('to', +value)}
+                    max={maxTo}
+                  />
+                  {maxTo && tokenToQuantity > maxTo ? (
+                    <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxTo}`}</div>
+                  ) : (
+                    ''
+                  )}
+                </div>
               </div>{' '}
             </>
           ) : (

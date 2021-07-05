@@ -20,7 +20,7 @@ const Swap: React.FC = () => {
     setSettings(settingsObj);
   };
 
-  const ExchangeComp = TradeWrapper(Exchange, settings);
+  const ExchangeComp = TradeWrapper(Exchange, 'getAmountOut', settings);
 
   return (
     <Switch>

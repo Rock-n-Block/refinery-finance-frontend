@@ -178,7 +178,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         info="info"
         titleBackLink
       >
-        {exchange === null ? 'your first provider' : ''}
+        {exchange === null || tokensResurves === null ? 'your first provider' : ''}
         <ChooseTokens
           handleChangeTokens={setTokensData}
           initialTokenData={tokensData}

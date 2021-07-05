@@ -15,54 +15,44 @@ interface IInputNumberProps extends InputNumberProps {
 }
 
 const InputNumber: React.ForwardRefExoticComponent<IInputNumberProps> = React.memo(
-  React.forwardRef<HTMLInputElement, IInputNumberProps>(
-    (
-      {
-        inputSize = 'lg',
-        colorScheme = 'gray',
-        inputPrefix,
-        onChange,
-        onFocus,
-        onKeyDown,
-        className,
-        placeholder,
-        inputClass,
-        value,
-      },
-      ref,
-    ) => {
-      return (
-        <div
+  React.forwardRef<HTMLInputElement, IInputNumberProps>((props, ref) => {
+    const {
+      inputSize = 'lg',
+      colorScheme = 'gray',
+      inputPrefix,
+      className,
+      inputClass,
+      value,
+      ...otherProps
+    } = props;
+    return (
+      <div
+        className={cn(
+          'input-number__box box-f-ai-c',
+          `input-number-${inputSize}-box`,
+          `input-number-${colorScheme}-box`,
+          className,
+        )}
+      >
+        <Input
+          type="number"
+          ref={ref}
           className={cn(
-            'input-number__box box-f-ai-c',
-            `input-number-${inputSize}-box`,
-            `input-number-${colorScheme}-box`,
-            className,
+            'input-number',
+            `input-number-${inputSize}`,
+            `input-number-${colorScheme}`,
+            inputClass,
           )}
-        >
-          <Input
-            type="number"
-            ref={ref}
-            className={cn(
-              'input-number',
-              `input-number-${inputSize}`,
-              `input-number-${colorScheme}`,
-              inputClass,
-            )}
-            onChange={onChange}
-            value={value}
-            onFocus={onFocus}
-            onKeyDown={onKeyDown}
-            placeholder={placeholder}
-            onWheel={(e: any) => {
-              e.target.blur();
-            }}
-          />
-          {inputPrefix ? <div className="input-number__prefix">{inputPrefix}</div> : ''}
-        </div>
-      );
-    },
-  ),
+          value={value}
+          onWheel={(e: any) => {
+            e.target.blur();
+          }}
+          {...otherProps}
+        />
+        {inputPrefix ? <div className="input-number__prefix">{inputPrefix}</div> : ''}
+      </div>
+    );
+  }),
 );
 
 export default InputNumber;

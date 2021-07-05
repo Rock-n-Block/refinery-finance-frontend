@@ -89,6 +89,12 @@
   &-center {
     text-align: center;
   }
+  &-right {
+    text-align: right;
+  }
+  &-left {
+    text-align: left;
+  }
   &-blue {
     color: $blue;
   }
@@ -97,5 +103,8 @@
   }
   &-capitalize {
     text-transform: capitalize;
+  }
+  &-red {
+    color: $red;
   }
 }

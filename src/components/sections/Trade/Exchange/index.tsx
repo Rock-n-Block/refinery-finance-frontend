@@ -6,6 +6,7 @@ import { Button } from '../../../atoms';
 import { ITokens } from '../../../../types';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
+import MetamaskService from '../../../../services/web3';
 
 import './Exchange.scss';
 
@@ -18,6 +19,9 @@ interface IExchange {
   isAllowanceTo: boolean;
   handleApproveTokens: () => void;
   txDeadlineUtc: number;
+  tokensResurves: any;
+  maxFrom: '';
+  maxTo: '';
 }
 
 const Exchange: React.FC<IExchange> = observer(
@@ -29,9 +33,49 @@ const Exchange: React.FC<IExchange> = observer(
     isAllowanceFrom,
     handleApproveTokens,
     isAllowanceTo,
+    maxFrom,
+    maxTo,
+    txDeadlineUtc,
+    tokensResurves,
   }) => {
-    const connector = useWalletConnectorContext();
+    const { connect, metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
+
+    const handleSwap = async () => {
+      if (tokensData.to.token && tokensData.from.token) {
+        try {
+          await metamaskService.createTransaction({
+            method: 'swapExactTokensForTokens',
+            contractName: 'ROUTER',
+            data: [
+              MetamaskService.calcTransactionAmount(
+                tokensData.from.amount,
+                +tokensData.from.token?.decimals,
+              ),
+              MetamaskService.calcTransactionAmount(
+                tokensData.to.amount,
+                +tokensData.to.token?.decimals,
+              ),
+              [tokensData.from.token.address, tokensData.to.token.address],
+              user.address,
+              txDeadlineUtc,
+            ],
+          });
+          setTokensData({
+            from: {
+              token: tokensData.from.token,
+              amount: NaN,
+            },
+            to: {
+              token: tokensData.to.token,
+              amount: NaN,
+            },
+          });
+        } catch (err) {
+          console.log('swap err', err);
+        }
+      }
+    };
 
     return (
       <>
@@ -44,10 +88,12 @@ const Exchange: React.FC<IExchange> = observer(
           <ChooseTokens
             handleChangeTokens={setTokensData}
             initialTokenData={tokensData}
-            textFrom="Input"
-            textTo="Input"
+            textFrom="From"
+            textTo="To"
             changeTokenFromAllowance={(value: boolean) => setAllowanceFrom(value)}
             changeTokenToAllowance={(value: boolean) => setAllowanceTo(value)}
+            maxFrom={maxFrom}
+            maxTo={maxTo}
           />
           {isAllowanceFrom &&
           isAllowanceTo &&
@@ -55,8 +101,9 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.to.token &&
           tokensData.to.amount &&
           tokensData.from.amount &&
-          user.address ? (
-            <Button className="exchange__btn">
+          user.address &&
+          tokensResurves !== null ? (
+            <Button className="exchange__btn" onClick={handleSwap}>
               <span className="text-white text-bold text-smd">Swap</span>
             </Button>
           ) : (
@@ -68,8 +115,9 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.to.token &&
           tokensData.to.amount &&
           tokensData.from.amount &&
-          !user.address ? (
-            <Button className="exchange__btn" onClick={connector.connect}>
+          !user.address &&
+          tokensResurves !== null ? (
+            <Button className="exchange__btn" onClick={connect}>
               <span className="text-bold text-md text-white">Connect</span>
             </Button>
           ) : (
@@ -77,7 +125,8 @@ const Exchange: React.FC<IExchange> = observer(
           )}
           {tokensData.from.token &&
           tokensData.to.token &&
-          (!tokensData.to.amount || !tokensData.from.amount) ? (
+          (!tokensData.to.amount || !tokensData.from.amount) &&
+          tokensResurves !== null ? (
             <Button
               className="exchange__btn"
               disabled={!tokensData.from.amount || !tokensData.to.amount}
@@ -91,16 +140,26 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.from.token &&
           tokensData.to.token &&
           tokensData.to.amount &&
-          tokensData.from.amount ? (
+          tokensData.from.amount &&
+          tokensResurves !== null ? (
             <Button className="exchange__btn" onClick={handleApproveTokens}>
               <span className="text-white text-bold text-smd">Approve tokens</span>
             </Button>
           ) : (
             ''
           )}
-          {!tokensData.from.token || !tokensData.to.token ? (
+          {(!tokensData.from.token || !tokensData.to.token) && tokensResurves !== null ? (
             <Button disabled className="exchange__btn">
               <span className="text-white text-bold text-smd">Select a Tokens</span>
+            </Button>
+          ) : (
+            ''
+          )}
+          {tokensData.from.token && tokensData.to.token && tokensResurves === null ? (
+            <Button disabled className="exchange__btn">
+              <span className="text-white text-bold text-smd">
+                This pair haven&lsquo;t been created
+              </span>
             </Button>
           ) : (
             ''
