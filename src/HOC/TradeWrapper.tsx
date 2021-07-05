@@ -243,6 +243,10 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
               tokensData: tokens,
             });
           }
+        } else {
+          this.setState({
+            tokensData: tokens,
+          });
         }
       } catch (err) {
         console.log('get pair', err);
@@ -275,7 +279,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
             },
           },
         });
-      } else if (tokensData.from.token && tokensData.to.token) {
+      } else if (tokensData.from.token && tokensData.to.token && type) {
         this.handleGetExchange(tokensData, type);
       } else {
         this.setState({

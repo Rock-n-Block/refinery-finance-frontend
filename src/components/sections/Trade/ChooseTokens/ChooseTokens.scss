@@ -50,4 +50,9 @@
       position: relative;
     }
   }
+  &__balance {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+  }
 }

@@ -1,10 +1,13 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import { InputNumber, Button } from '../../../atoms';
 import { SelectTokenModal } from '..';
 import { ITokens, IToken } from '../../../../types';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import config from '../../../../services/web3/config';
+import MetamaskService from '../../../../services/web3';
+import Web3Config from '../../../../services/web3/config';
+import { useMst } from '../../../../store';
 
 import './ChooseTokens.scss';
 
@@ -12,7 +15,7 @@ import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
 
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens, type?: 'from' | 'to') => void;
-  initialTokenData?: ITokens;
+  initialTokenData: ITokens;
   textFrom?: string;
   textTo?: string;
   changeTokenFromAllowance?: (value: boolean) => void;
@@ -21,7 +24,7 @@ export interface IChooseTokens {
   maxTo?: number | string;
 }
 
-const ChooseTokens: React.FC<IChooseTokens> = React.memo(
+const ChooseTokens: React.FC<IChooseTokens> = observer(
   ({
     handleChangeTokens,
     initialTokenData,
@@ -32,6 +35,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
     maxFrom,
     maxTo,
   }) => {
+    const { user } = useMst();
     const { metamaskService } = useWalletConnectorContext();
 
     const [time, setTime] = React.useState<any>(null);
@@ -52,6 +56,9 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
 
     const [isModalVisible, setModalVisible] = React.useState<boolean>(false);
     const [tokenType, setTokenType] = React.useState<'from' | 'to'>('from');
+
+    const [balanceFrom, setBalanceFrom] = React.useState<number | string>('');
+    const [balanceTo, setBalanceTo] = React.useState<number | string>('');
 
     const handleCloseSelectTokenModal = (): void => {
       setModalVisible(false);
@@ -171,7 +178,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           promises.push(
             metamaskService.checkTokenAllowance({
               contractName: 'ERC20',
-              approvedAddress: config.ROUTER.ADDRESS,
+              approvedAddress: Web3Config.ROUTER.ADDRESS,
               tokenAddress: tokenFrom?.address,
               approveSum: +inputValue,
             }),
@@ -181,7 +188,7 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
           promises.push(
             metamaskService.checkTokenAllowance({
               contractName: 'ERC20',
-              approvedAddress: config.ROUTER.ADDRESS,
+              approvedAddress: Web3Config.ROUTER.ADDRESS,
               tokenAddress: tokenTo?.address,
               approveSum: +inputValue,
             }),
@@ -297,10 +304,44 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
       }
     };
 
+    const handleGetBalance = React.useCallback(
+      async (type: 'from' | 'to') => {
+        try {
+          if (initialTokenData[type] && initialTokenData[type].token && user.address) {
+            let balance = await metamaskService.callContractMethodFromNewContract(
+              initialTokenData[type].token?.address || '',
+              Web3Config.ERC20.ABI,
+              'balanceOf',
+              [user.address],
+            );
+
+            balance = MetamaskService.amountFromGwei(
+              balance,
+              +(initialTokenData[type].token?.decimals || 8),
+            );
+
+            if (type === 'from') {
+              setBalanceFrom(balance);
+            } else {
+              setBalanceTo(balance);
+            }
+          }
+        } catch (err) {
+          console.log(`get balance ${type}`, err);
+        }
+      },
+      [initialTokenData, metamaskService, user.address],
+    );
+
     React.useEffect(() => {
       setTokenFromQuantity(initialTokenData?.from.amount || NaN);
       setTokenToQuantity(initialTokenData?.to.amount || NaN);
     }, [initialTokenData?.from.amount, initialTokenData?.to.amount]);
+
+    React.useEffect(() => {
+      handleGetBalance('from');
+      handleGetBalance('to');
+    }, [handleGetBalance, initialTokenData.from.token, initialTokenData.to.token]);
 
     return (
       <>
@@ -331,6 +372,13 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                       handleChangeTokensQuantity('from', +value)
                     }
                   />
+                  {balanceFrom ? (
+                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${
+                      balanceFrom > 100000 ? (+balanceFrom).toFixed() : +(+balanceFrom).toFixed(8)
+                    }`}</div>
+                  ) : (
+                    ''
+                  )}
                   {maxFrom && tokenFromQuantity > maxFrom ? (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxFrom}`}</div>
                   ) : (
@@ -384,6 +432,13 @@ const ChooseTokens: React.FC<IChooseTokens> = React.memo(
                     onChange={(value: number | string) => handleChangeTokensQuantity('to', +value)}
                     max={maxTo}
                   />
+                  {balanceTo ? (
+                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${
+                      balanceTo > 100000 ? (+balanceTo).toFixed() : +(+balanceTo).toFixed(8)
+                    }`}</div>
+                  ) : (
+                    ''
+                  )}
                   {maxTo && tokenToQuantity > maxTo ? (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxTo}`}</div>
                   ) : (
