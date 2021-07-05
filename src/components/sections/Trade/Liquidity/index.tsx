@@ -2,7 +2,14 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import moment from 'moment';
 
-import { YourLiquidity, ExchangeSettings, RecentTxs, ImportPool, AddLiquidity } from '..';
+import {
+  YourLiquidity,
+  ExchangeSettings,
+  RecentTxs,
+  ImportPool,
+  AddLiquidity,
+  RemoveLiquidity,
+} from '..';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
 import { ISettings } from '../../../../types';
 
@@ -23,9 +30,10 @@ const Liquidity: React.FC = () => {
 
   return (
     <Switch>
-      <Route exact path="/trade/liquidity" render={() => <YourLiquidity />} />
-      <Route exact path="/trade/liquidity/find" render={() => <ImportPool />} />
-      <Route exact path="/trade/liquidity/add" render={() => <AddLiquidityComp />} />
+      <Route exact path="/trade/liquidity" component={YourLiquidity} />
+      <Route exact path="/trade/liquidity/find" component={ImportPool} />
+      <Route exact path="/trade/liquidity/add" component={AddLiquidityComp} />
+      <Route exact path="/trade/liquidity/remove" component={RemoveLiquidity} />
       <Route
         exact
         path="/trade/liquidity/settings"

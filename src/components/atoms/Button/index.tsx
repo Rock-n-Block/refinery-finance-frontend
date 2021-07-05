@@ -9,7 +9,7 @@ import './Button.scss';
 import { ReactComponent as ArrowImg } from '../../../assets/img/icons/arrow-btn.svg';
 
 export interface IColorScheme {
-  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple' | 'gray';
+  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple' | 'gray' | 'purple-l';
 }
 
 export interface ISize {

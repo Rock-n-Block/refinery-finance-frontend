@@ -33,6 +33,7 @@ const Menu: React.FC = React.memo(() => {
         '/trade/liquidity/history',
         '/trade/liquidity/find',
         '/trade/liquidity/add',
+        '/trade/liquidity/remove',
         '/trade/bridge',
         '/trade/swap/settings',
         '/trade/swap/history',

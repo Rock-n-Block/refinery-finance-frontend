@@ -113,6 +113,17 @@
       border: 1px solid $purple;
     }
   }
+  &-purple-l {
+    background: $purple-l;
+    color: $purple;
+    &:hover,
+    &:focus {
+      background: $purple-l;
+    }
+    span {
+      color: $purple;
+    }
+  }
   &[disabled] {
     color: rgba(0, 0, 0, 0.1) !important;
     background: rgba(197, 196, 195, 0.5);

@@ -12,3 +12,4 @@ export { default as ChooseTokens } from './ChooseTokens';
 export { default as ManageTokensModal } from './ManageTokensModal';
 export { default as ImportTokensModal } from './ImportTokensModal';
 export { default as AddLiquidity } from './AddLiquidity';
+export { default as RemoveLiquidity } from './RemoveLiquidity';

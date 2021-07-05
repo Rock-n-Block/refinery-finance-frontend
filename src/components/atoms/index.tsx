@@ -8,3 +8,4 @@ export { default as WinNumber } from './WinNumber';
 export { default as RadioGroup } from './RadioGroup';
 export { default as SortSelect } from './SortSelect';
 export { default as Popover } from './Popover';
+export { default as Slider } from './Slider';

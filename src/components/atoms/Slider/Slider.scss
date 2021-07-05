@@ -1,0 +1,22 @@
+@import 'src/styles/vars';
+.slider {
+  height: fit-content;
+  &:hover {
+    .ant-slider-rail,
+    .ant-slider-track {
+      background: $purple;
+    }
+  }
+  .ant-slider-rail,
+  .ant-slider-track {
+    background: $purple;
+    height: 1px;
+  }
+  .ant-slider-handle {
+    width: 32px;
+    height: 31px;
+    background: $orange;
+    margin-top: -16px;
+    border: none;
+  }
+}

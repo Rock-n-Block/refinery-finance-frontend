@@ -13,9 +13,9 @@ import InfoImg from '@/assets/img/icons/info.svg';
 
 interface ITradeBox {
   title: string;
-  subtitle: string;
-  settingsLink: string;
-  recentTxLink: string;
+  subtitle?: string;
+  settingsLink?: string;
+  recentTxLink?: string;
   className?: string;
   titleBackLink?: boolean;
   info?: string;
@@ -55,26 +55,42 @@ const TradeBox: React.FC<ITradeBox> = ({
             {titleBackLink ? <img src={ArrowImg} alt="" className="trade-box__back" /> : ''}
             <span>{title}</span>
           </div>
-          <div className="trade-box__subtitle text-gray box-f-ai-c">
-            <span>{subtitle}</span>
+          {subtitle ? (
+            <div className="trade-box__subtitle text-gray box-f-ai-c">
+              <span>{subtitle}</span>
 
-            {info ? (
-              <Popover content={<span className="text-med text text-purple">{info}</span>}>
-                <img src={InfoImg} alt="" />
-              </Popover>
+              {info ? (
+                <Popover content={<span className="text-med text text-purple">{info}</span>}>
+                  <img src={InfoImg} alt="" />
+                </Popover>
+              ) : (
+                ''
+              )}
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+        {recentTxLink && settingsLink ? (
+          <div className="box-f-ai-c">
+            {settingsLink ? (
+              <Link to={settingsLink} className="trade-box__icon">
+                <img src={SettingsImg} alt="advanced settings" />
+              </Link>
+            ) : (
+              ''
+            )}
+            {recentTxLink ? (
+              <Link to={recentTxLink} className="trade-box__icon">
+                <img src={RecentTxImg} alt="advanced settings" />
+              </Link>
             ) : (
               ''
             )}
           </div>
-        </div>
-        <div className="box-f-ai-c">
-          <Link to={settingsLink} className="trade-box__icon">
-            <img src={SettingsImg} alt="advanced settings" />
-          </Link>
-          <Link to={recentTxLink} className="trade-box__icon">
-            <img src={RecentTxImg} alt="advanced settings" />
-          </Link>
-        </div>
+        ) : (
+          ''
+        )}
       </div>
       {children}
     </div>

@@ -109,9 +109,7 @@ const Exchange: React.FC<IExchange> = observer(
           ) : (
             ''
           )}
-          {isAllowanceFrom &&
-          isAllowanceTo &&
-          tokensData.from.token &&
+          {tokensData.from.token &&
           tokensData.to.token &&
           tokensData.to.amount &&
           tokensData.from.amount &&
@@ -126,7 +124,8 @@ const Exchange: React.FC<IExchange> = observer(
           {tokensData.from.token &&
           tokensData.to.token &&
           (!tokensData.to.amount || !tokensData.from.amount) &&
-          tokensResurves !== null ? (
+          tokensResurves !== null &&
+          user.address ? (
             <Button
               className="exchange__btn"
               disabled={!tokensData.from.amount || !tokensData.to.amount}
@@ -141,21 +140,27 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.to.token &&
           tokensData.to.amount &&
           tokensData.from.amount &&
-          tokensResurves !== null ? (
+          tokensResurves !== null &&
+          user.address ? (
             <Button className="exchange__btn" onClick={handleApproveTokens}>
               <span className="text-white text-bold text-smd">Approve tokens</span>
             </Button>
           ) : (
             ''
           )}
-          {(!tokensData.from.token || !tokensData.to.token) && tokensResurves !== null ? (
+          {(!tokensData.from.token || !tokensData.to.token) &&
+          tokensResurves !== null &&
+          user.address ? (
             <Button disabled className="exchange__btn">
               <span className="text-white text-bold text-smd">Select a Tokens</span>
             </Button>
           ) : (
             ''
           )}
-          {tokensData.from.token && tokensData.to.token && tokensResurves === null ? (
+          {tokensData.from.token &&
+          tokensData.to.token &&
+          tokensResurves === null &&
+          user.address ? (
             <Button disabled className="exchange__btn">
               <span className="text-white text-bold text-smd">
                 This pair haven&lsquo;t been created

@@ -43,11 +43,15 @@ const YourLiquidity: React.FC = observer(() => {
   return (
     <TradeBox
       className="y-liquidity"
-      title="Your Liquidity"
-      subtitle="Remove liquidity to receive tokens back"
+      title="Liquidity"
+      subtitle="Add liquidity to receive LP tokens"
       settingsLink="/trade/liquidity/settings"
       recentTxLink="/trade/liquidity/history"
     >
+      <Button className="y-liquidity__btn" link="/trade/liquidity/add">
+        <span className="text-md text-white text-bold">Add liquidity</span>
+      </Button>
+      <div className="y-liquidity__title text-purple text-med text-md">Your Liquidity</div>
       <div className="y-liquidity__box">
         {user.address && loading ? 'Loading' : ''}
 
@@ -77,9 +81,6 @@ const YourLiquidity: React.FC = observer(() => {
           ''
         )}
       </div>
-      <Button className="y-liquidity__btn" link="/trade/liquidity/add">
-        <span className="text-md text-white text-bold">Add liquidity</span>
-      </Button>
     </TradeBox>
   );
 });

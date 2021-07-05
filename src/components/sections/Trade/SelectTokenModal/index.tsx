@@ -87,7 +87,12 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
     React.useEffect(() => {
       setInitTokens([...storeTokens.imported, ...storeTokens.default]);
       setTokens([...storeTokens.imported, ...storeTokens.default]);
-    }, [storeTokens.default, storeTokens.imported]);
+    }, [
+      storeTokens.default,
+      storeTokens.default.length,
+      storeTokens.imported,
+      storeTokens.imported.length,
+    ]);
 
     return (
       <>
