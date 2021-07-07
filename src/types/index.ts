@@ -53,3 +53,25 @@ export interface IRecentTx {
     img?: string;
   };
 }
+
+export interface ILiquidityInfo {
+  address: string;
+  token0: {
+    address: string;
+    symbol: string;
+    balance: number | string;
+    rate: number | string;
+    decimals: number | string;
+    deposited?: number | string;
+    receive?: number | string;
+  };
+  token1: {
+    address: string;
+    symbol: string;
+    balance: number | string;
+    rate: number | string;
+    decimals: number | string;
+    deposited?: number | string;
+    receive?: number | string;
+  };
+}

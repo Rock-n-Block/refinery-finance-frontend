@@ -185,7 +185,7 @@ export default class MetamaskService {
     tokenAddress,
     approveSum,
   }: {
-    contractName: 'ROUTER' | 'ERC20';
+    contractName: 'ROUTER' | 'ERC20' | 'PAIR';
     tokenDecimals?: number;
     approvedAddress?: string;
     walletAddress?: string;
@@ -227,7 +227,7 @@ export default class MetamaskService {
     walletAddress,
     tokenAddress,
   }: {
-    contractName: 'ROUTER' | 'ERC20';
+    contractName: 'ROUTER' | 'ERC20' | 'PAIR';
     tokenDecimals?: number;
     approvedAddress?: string;
     walletAddress?: string;

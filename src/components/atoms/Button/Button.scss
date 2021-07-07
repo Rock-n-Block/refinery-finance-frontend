@@ -107,10 +107,14 @@
   &-purple {
     background: $purple;
     border: 1px solid $purple;
+    color: white !important;
     &:hover,
     &:focus {
       background: $purple;
       border: 1px solid $purple;
+    }
+    span {
+      color: white !important;
     }
   }
   &-purple-l {

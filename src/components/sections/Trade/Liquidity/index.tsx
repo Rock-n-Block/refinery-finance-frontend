@@ -73,6 +73,7 @@ const Liquidity: React.FC = observer(() => {
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
+
   const AddLiquidityComp = TradeWrapper(AddLiquidity, 'quote', settings);
 
   React.useEffect(() => {
