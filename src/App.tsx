@@ -55,6 +55,7 @@ const App: React.FC = observer(() => {
             '/trade/liquidity/find',
             '/trade/liquidity/add',
             '/trade/liquidity/remove',
+            '/trade/liquidity/receive',
           ]}
           component={TradePage}
         />

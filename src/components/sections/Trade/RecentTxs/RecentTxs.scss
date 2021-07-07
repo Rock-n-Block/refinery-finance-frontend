@@ -23,6 +23,9 @@
     background: $gray-l;
     border: 1px solid rgba(0, 0, 0, 0.1);
     padding: 20px 20px 17px;
+    & + & {
+      margin-top: 10px;
+    }
     &-box {
       margin-top: 16px;
       & + & {

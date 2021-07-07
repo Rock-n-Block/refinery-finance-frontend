@@ -1,6 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import moment from 'moment';
+import { useLazyQuery, gql } from '@apollo/client';
+import { observer } from 'mobx-react-lite';
 
 import {
   YourLiquidity,
@@ -9,11 +11,56 @@ import {
   ImportPool,
   AddLiquidity,
   RemoveLiquidity,
+  Receive,
 } from '..';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
-import { ISettings } from '../../../../types';
+import { ISettings, IRecentTx } from '../../../../types';
+import { useMst } from '../../../../store';
 
-const Liquidity: React.FC = () => {
+const GET_USER_TRX = gql`
+  query User($address: String!) {
+    liquidityPositionSnapshots(
+      where: { user: $address, mintOrBurn: true }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      pair {
+        token0 {
+          symbol
+        }
+        token1 {
+          symbol
+        }
+      }
+      transaction {
+        mints {
+          amount0
+          amount1
+          transaction {
+            id
+          }
+        }
+        burns {
+          amount0
+          amount1
+          transaction {
+            id
+          }
+        }
+      }
+    }
+  }
+`;
+
+const Liquidity: React.FC = observer(() => {
+  const { user } = useMst();
+
+  const [getUserTrx, { error, data: userTrx }] = useLazyQuery(GET_USER_TRX, {
+    pollInterval: 60000,
+  });
+
+  const [trx, setTrx] = React.useState<IRecentTx[] | undefined>(undefined);
+
   const [settings, setSettings] = React.useState<ISettings>({
     slippage: {
       type: 'btn',
@@ -28,12 +75,71 @@ const Liquidity: React.FC = () => {
   };
   const AddLiquidityComp = TradeWrapper(AddLiquidity, 'quote', settings);
 
+  React.useEffect(() => {
+    if (user.address) {
+      getUserTrx({
+        variables: {
+          address: user.address,
+        },
+      });
+    }
+  }, [user.address, getUserTrx]);
+
+  React.useEffect(() => {
+    if (!error && userTrx && userTrx.liquidityPositionSnapshots) {
+      const trxData: any = [];
+
+      userTrx.liquidityPositionSnapshots.forEach((pairObj: any) => {
+        const dataItem: IRecentTx = {
+          type: '',
+          address: '',
+          from: {
+            symbol: '',
+            value: 0,
+          },
+          to: {
+            symbol: '',
+            value: 0,
+          },
+        };
+
+        dataItem.from.symbol = pairObj.pair.token0.symbol;
+        dataItem.to.symbol = pairObj.pair.token1.symbol;
+
+        if (pairObj.transaction.burns.length) {
+          pairObj.transaction.burns.forEach((burnTrx: any) => {
+            dataItem.type = 'Burn';
+            dataItem.from.value = burnTrx.amount0;
+            dataItem.to.value = burnTrx.amount1;
+            dataItem.address = burnTrx.transaction.id;
+
+            trxData.push(dataItem);
+          });
+        }
+
+        if (pairObj.transaction.mints.length) {
+          pairObj.transaction.mints.forEach((mintTx: any) => {
+            dataItem.type = 'Mint';
+            dataItem.from.value = mintTx.amount0;
+            dataItem.to.value = mintTx.amount1;
+            dataItem.address = mintTx.transaction.id;
+
+            trxData.push(dataItem);
+          });
+        }
+      });
+
+      setTrx(trxData);
+    }
+  }, [userTrx, error]);
+
   return (
     <Switch>
       <Route exact path="/trade/liquidity" component={YourLiquidity} />
       <Route exact path="/trade/liquidity/find" component={ImportPool} />
       <Route exact path="/trade/liquidity/add" component={AddLiquidityComp} />
       <Route exact path="/trade/liquidity/remove" component={RemoveLiquidity} />
+      <Route exact path="/trade/liquidity/receive" component={Receive} />
       <Route
         exact
         path="/trade/liquidity/settings"
@@ -45,9 +151,9 @@ const Liquidity: React.FC = () => {
           />
         )}
       />
-      <Route exact path="/trade/liquidity/history" component={RecentTxs} />
+      <Route exact path="/trade/liquidity/history" render={() => <RecentTxs items={trx} />} />
     </Switch>
   );
-};
+});
 
 export default Liquidity;

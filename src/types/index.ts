@@ -38,3 +38,18 @@ export interface ITeamCard {
   img: string;
   id: number | string;
 }
+
+export interface IRecentTx {
+  type: string;
+  address: string;
+  from: {
+    symbol: string;
+    value: number | string;
+    img?: string;
+  };
+  to: {
+    symbol: string;
+    value: number | string;
+    img?: string;
+  };
+}

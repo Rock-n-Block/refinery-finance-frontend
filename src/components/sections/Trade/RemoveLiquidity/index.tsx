@@ -5,7 +5,7 @@ import { Slider, Button } from '../../../atoms';
 
 import './RemoveLiquidity.scss';
 
-import BnbImg from '../../../../assets/img/currency/bnb.svg';
+import BnbImg from '@/assets/img/currency/bnb.svg';
 
 const RemoveLiquidity: React.FC = () => {
   const [percent, setPercent] = React.useState<number>(25);

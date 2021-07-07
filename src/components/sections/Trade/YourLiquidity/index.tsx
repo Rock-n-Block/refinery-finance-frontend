@@ -25,10 +25,9 @@ const USER_PAIRS = gql`
 const YourLiquidity: React.FC = observer(() => {
   const { user } = useMst();
 
-  const [getUserLiquidities, { loading, error, data: userLiquidities }] = useLazyQuery(USER_PAIRS, {
+  const [getUserLiquidities, { loading, data: userLiquidities }] = useLazyQuery(USER_PAIRS, {
     pollInterval: 60000,
   });
-  console.log(loading, error, userLiquidities);
 
   React.useEffect(() => {
     if (user.address) {

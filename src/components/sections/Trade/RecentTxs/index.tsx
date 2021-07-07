@@ -5,34 +5,26 @@ import { Scrollbar } from 'react-scrollbars-custom';
 
 import { useMst } from '../../../../store';
 import { Button } from '../../../atoms';
+import { IRecentTx } from '../../../../types';
 
 import './RecentTxs.scss';
 
 import CrossImg from '../../../../assets/img/icons/cross.svg';
-import BnbImg from '@/assets/img/currency/bnb.svg';
+import UnknownImg from '@/assets/img/currency/unknown.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 
-const RecentTxs: React.FC = observer(() => {
+interface IRecentTxs {
+  items?: IRecentTx[];
+}
+
+const RecentTxs: React.FC<IRecentTxs> = observer(({ items }) => {
   const history = useHistory();
   const { user } = useMst();
-  const txs = [
-    {
-      type: 'Swap',
-      from: {
-        value: 100,
-        symbol: 'BNB',
-        img: BnbImg,
-      },
-      to: {
-        value: 200,
-        symbol: 'BNB',
-        img: BnbImg,
-      },
-    },
-  ];
+
   const handleClose = (): void => {
     history.goBack();
   };
+
   return (
     <div className="exchange recent-txs box-shadow box-white">
       <div className="box-f-jc-sb box-f-ai-c">
@@ -52,26 +44,30 @@ const RecentTxs: React.FC = observer(() => {
           <div className="recent-txs__err-text text-purple text-med">
             Please connect your wallet to view your recent transactions
           </div>
-          <Button link="/trade/swap" className="recent-txs__err-btn">
+          <Button onClick={handleClose} className="recent-txs__err-btn">
             <span className="text-white text-smd">Close</span>
           </Button>
         </div>
       ) : (
         ''
       )}
-      {user.address ? (
+      {user.address && items?.length ? (
         <Scrollbar
           className="recent-txs__scroll"
           style={{
             width: '100%',
-            height: txs.length > 3 ? '50vh' : `${txs.length * 175}px`,
+            height: items.length > 3 ? '50vh' : `${items.length * 185}px`,
           }}
         >
-          {txs.map((tx) => (
-            <div className="recent-txs__item">
+          {items.map((tx) => (
+            <div className="recent-txs__item" key={tx.address}>
               <div className="box-f-ai-c box-f-jc-sb">
                 <span className="text-smd text-purple text-med">{tx.type}</span>
-                <a href="/" target="_blank">
+                <a
+                  href={`https://kovan.etherscan.io/tx/${tx.address}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <img src={OpenLinkImg} alt="" />
                 </a>
               </div>
@@ -80,7 +76,7 @@ const RecentTxs: React.FC = observer(() => {
                 <div className="box-f-ai-c recent-txs__item-currency">
                   <div className="recent-txs__item-currency-name text-gray">{tx.from.symbol}</div>
                   <img
-                    src={tx.from.img}
+                    src={tx.from.img || UnknownImg}
                     alt={tx.from.symbol}
                     className="recent-txs__item-currency-img"
                   />
@@ -91,7 +87,7 @@ const RecentTxs: React.FC = observer(() => {
                 <div className="box-f-ai-c recent-txs__item-currency">
                   <div className="recent-txs__item-currency-name text-gray">{tx.to.symbol}</div>
                   <img
-                    src={tx.to.img}
+                    src={tx.to.img || UnknownImg}
                     alt={tx.to.symbol}
                     className="recent-txs__item-currency-img"
                   />
@@ -100,6 +96,13 @@ const RecentTxs: React.FC = observer(() => {
             </div>
           ))}
         </Scrollbar>
+      ) : (
+        ''
+      )}
+      {!items || !items?.length ? (
+        <div className="recent-txs__err">
+          <div className="recent-txs__err-text text-purple text-med">Transactions not found</div>
+        </div>
       ) : (
         ''
       )}
