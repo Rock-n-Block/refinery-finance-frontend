@@ -24,6 +24,7 @@ interface ITradeWrapper {
   pairAddress: string;
   maxFrom: number | string;
   maxTo: number | string;
+  isLoadingExchange: boolean;
 }
 
 const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compProps?: any) => {
@@ -52,6 +53,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
         pairAddress: '',
         maxFrom: '',
         maxTo: '',
+        isLoadingExchange: false,
       };
 
       this.handleChangeTokensData = this.handleChangeTokensData.bind(this);
@@ -116,6 +118,9 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
 
     async handleGetExchange(tokens: ITokens, type?: 'from' | 'to') {
       try {
+        this.setState({
+          isLoadingExchange: true,
+        });
         const pairAddr = await metamaskService.callContractMethod('FACTORY', 'getPair', [
           tokens.from.token?.address,
           tokens.to.token?.address,
@@ -125,6 +130,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
             tokensResurves: null,
             pairAddress: '',
             tokensData: tokens,
+            isLoadingExchange: false,
           });
           return;
         }
@@ -248,7 +254,13 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
             tokensData: tokens,
           });
         }
+        this.setState({
+          isLoadingExchange: false,
+        });
       } catch (err) {
+        this.setState({
+          isLoadingExchange: false,
+        });
         console.log('get pair', err);
       }
     }
@@ -303,6 +315,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
           tokensResurves={this.state.tokensResurves}
           maxFrom={this.state.maxFrom}
           maxTo={this.state.maxTo}
+          isLoadingExchange={this.state.isLoadingExchange}
         />
       );
     }

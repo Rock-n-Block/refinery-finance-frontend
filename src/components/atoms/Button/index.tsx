@@ -21,6 +21,7 @@ export interface ButtonProps extends IColorScheme, ISize {
   className?: string;
   disabled?: boolean;
   loading?: boolean;
+  loadingText?: string;
   link?: any;
   linkClassName?: string;
   shadow?: boolean;
@@ -49,6 +50,7 @@ const Button: React.FC<ButtonProps> = React.memo(
     isActive = null,
     onToggle,
     noclick,
+    loadingText,
   }) => {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (!link) e.stopPropagation();
@@ -82,7 +84,7 @@ const Button: React.FC<ButtonProps> = React.memo(
           },
         )}
       >
-        {loading ? 'In progress...' : BtnContent}
+        {loading ? `${loadingText || 'In progress...'}` : BtnContent}
       </BtnAntd>
     );
     if (link) {

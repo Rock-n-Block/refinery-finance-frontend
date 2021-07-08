@@ -119,9 +119,12 @@ const RemoveLiquidity: React.FC = observer(() => {
           <div className="r-liquidity__currency box-f-ai-c box-f-jc-sb">
             <div className="r-liquidity__currency-sum text-lmd">
               {
-                +new BigNumber(liquidityInfo.token0.deposited)
-                  .multipliedBy(percent / 100)
-                  .toFixed(8)
+                +new BigNumber(
+                  MetamaskService.amountFromGwei(
+                    liquidityInfo.token0.deposited,
+                    +liquidityInfo.token0.decimals,
+                  ),
+                ).multipliedBy(percent / 100)
               }
             </div>
             <div className="box-f-ai-c r-liquidity__currency-item">
@@ -132,7 +135,12 @@ const RemoveLiquidity: React.FC = observer(() => {
           <div className="r-liquidity__currency box-f-ai-c box-f-jc-sb">
             <div className="r-liquidity__currency-sum text-lmd">
               {
-                +new BigNumber(liquidityInfo.token1.deposited)
+                +new BigNumber(
+                  MetamaskService.amountFromGwei(
+                    liquidityInfo.token1.deposited,
+                    +liquidityInfo.token1.decimals,
+                  ),
+                )
                   .multipliedBy(percent / 100)
                   .toFixed(8)
               }
@@ -178,18 +186,20 @@ const RemoveLiquidity: React.FC = observer(() => {
               pathname: '/trade/liquidity/receive',
               state: {
                 address: liquidityInfo?.address,
-                lpTokens: +new BigNumber(lpBalance).multipliedBy(percent / 100),
+                lpTokens: +new BigNumber(lpBalance)
+                  .multipliedBy(new BigNumber(percent).dividedBy(100))
+                  .toString(10),
                 token0: {
                   ...liquidityInfo?.token0,
                   receive: new BigNumber(liquidityInfo.token0.deposited)
-                    .multipliedBy(percent / 100)
-                    .toFixed(+liquidityInfo.token0.decimals),
+                    .multipliedBy(new BigNumber(percent).dividedBy(100))
+                    .toString(10),
                 },
                 token1: {
                   ...liquidityInfo?.token1,
                   receive: +new BigNumber(liquidityInfo.token1.deposited)
-                    .multipliedBy(percent / 100)
-                    .toFixed(+liquidityInfo.token1.decimals),
+                    .multipliedBy(new BigNumber(percent).dividedBy(100))
+                    .toString(10),
                 },
               },
             }}

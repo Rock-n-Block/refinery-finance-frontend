@@ -14,6 +14,7 @@ import './AddLiquidity.scss';
 interface IAddLiquidity {
   tokensData: ITokens;
   setTokensData: (value: ITokens) => void;
+  isLoadingExchange: boolean;
   setAllowanceFrom: (value: boolean) => void;
   setAllowanceTo: (value: boolean) => void;
   isAllowanceFrom: boolean;
@@ -40,15 +41,18 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     isAllowanceTo,
     txDeadlineUtc,
     tokensResurves,
+    isLoadingExchange,
   }) => {
     const { metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
 
     const [exchange, setExchange] = React.useState<IPrices | undefined | null>(undefined);
+    const [isLoading, setLoading] = React.useState<boolean>(false);
 
     const handleCreatePair = async () => {
       try {
         if (tokensData.from.token && tokensData.to.token) {
+          setLoading(true);
           await metamaskService.createTransaction({
             contractName: 'ROUTER',
             method: 'addLiquidity',
@@ -75,8 +79,10 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
               txDeadlineUtc,
             ],
           });
+          setLoading(false);
         }
       } catch (err) {
+        setLoading(false);
         console.log(err);
       }
     };
@@ -235,6 +241,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             className="add-liquidity__btn"
             disabled={!tokensData.from.amount || !tokensData.to.amount}
             onClick={handleCreatePair}
+            loading={isLoading || isLoadingExchange}
+            loadingText={isLoadingExchange ? 'Geting exchange' : ''}
           >
             <span className="text-white text-bold text-smd">Add</span>
           </Button>
@@ -247,6 +255,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
           <Button
             className="add-liquidity__btn"
             disabled={!tokensData.from.amount || !tokensData.to.amount}
+            loading={isLoadingExchange}
+            loadingText="Geting exchange"
           >
             <span className="text-white text-bold text-smd">Enter an amount</span>
           </Button>

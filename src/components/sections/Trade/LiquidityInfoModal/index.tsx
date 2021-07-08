@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import BigNumber from 'bignumber.js/bignumber';
 
 import { Modal } from '../../../molecules';
 import { Button } from '../../../atoms';
@@ -7,6 +8,7 @@ import { ILiquidityInfo } from '../../../../types';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
 import Web3Config from '../../../../services/web3/config';
+import MetamaskService from '../../../../services/web3';
 
 import './LiquidityInfoModal.scss';
 
@@ -27,12 +29,14 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
   const getDeposites = React.useCallback(async () => {
     try {
       if (info?.address && user.address) {
-        const lpBalance = await metamaskService.callContractMethodFromNewContract(
+        let lpBalance = await metamaskService.callContractMethodFromNewContract(
           info?.address,
           Web3Config.PAIR.ABI,
           'balanceOf',
           [user.address],
         );
+
+        lpBalance = +lpBalance + 1000;
 
         const supply = await metamaskService.callContractMethodFromNewContract(
           info?.address,
@@ -40,20 +44,34 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
           'totalSupply',
         );
 
-        if (+lpBalance === +supply) {
-          setDeposit0(info.token0.balance);
-          setDeposit1(info.token1.balance);
-        } else {
-          const percent = lpBalance / supply;
+        const percent = new BigNumber(lpBalance).dividedBy(new BigNumber(supply));
 
-          setDeposit0(+info.token0.balance * percent);
-          setDeposit1(+info.token1.balance * percent);
-        }
+        const depos0 = new BigNumber(
+          MetamaskService.calcTransactionAmount(+info.token0.balance, +info?.token0.decimals),
+        )
+          .multipliedBy(percent)
+          .toString(10);
+        const depos1 = new BigNumber(
+          MetamaskService.calcTransactionAmount(+info.token1.balance, +info?.token1.decimals),
+        )
+          .multipliedBy(percent)
+          .toString(10);
+
+        setDeposit0(depos0);
+        setDeposit1(depos1);
       }
     } catch (err) {
       console.log('get deposites', err);
     }
-  }, [info?.address, metamaskService, user.address, info?.token0.balance, info?.token1.balance]);
+  }, [
+    info?.address,
+    metamaskService,
+    user.address,
+    info?.token0.balance,
+    info?.token1.balance,
+    info?.token0.decimals,
+    info?.token1.decimals,
+  ]);
 
   React.useEffect(() => {
     getDeposites();
@@ -79,14 +97,18 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
             <span>{`${info.token0.symbol} Deposited`}</span>
             <div className="box-f-ai-c">
               <img src={UnknownImg} alt={info.token0.symbol} />
-              <span>{deposit0}</span>
+              <span>
+                {(+MetamaskService.amountFromGwei(deposit0, +info.token0.decimals)).toFixed()}
+              </span>
             </div>
           </div>
           <div className="liquidity-info__row box-f-ai-c box-f-jc-sb text-purple text-smd">
             <span>{`${info.token1.symbol} Deposited`}</span>
             <div className="box-f-ai-c">
               <img src={UnknownImg} alt={info.token1.symbol} />
-              <span>{deposit1}</span>
+              <span>
+                {(+MetamaskService.amountFromGwei(deposit1, +info.token1.decimals)).toFixed()}
+              </span>
             </div>
           </div>
           <div className="liquidity-info__row box-f box-f-jc-sb text-purple text-smd">

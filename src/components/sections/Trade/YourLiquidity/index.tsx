@@ -7,6 +7,8 @@ import { TradeBox, LiquidityInfoModal } from '..';
 import { Button } from '../../../atoms';
 import { useMst } from '../../../../store';
 import { ILiquidityInfo } from '../../../../types';
+import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
+import Web3Config from '../../../../services/web3/config';
 
 import './YourLiquidity.scss';
 
@@ -40,12 +42,14 @@ const USER_PAIRS = gql`
 
 const YourLiquidity: React.FC = observer(() => {
   const { user } = useMst();
+  const { metamaskService } = useWalletConnectorContext();
 
   const [getUserLiquidities, { loading, data: userLiquidities }] = useLazyQuery(USER_PAIRS, {
     pollInterval: 60000,
   });
 
   const [liquidityInfo, setLiquidityInfo] = React.useState<ILiquidityInfo | undefined>(undefined);
+  const [liquidities, setLiquidities] = React.useState<any>([]);
 
   const handleCloseLiquidityInfoModal = (): void => {
     setLiquidityInfo(undefined);
@@ -54,6 +58,29 @@ const YourLiquidity: React.FC = observer(() => {
   const handleOpenLiquidityInfoModal = (info: ILiquidityInfo): void => {
     setLiquidityInfo(info);
   };
+
+  const handleCheckLiquidity = React.useCallback(
+    (data: any) => {
+      for (let i = 0; i < data.user.liquidityPositions.length; i += 1) {
+        metamaskService
+          .callContractMethodFromNewContract(
+            data.user.liquidityPositions[i].pair.id,
+            Web3Config.PAIR.ABI,
+            'balanceOf',
+            [user.address],
+          )
+          .then((res: any) => {
+            if (+res > 0) {
+              setLiquidities((arr: any) => [...arr, data.user.liquidityPositions[i]]);
+            }
+          })
+          .catch((err) => {
+            console.log('check lp balance', err);
+          });
+      }
+    },
+    [metamaskService, user.address],
+  );
 
   React.useEffect(() => {
     if (user.address) {
@@ -64,6 +91,12 @@ const YourLiquidity: React.FC = observer(() => {
       });
     }
   }, [user.address, getUserLiquidities]);
+
+  React.useEffect(() => {
+    if (userLiquidities && !loading) {
+      handleCheckLiquidity(userLiquidities);
+    }
+  }, [userLiquidities, loading, handleCheckLiquidity]);
 
   return (
     <>
@@ -81,18 +114,15 @@ const YourLiquidity: React.FC = observer(() => {
         <div className="y-liquidity__box">
           {user.address && loading ? 'Loading' : ''}
 
-          {user.address && userLiquidities && userLiquidities.user.liquidityPositions.length ? (
+          {user.address && liquidities && liquidities.length ? (
             <Scrollbar
               className="recent-txs__scroll"
               style={{
                 width: '100%',
-                height:
-                  userLiquidities.user.liquidityPositions.length > 3
-                    ? '50vh'
-                    : `${userLiquidities.user.liquidityPositions.length * 75}px`,
+                height: liquidities.length > 3 ? '50vh' : `${liquidities.length * 75}px`,
               }}
             >
-              {userLiquidities.user.liquidityPositions.map((liquidity: any) => (
+              {liquidities.map((liquidity: any) => (
                 <div
                   key={liquidity.pair.id}
                   className="y-liquidity__item box-f-ai-c box-pointer"

@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
+import BigNumber from 'bignumber.js/bignumber';
 
 import { TradeBox } from '..';
 import { Button } from '../../../atoms';
@@ -36,14 +37,8 @@ const Receive: React.FC = observer(() => {
             liquidityInfo?.token0.address,
             liquidityInfo?.token1.address,
             liquidityInfo.lpTokens,
-            MetamaskService.calcTransactionAmount(
-              liquidityInfo?.token0.receive,
-              +liquidityInfo?.token0.decimals,
-            ),
-            MetamaskService.calcTransactionAmount(
-              liquidityInfo?.token1.receive,
-              +liquidityInfo?.token1.decimals,
-            ),
+            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(0.99).toFixed(0),
+            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(0.99).toFixed(0),
             user.address,
             moment.utc().add(20, 'm').valueOf(),
           ],
@@ -64,23 +59,37 @@ const Receive: React.FC = observer(() => {
 
   return (
     <TradeBox className="receive" title="You will receive" titleBackLink>
-      <div className="receive__box">
-        <div className="receive__item box-f-ai-c box-f-jc-sb">
-          <div className="text-lmd">{liquidityInfo?.token0.receive}</div>
-          <div className="receive__item-currency box-f-ai-c">
-            <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
-            <img src={BnbImg} alt="" />
+      {liquidityInfo && liquidityInfo.token0.receive && liquidityInfo.token1.receive ? (
+        <div className="receive__box">
+          <div className="receive__item box-f-ai-c box-f-jc-sb">
+            <div className="text-lmd">
+              {MetamaskService.amountFromGwei(
+                liquidityInfo.token0.receive,
+                +liquidityInfo.token0.decimals,
+              )}
+            </div>
+            <div className="receive__item-currency box-f-ai-c">
+              <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
+              <img src={BnbImg} alt="" />
+            </div>
+          </div>
+          <div className="text-purple text-lmd text-med receive__plus">+</div>
+          <div className="receive__item box-f-ai-c box-f-jc-sb">
+            <div className="text-lmd">
+              {MetamaskService.amountFromGwei(
+                liquidityInfo.token1.receive,
+                +liquidityInfo.token1.decimals,
+              )}
+            </div>
+            <div className="receive__item-currency box-f-ai-c">
+              <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
+              <img src={BnbImg} alt="" />
+            </div>
           </div>
         </div>
-        <div className="text-purple text-lmd text-med receive__plus">+</div>
-        <div className="receive__item box-f-ai-c box-f-jc-sb">
-          <div className="text-lmd">{liquidityInfo?.token1.receive}</div>
-          <div className="receive__item-currency box-f-ai-c">
-            <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
-            <img src={BnbImg} alt="" />
-          </div>
-        </div>
-      </div>
+      ) : (
+        ''
+      )}
       <div className="text text-gray">
         Output is stimulated. If the price changes by more than 0.8% your transaction will revert.
       </div>
