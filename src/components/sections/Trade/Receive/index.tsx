@@ -93,14 +93,20 @@ const Receive: React.FC = observer(() => {
       <div className="text text-gray">
         Output is stimulated. If the price changes by more than 0.8% your transaction will revert.
       </div>
-      <div className="receive__burned box-f-ai-c box-f-jc-sb text-smd text-purple">
-        <span>LP CAKE/BNB Burned</span>
-        <div className="box-f-ai-c">
-          <img src={BnbImg} alt="" />
-          <img src={BnbImg} alt="" />
-          <span>0.343535</span>
+      {liquidityInfo?.lpTokens ? (
+        <div className="receive__burned text-smd text-purple">
+          <span>
+            LP {liquidityInfo?.token0.symbol}/{liquidityInfo?.token1.symbol} Burned
+          </span>
+          <div className="box-f-ai-c">
+            <img src={BnbImg} alt="" />
+            <img src={BnbImg} alt="" />
+            <span>{MetamaskService.amountFromGwei(liquidityInfo?.lpTokens, 18)}</span>
+          </div>
         </div>
-      </div>
+      ) : (
+        ''
+      )}
       {liquidityInfo?.token1.rate && liquidityInfo?.token0.rate ? (
         <div className="receive__price box-f box-f-jc-sb text-smd text-purple">
           <span>Price</span>

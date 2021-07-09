@@ -25,6 +25,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
 
   const [deposit0, setDeposit0] = React.useState<number | string>(0);
   const [deposit1, setDeposit1] = React.useState<number | string>(0);
+  const [share, setShare] = React.useState<number | string>(0);
 
   const getDeposites = React.useCallback(async () => {
     try {
@@ -73,9 +74,37 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
     info?.token1.decimals,
   ]);
 
+  const handleGetShareOfPool = React.useCallback(() => {
+    if (info && deposit0 && deposit1) {
+      const resurve0 = MetamaskService.calcTransactionAmount(
+        +info?.token0.balance,
+        +info?.token0.decimals,
+      );
+      const resurve1 = MetamaskService.calcTransactionAmount(
+        +info?.token1.balance,
+        +info?.token1.decimals,
+      );
+
+      const share1 = new BigNumber(deposit0)
+        .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit0))
+        .toString(10);
+      const share2 = new BigNumber(deposit1)
+        .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit1))
+        .toString(10);
+
+      const min = BigNumber.min(share1, share2).toString(10);
+
+      setShare(min);
+    }
+  }, [deposit0, deposit1, info]);
+
   React.useEffect(() => {
     getDeposites();
   }, [getDeposites]);
+
+  React.useEffect(() => {
+    handleGetShareOfPool();
+  }, [handleGetShareOfPool, deposit0, deposit1, info]);
 
   return (
     <Modal
@@ -125,7 +154,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
           </div>
           <div className="liquidity-info__row box-f-ai-c box-f-jc-sb text-purple text-smd">
             <span>Share of Pool</span>
-            <span>0.34353%</span>
+            <span>{(+share).toFixed(5)}%</span>
           </div>
           <Button
             colorScheme="purple"

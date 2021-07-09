@@ -22,6 +22,7 @@ interface IExchange {
   tokensResurves: any;
   maxFrom: '';
   maxTo: '';
+  isLoadingExchange: boolean;
 }
 
 const Exchange: React.FC<IExchange> = observer(
@@ -37,6 +38,7 @@ const Exchange: React.FC<IExchange> = observer(
     maxTo,
     txDeadlineUtc,
     tokensResurves,
+    isLoadingExchange,
   }) => {
     const { connect, metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
@@ -103,7 +105,12 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.from.amount &&
           user.address &&
           tokensResurves !== null ? (
-            <Button className="exchange__btn" onClick={handleSwap}>
+            <Button
+              className="exchange__btn"
+              onClick={handleSwap}
+              loading={isLoadingExchange}
+              loadingText={isLoadingExchange ? 'Geting exchange' : ''}
+            >
               <span className="text-white text-bold text-smd">Swap</span>
             </Button>
           ) : (
@@ -129,6 +136,7 @@ const Exchange: React.FC<IExchange> = observer(
             <Button
               className="exchange__btn"
               disabled={!tokensData.from.amount || !tokensData.to.amount}
+              loading={isLoadingExchange}
             >
               <span className="text-white text-bold text-smd">Enter an amount</span>
             </Button>

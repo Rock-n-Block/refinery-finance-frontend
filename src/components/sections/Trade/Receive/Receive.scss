@@ -23,6 +23,10 @@
       margin-top: -2px;
       margin-right: 3px;
     }
+    & > span {
+      margin-bottom: 10px;
+      display: block;
+    }
   }
   &__price {
     &__item {
