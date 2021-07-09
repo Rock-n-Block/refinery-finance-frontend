@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { PoolsPreview, PoolCard } from '../../components/sections/Pools';
-import { ItemsController } from '../../components/organisms';
+import { ItemsController, StakeUnstakeModal } from '../../components/organisms';
 import { IPoolCard } from '../../components/sections/Pools/PoolCard';
 
 import './Pools.scss';
@@ -73,21 +73,24 @@ const Pools: React.FC = () => {
     },
   ];
   return (
-    <main className="pools">
-      <div className="row">
-        <PoolsPreview />
-        <ItemsController />
-        <div className="pools__content box-f">
-          {pools.map((pool) => (
-            <PoolCard
-              {...pool}
-              key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
-              type={pool.type}
-            />
-          ))}
+    <>
+      <main className="pools">
+        <div className="row">
+          <PoolsPreview />
+          <ItemsController />
+          <div className="pools__content box-f">
+            {pools.map((pool) => (
+              <PoolCard
+                {...pool}
+                key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
+                type={pool.type}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <StakeUnstakeModal isVisible={false} handleClose={() => {}} />
+    </>
   );
 };
 

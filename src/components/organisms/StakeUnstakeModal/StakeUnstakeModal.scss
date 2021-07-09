@@ -1,0 +1,27 @@
+.stake-unstake-modal {
+  &__content {
+    padding: 20px;
+  }
+  &__title {
+    margin-bottom: 60px;
+  }
+  &__subtitle {
+    margin-bottom: 18px;
+  }
+  &__currency {
+    img {
+      margin-right: 5px;
+      margin-top: -2px;
+    }
+  }
+  &__balance {
+    margin: 10px 0 25px;
+  }
+  &__btns {
+    margin-top: 30px;
+  }
+  &__btn {
+    width: 100%;
+    margin-top: 30px;
+  }
+}

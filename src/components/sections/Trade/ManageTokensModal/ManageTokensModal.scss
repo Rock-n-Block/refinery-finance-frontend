@@ -5,12 +5,16 @@
   }
   &__title {
     width: fit-content;
+    margin-bottom: 20px;
     img {
       transform: rotate(90deg);
       width: 12px;
       margin-right: 12px;
       margin-top: -2px;
     }
+  }
+  &__info {
+    margin-top: 10px;
   }
   &__radio {
     width: 100%;

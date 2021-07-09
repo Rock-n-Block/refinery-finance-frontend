@@ -7,7 +7,7 @@ const TokenModel = types.model({
   address: types.string,
   chainId: types.optional(types.number, 56),
   decimals: types.union(types.number, types.string),
-  logoURI: types.string,
+  logoURI: types.optional(types.string, ''),
 });
 
 const TokensModel = types

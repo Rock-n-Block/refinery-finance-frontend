@@ -24,6 +24,10 @@
     width: 100%;
     border: none;
   }
+  &__prefix-bottom {
+    margin-top: -20px;
+    margin: -20px 20px 15px;
+  }
   &-lg {
     &-box {
       border-radius: 40px;
@@ -37,9 +41,11 @@
     }
   }
   &-md {
+    &-box {
+      border-radius: 30px;
+    }
     input {
       padding: 20px;
-      padding-left: 0;
       font-size: 20px;
       line-height: 24px;
     }

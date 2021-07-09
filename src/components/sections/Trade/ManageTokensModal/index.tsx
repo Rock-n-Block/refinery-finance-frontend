@@ -1,11 +1,12 @@
 import React from 'react';
-import { RadioChangeEvent } from 'antd';
+// import { RadioChangeEvent } from 'antd';
 import { Scrollbar } from 'react-scrollbars-custom';
-import cn from 'classnames';
+// import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import { Modal } from '../../../molecules';
-import { RadioGroup, Input, Switch, Button } from '../../../atoms';
+import { Input, Button } from '../../../atoms';
+// import { RadioGroup, Input, Switch, Button } from '../../../atoms';
 import { IToken } from '../../../../types';
 import { ImportTokensModal } from '..';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -15,7 +16,7 @@ import contractsConfig from '../../../../services/web3/config';
 import './ManageTokensModal.scss';
 
 import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
-import LogoMiniImg from '@/assets/img/icons/logo-m.svg';
+// import LogoMiniImg from '@/assets/img/icons/logo-m.svg';
 import UnknownImg from '@/assets/img/currency/unknown.svg';
 import CrossImg from '@/assets/img/icons/cross.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
@@ -30,29 +31,31 @@ interface IManageTokensModal {
 }
 
 const ManageTokensModal: React.FC<IManageTokensModal> = observer(
-  ({ isVisible, handleClose, handleOpen, handleBack, handleChangeSwitch, selectToken }) => {
+  ({ isVisible, handleClose, handleOpen, handleBack, selectToken }) => {
     const { metamaskService } = useWalletConnectorContext();
     const { tokens } = useMst();
 
-    const [acitveTab, setActiveTab] = React.useState<'lists' | 'tokens'>('lists');
-    const [isExtendedTokensActive, setExtendedTokensActive] = React.useState<boolean>(false);
-    const [isTopTokensActive, setTopTokensActive] = React.useState<boolean>(false);
+    // const [acitveTab, setActiveTab] = React.useState<'lists' | 'tokens'>('lists');
+    // const [isExtendedTokensActive, setExtendedTokensActive] = React.useState<boolean>(false);
+    // const [isTopTokensActive, setTopTokensActive] = React.useState<boolean>(false);
     const [unknownToken, setUnknowToken] = React.useState<IToken | undefined>(undefined);
     const [selectedToken, setSelectedToken] = React.useState<IToken | undefined>();
+    const [isLoading, setLoading] = React.useState<boolean>(false);
+    const [searchedValue, setSearchedValue] = React.useState<string>('');
 
-    const handleChangeNavbar = ({ target }: RadioChangeEvent): void => {
-      setActiveTab(target.value);
-    };
+    // const handleChangeNavbar = ({ target }: RadioChangeEvent): void => {
+    //   setActiveTab(target.value);
+    // };
 
-    const handleChangeExtendedTokensSwitch = (value: boolean): void => {
-      handleChangeSwitch(value, isTopTokensActive);
-      setExtendedTokensActive(value);
-    };
+    // const handleChangeExtendedTokensSwitch = (value: boolean): void => {
+    //   handleChangeSwitch(value, isTopTokensActive);
+    //   setExtendedTokensActive(value);
+    // };
 
-    const handleChangeTopTokensSwitch = (value: boolean): void => {
-      handleChangeSwitch(isExtendedTokensActive, value);
-      setTopTokensActive(value);
-    };
+    // const handleChangeTopTokensSwitch = (value: boolean): void => {
+    //   handleChangeSwitch(isExtendedTokensActive, value);
+    //   setTopTokensActive(value);
+    // };
 
     const handleOpenImportTokensModal = (token: IToken): void => {
       handleClose();
@@ -69,14 +72,19 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
     };
 
     const handleChangeTokensInput = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchedValue(target.value);
       if (target.value) {
         try {
+          setLoading(true);
           const token = await metamaskService.getTokenInfo(target.value, contractsConfig.ERC20.ABI);
+          console.log(token, 'token');
           setUnknowToken({
             ...token,
             logoURI: UnknownImg,
           });
+          setLoading(false);
         } catch (err) {
+          setLoading(false);
           setUnknowToken(undefined);
         }
       } else {
@@ -121,7 +129,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
               <img src={ArrowImg} alt="" />
               <span className="text-purple text-bold text-smd">Manage</span>
             </div>
-            <RadioGroup
+            {/* <RadioGroup
               className="m-manage-tokens__radio"
               onChange={handleChangeNavbar}
               buttonStyle="solid"
@@ -136,8 +144,8 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                   value: 'tokens',
                 },
               ]}
-            />
-            {acitveTab === 'lists' ? (
+            /> */}
+            {/* {acitveTab === 'lists' ? (
               <>
                 <Input
                   className="m-manage-tokens__input"
@@ -202,98 +210,104 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
               </>
             ) : (
               ''
-            )}
-            {acitveTab === 'tokens' ? (
-              <>
-                <Input
-                  className="m-manage-tokens__input"
-                  placeholder="0x00"
-                  colorScheme="outline"
-                  inputSize="lg"
-                  onChange={handleChangeTokensInput}
-                />
-                {unknownToken ? (
-                  <div
-                    key={unknownToken.address}
-                    className="m-manage-tokens__token box-f-ai-c box-f-jc-sb"
-                  >
-                    <div className="box-f-ai-c">
-                      <img
-                        src={unknownToken.logoURI}
-                        alt={unknownToken.name}
-                        className="m-manage-tokens__token-img"
-                      />
-                      <div>
-                        <div className="text m-manage-tokens__token-name">{unknownToken.name}</div>
-                        <div className="text-gray text-ssm">{unknownToken.symbol}</div>
-                      </div>
-                    </div>
-                    {tokens.imported &&
-                    tokens.imported.find(
-                      (token: IToken) => token.address === unknownToken.address,
-                    ) ? (
-                      <span className="text-purple text-med text-ssm">Active</span>
-                    ) : (
-                      <Button size="smd" onClick={() => handleOpenImportTokensModal(unknownToken)}>
-                        <span className="text-bold text-white text-smd">Import</span>
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  ''
-                )}
-                {tokens.imported.length ? (
-                  <Scrollbar
-                    className="m-select-token__scroll"
-                    style={{
-                      width: '100%',
-                      height:
-                        tokens.imported.length > 8 ? '55vh' : `${tokens.imported.length * 55}px`,
-                    }}
-                  >
-                    {tokens.imported.map((token: IToken) => (
-                      <div
-                        key={token.address}
-                        className="m-manage-tokens__token-imported box-f-ai-c box-f-jc-sb"
-                      >
-                        <div className="box-f-ai-c">
-                          <img
-                            src={token.logoURI}
-                            alt={token.name}
-                            className="m-manage-tokens__token-img"
-                          />
-                          <div>
-                            <div className="text m-manage-tokens__token-name">{token.name}</div>
-                            <div className="text-gray text-ssm">{token.symbol}</div>
-                          </div>
-                        </div>
-                        <div className="box-f-ai-c">
-                          <div
-                            className="box-pointer m-manage-tokens__token-delete"
-                            onClick={() => handleDeleteImportedToken(token.address)}
-                            onKeyDown={() => handleDeleteImportedToken(token.address)}
-                            role="button"
-                            tabIndex={0}
-                          >
-                            <img src={CrossImg} alt={token.name} />
-                          </div>
-                          <a href="/" className="m-manage-tokens__token-open">
-                            <img src={OpenLinkImg} alt="" />
-                          </a>
-                        </div>
-                      </div>
-                    ))}
-                  </Scrollbar>
-                ) : (
-                  ''
-                )}
-                <div className="text-med text text-purple m-manage-tokens__text">
-                  {tokens.imported.length || 0} Custom Tokens
-                </div>
-              </>
+            )} */}
+            {/* {acitveTab === 'tokens' ? (
+              <> */}
+            <Input
+              className="m-manage-tokens__input"
+              placeholder="0x00"
+              colorScheme="outline"
+              inputSize="lg"
+              value={searchedValue}
+              onChange={handleChangeTokensInput}
+            />
+            {isLoading ? <div className="text-smd m-manage-tokens__info">Loading</div> : ''}
+            {!isLoading && searchedValue && !unknownToken ? (
+              <div className="text-smd text-red m-manage-tokens__info">not found</div>
             ) : (
               ''
             )}
+            {unknownToken ? (
+              <div
+                key={unknownToken.address}
+                className="m-manage-tokens__token box-f-ai-c box-f-jc-sb"
+              >
+                <div className="box-f-ai-c">
+                  <img
+                    src={unknownToken.logoURI}
+                    alt={unknownToken.name}
+                    className="m-manage-tokens__token-img"
+                  />
+                  <div>
+                    <div className="text m-manage-tokens__token-name">{unknownToken.name}</div>
+                    <div className="text-gray text-ssm">{unknownToken.symbol}</div>
+                  </div>
+                </div>
+                {tokens.imported &&
+                [...tokens.imported, ...tokens.default].find(
+                  (token: IToken) => token.address === unknownToken.address,
+                ) ? (
+                  <span className="text-purple text-med text-ssm">Active</span>
+                ) : (
+                  <Button size="smd" onClick={() => handleOpenImportTokensModal(unknownToken)}>
+                    <span className="text-bold text-white text-smd">Import</span>
+                  </Button>
+                )}
+              </div>
+            ) : (
+              ''
+            )}
+            {tokens.imported.length ? (
+              <Scrollbar
+                className="m-select-token__scroll"
+                style={{
+                  width: '100%',
+                  height: tokens.imported.length > 8 ? '55vh' : `${tokens.imported.length * 55}px`,
+                }}
+              >
+                {tokens.imported.map((token: IToken) => (
+                  <div
+                    key={token.address}
+                    className="m-manage-tokens__token-imported box-f-ai-c box-f-jc-sb"
+                  >
+                    <div className="box-f-ai-c">
+                      <img
+                        src={token.logoURI}
+                        alt={token.name}
+                        className="m-manage-tokens__token-img"
+                      />
+                      <div>
+                        <div className="text m-manage-tokens__token-name">{token.name}</div>
+                        <div className="text-gray text-ssm">{token.symbol}</div>
+                      </div>
+                    </div>
+                    <div className="box-f-ai-c">
+                      <div
+                        className="box-pointer m-manage-tokens__token-delete"
+                        onClick={() => handleDeleteImportedToken(token.address)}
+                        onKeyDown={() => handleDeleteImportedToken(token.address)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <img src={CrossImg} alt={token.name} />
+                      </div>
+                      <a href="/" className="m-manage-tokens__token-open">
+                        <img src={OpenLinkImg} alt="" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </Scrollbar>
+            ) : (
+              ''
+            )}
+            <div className="text-med text text-purple m-manage-tokens__text">
+              {tokens.imported.length || 0} Custom Tokens
+            </div>
+            {/* </>
+            ) : (
+              ''
+            )} */}
           </div>
         </Modal>
         <ImportTokensModal

@@ -32,7 +32,6 @@ const ImportTokensModal: React.FC<IImportTokensModal> = observer(
     const handleEnd = () => {
       if (token) {
         handleImport(token);
-
         if (localStorage.importTokens) {
           localStorage.importTokens = JSON.stringify([
             ...JSON.parse(localStorage.importTokens),
@@ -82,7 +81,9 @@ const ImportTokensModal: React.FC<IImportTokensModal> = observer(
             <div className="m-import-tokens__token box-f box-f-ai-e box-f-jc-sb">
               <div>
                 <div className="text m-import-tokens__token-name">{`${token.name} (${token.symbol})`}</div>
-                <div className="text-gray text-ssm">0x0000..00000</div>
+                <div className="text-gray text-ssm m-import-tokens__token-address">
+                  {token.address}
+                </div>
               </div>
               <a href="/" className="m-import-tokens__token-link text-purple text-ssm box-f-ai-c">
                 <span>View BscScan</span>

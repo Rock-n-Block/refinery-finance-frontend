@@ -184,7 +184,14 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         info="info"
         titleBackLink
       >
-        {exchange === null || tokensResurves === null ? 'your first provider' : ''}
+        {exchange === null || tokensResurves === null ? (
+          <div className="add-liquidity__first text-smd">
+            <p className="text-bold">You are the first liquidity provider.</p>
+            <p>The ratio of tokens you add will set the price of this pool.</p>
+          </div>
+        ) : (
+          ''
+        )}
         <ChooseTokens
           handleChangeTokens={setTokensData}
           initialTokenData={tokensData}

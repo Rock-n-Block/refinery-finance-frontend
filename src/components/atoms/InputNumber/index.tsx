@@ -10,6 +10,7 @@ interface IInputNumberProps extends InputNumberProps {
   inputSize?: 'lg' | 'md' | 'sm';
   colorScheme?: 'gray' | 'outline' | 'transparent' | 'white';
   inputPrefix?: string | React.ReactElement;
+  prefixPosition?: 'right' | 'left' | 'top' | 'button';
   inputClass?: string;
   ref?: React.ForwardedRef<HTMLInputElement>;
 }
@@ -23,15 +24,20 @@ const InputNumber: React.ForwardRefExoticComponent<IInputNumberProps> = React.me
       className,
       inputClass,
       value,
+      prefixPosition = 'right',
       ...otherProps
     } = props;
     return (
       <div
         className={cn(
-          'input-number__box box-f-ai-c',
+          'input-number__box box-f',
           `input-number-${inputSize}-box`,
           `input-number-${colorScheme}-box`,
           className,
+          {
+            'box-f-ai-c': prefixPosition === 'right',
+            'box-f-fd-c': prefixPosition === 'button',
+          },
         )}
       >
         <Input
@@ -49,7 +55,17 @@ const InputNumber: React.ForwardRefExoticComponent<IInputNumberProps> = React.me
           }}
           {...otherProps}
         />
-        {inputPrefix ? <div className="input-number__prefix">{inputPrefix}</div> : ''}
+        {inputPrefix ? (
+          <div
+            className={cn('input-number__prefix', {
+              'input-number__prefix-bottom': prefixPosition === 'button',
+            })}
+          >
+            {inputPrefix}
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     );
   }),

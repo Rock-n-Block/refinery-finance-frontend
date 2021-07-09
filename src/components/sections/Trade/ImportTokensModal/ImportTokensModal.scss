@@ -31,6 +31,13 @@
     }
   }
   &__token {
+    &-address {
+      max-width: 220px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: block;
+      white-space: nowrap;
+    }
     &-name {
       margin-bottom: 6px;
     }

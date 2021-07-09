@@ -12,6 +12,7 @@ import { useMst } from '../../../../store';
 import './ChooseTokens.scss';
 
 import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
+import UnknownImg from '@/assets/img/currency/unknown.svg';
 
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens, type?: 'from' | 'to') => void;
@@ -360,7 +361,11 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   tabIndex={0}
                   role="button"
                 >
-                  <img src={tokenFrom.logoURI} alt="" className="choose-tokens__currency-img" />
+                  <img
+                    src={tokenFrom.logoURI || UnknownImg}
+                    alt=""
+                    className="choose-tokens__currency-img"
+                  />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
                 <div className="choose-tokens__err-wrapper">
@@ -422,7 +427,11 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   tabIndex={0}
                   role="button"
                 >
-                  <img src={tokenTo.logoURI} alt="" className="choose-tokens__currency-img" />
+                  <img
+                    src={tokenTo.logoURI || UnknownImg}
+                    alt=""
+                    className="choose-tokens__currency-img"
+                  />
                   <img src={ArrowImg} alt="" className="choose-tokens__currency-arrow" />
                 </div>
                 <div className="choose-tokens__err-wrapper">
