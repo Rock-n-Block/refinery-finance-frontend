@@ -372,7 +372,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   <InputNumber
                     value={tokenFromQuantity}
                     placeholder="0"
-                    max={maxFrom}
+                    max={maxFrom && maxFrom < balanceFrom ? maxFrom : balanceFrom}
                     onChange={(value: number | string) =>
                       handleChangeTokensQuantity('from', +value)
                     }
@@ -439,7 +439,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     value={tokenToQuantity}
                     placeholder="0"
                     onChange={(value: number | string) => handleChangeTokensQuantity('to', +value)}
-                    max={maxTo}
+                    max={maxTo && maxTo < balanceTo ? maxTo : balanceTo}
                   />
                   {balanceTo ? (
                     <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${

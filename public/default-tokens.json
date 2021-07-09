@@ -1,5 +1,11 @@
 [
   {
+    "address": "0x6057D2bAC8AC2aA0B5B0C9f3997312A4BbFC91b8",
+    "decimals": "18",
+    "name": "RefinerySwap Token",
+    "symbol": "RP1"
+  },
+  {
     "address": "0x29Cf6bE682B8B52f31B46e605aD93Ec1EE89539e",
     "decimals": "18",
     "name": "ugabuga",

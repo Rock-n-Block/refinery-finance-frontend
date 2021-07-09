@@ -67,6 +67,12 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
       handleOpen();
     };
 
+    const onCloseModal = () => {
+      setInitTokens([...storeTokens.imported, ...storeTokens.default]);
+      setTokens([...storeTokens.imported, ...storeTokens.default]);
+      handleClose();
+    };
+
     const handleChangeSwitch = (extendedValue: boolean, topValue: boolean): void => {
       let arr: IToken[] = storeTokens.default;
       if (extendedValue && topValue) {
@@ -99,7 +105,7 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
         <Modal
           isVisible={!!isVisible}
           className="m-select-token"
-          handleCancel={handleClose}
+          handleCancel={onCloseModal}
           width={300}
           destroyOnClose
           closeIcon
@@ -113,36 +119,40 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
               <Search placeholder="Search" realtime onChange={handleSearch} />
             </div>
 
-            <Scrollbar
-              className="m-select-token__scroll"
-              style={{
-                width: '100%',
-                height: tokens.length > 5 ? '55vh' : `${tokens.length * 65}px`,
-              }}
-            >
-              {[...tokens].map((token: IToken) => (
-                <div
-                  className="m-select-token__item box-f-ai-c"
-                  key={token.address}
-                  onClick={() => handleTokenClick(token)}
-                  onKeyDown={() => handleTokenClick(token)}
-                  role="button"
-                  tabIndex={-2}
-                >
-                  <img
-                    onError={(e: any) => {
-                      e.target.src = UnknownImg;
-                    }}
-                    src={token.logoURI}
-                    alt=""
-                  />
-                  <div>
-                    <div>{token.name}</div>
-                    <div className="text-ssm text-gray-2">{token.symbol}</div>
+            {tokens.length ? (
+              <Scrollbar
+                className="m-select-token__scroll"
+                style={{
+                  width: '100%',
+                  height: tokens.length > 5 ? '55vh' : `${tokens.length * 65}px`,
+                }}
+              >
+                {[...tokens].map((token: IToken) => (
+                  <div
+                    className="m-select-token__item box-f-ai-c"
+                    key={token.address}
+                    onClick={() => handleTokenClick(token)}
+                    onKeyDown={() => handleTokenClick(token)}
+                    role="button"
+                    tabIndex={-2}
+                  >
+                    <img
+                      onError={(e: any) => {
+                        e.target.src = UnknownImg;
+                      }}
+                      src={token.logoURI}
+                      alt=""
+                    />
+                    <div>
+                      <div>{token.name}</div>
+                      <div className="text-ssm text-gray-2">{token.symbol}</div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </Scrollbar>
+                ))}
+              </Scrollbar>
+            ) : (
+              <span className="text">Not found</span>
+            )}
             <div
               className="m-select-token__manage text-purple text-med text-center box-pointer"
               onClick={handleOpenManageModal}

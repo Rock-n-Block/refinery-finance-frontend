@@ -77,7 +77,6 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
         try {
           setLoading(true);
           const token = await metamaskService.getTokenInfo(target.value, contractsConfig.ERC20.ABI);
-          console.log(token, 'token');
           setUnknowToken({
             ...token,
             logoURI: UnknownImg,

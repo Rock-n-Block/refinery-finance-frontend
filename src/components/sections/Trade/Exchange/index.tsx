@@ -116,12 +116,7 @@ const Exchange: React.FC<IExchange> = observer(
           ) : (
             ''
           )}
-          {tokensData.from.token &&
-          tokensData.to.token &&
-          tokensData.to.amount &&
-          tokensData.from.amount &&
-          !user.address &&
-          tokensResurves !== null ? (
+          {!user.address ? (
             <Button className="exchange__btn" onClick={connect}>
               <span className="text-bold text-md text-white">Connect</span>
             </Button>
