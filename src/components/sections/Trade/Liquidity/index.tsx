@@ -88,7 +88,7 @@ const Liquidity: React.FC = observer(() => {
 
   React.useEffect(() => {
     if (!error && userTrx && userTrx.liquidityPositionSnapshots) {
-      const trxData: any = [];
+      const trxData: IRecentTx[] = [];
 
       userTrx.liquidityPositionSnapshots.forEach((pairObj: any) => {
         const dataItem: IRecentTx = {
