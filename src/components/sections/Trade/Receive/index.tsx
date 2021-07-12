@@ -43,6 +43,7 @@ const Receive: React.FC = observer(() => {
             moment.utc().add(20, 'm').valueOf(),
           ],
         });
+        history.push('/trade/liquidity');
       }
     } catch (err) {
       console.log('remove liquidity', err);
