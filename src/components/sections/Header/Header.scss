@@ -1,0 +1,62 @@
+@import '../../../styles/mixins/media.scss';
+@import '../../../styles/vars';
+
+.header {
+  display: none;
+  height: 72px;
+  box-shadow: 0px 6px 20px rgba(85, 32, 142, 0.25);
+  border-radius: 0px 0px 14px 14px;
+  padding: 0 22px;
+
+  @include b(tablet) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &-logo {
+  }
+
+  &-burger {
+    height: 16px;
+    width: 30px;
+    position: relative;
+    cursor: pointer;
+
+    &__line {
+      position: absolute;
+      background-color: $purple;
+      height: 1px;
+      width: 100%;
+      transition: 0.4s ease;
+
+      &--1 {
+        top: 0;
+      }
+      &--2 {
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      &--3 {
+        bottom: 0;
+      }
+    }
+
+    &--active {
+      .header-burger__line {
+        &--1 {
+          top: 50%;
+          transform: rotate(225deg) translateY(-50%);
+        }
+        &--2 {
+          opacity: 0;
+          transform:  rotate(405deg);
+        }
+        &--3 {
+          top: 50%;
+          transform: rotate(-45deg) translateY(-50%);
+        }
+      }
+    }
+  }
+}

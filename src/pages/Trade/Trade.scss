@@ -1,3 +1,5 @@
+@import '../../styles/mixins/media.scss';
+
 .trade {
   background-image: url(../../assets/img/bg-t-r.svg), url(../../assets/img/bg-b-r.svg),
     url(../../assets/img/bg-b-l.svg), url(../../assets/img/bg-c.svg);
@@ -10,5 +12,9 @@
   &__content {
     max-width: 420px;
     width: 100%;
+  }
+
+  @include b(extramobile) {
+    background-image: none;
   }
 }

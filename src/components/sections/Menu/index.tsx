@@ -16,7 +16,11 @@ import TeamsImg from '../../../assets/img/icons/teams.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
-const Menu: React.FC = React.memo(() => {
+interface IMenuProps {
+  mobile?: boolean;
+}
+
+const Menu: React.FC<IMenuProps> = React.memo(({ mobile }) => {
   const navItems = [
     {
       text: 'Home',
@@ -68,8 +72,8 @@ const Menu: React.FC = React.memo(() => {
     },
   ];
   return (
-    <div className="menu box-f-fd-c">
-      <img src={LogoImg} alt="refinery finance" className="menu__logo" />
+    <div className={`menu box-f-fd-c ${mobile && 'menu-mobile'}`}>
+      {!mobile && <img src={LogoImg} alt="refinery finance" className="menu__logo" />}
       <div className="menu__nav">
         {navItems.map((item) => (
           <NavLink
