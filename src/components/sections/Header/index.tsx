@@ -3,14 +3,19 @@ import './Header.scss';
 import logo from '@/assets/img/icons/logo-header.svg';
 
 import { Menu } from '../index';
+import { useMst } from '../../../store';
+import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
+import { Button } from '../../atoms';
 
 const Header: React.FC = React.memo(() => {
   const [isBurger, setIsBurger] = useState(false);
 
+  const connector = useWalletConnectorContext();
+  const { user } = useMst();
+
   const handleClose = () => {
     setIsBurger(false);
   };
-
   return (
     <>
       <section className="header">
@@ -30,6 +35,13 @@ const Header: React.FC = React.memo(() => {
         </div>
       </section>
       <div className={`menu-mob ${isBurger && 'menu-mob--active'}`}>
+        {!user.address ? (
+          <Button className="header-mob__connect" onClick={connector.connect}>
+            <span className="text-bold text-white">Connect Wallet</span>
+          </Button>
+        ) : (
+          ''
+        )}
         <Menu mobile onClick={handleClose} />
       </div>
     </>
