@@ -43,7 +43,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     tokensResurves,
     isLoadingExchange,
   }) => {
-    const { metamaskService } = useWalletConnectorContext();
+    const { metamaskService, connect } = useWalletConnectorContext();
     const { user } = useMst();
 
     const [exchange, setExchange] = React.useState<IPrices | undefined | null>(undefined);
@@ -238,7 +238,15 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         ) : (
           ''
         )}
-        {isAllowanceFrom &&
+        {!user.address ? (
+          <Button className="exchange__btn" onClick={connect}>
+            <span className="text-bold text-md text-white">Connect</span>
+          </Button>
+        ) : (
+          ''
+        )}
+        {user.address &&
+        isAllowanceFrom &&
         isAllowanceTo &&
         tokensData.from.token &&
         tokensData.to.token &&
@@ -256,7 +264,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         ) : (
           ''
         )}
-        {tokensData.from.token &&
+        {user.address &&
+        tokensData.from.token &&
         tokensData.to.token &&
         (!tokensData.to.amount || !tokensData.from.amount) ? (
           <Button
@@ -270,7 +279,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         ) : (
           ''
         )}
-        {(!isAllowanceFrom || !isAllowanceTo) &&
+        {user.address &&
+        (!isAllowanceFrom || !isAllowanceTo) &&
         tokensData.from.token &&
         tokensData.to.token &&
         tokensData.to.amount &&
@@ -281,7 +291,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         ) : (
           ''
         )}
-        {!tokensData.from.token || !tokensData.to.token ? (
+        {user.address && (!tokensData.from.token || !tokensData.to.token) ? (
           <Button disabled className="add-liquidity__btn">
             <span className="text-white text-bold text-smd">Select a Tokens</span>
           </Button>

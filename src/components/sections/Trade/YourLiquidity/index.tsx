@@ -61,22 +61,24 @@ const YourLiquidity: React.FC = observer(() => {
 
   const handleCheckLiquidity = React.useCallback(
     (data: any) => {
-      for (let i = 0; i < data.user.liquidityPositions.length; i += 1) {
-        metamaskService
-          .callContractMethodFromNewContract(
-            data.user.liquidityPositions[i].pair.id,
-            Web3Config.PAIR.ABI,
-            'balanceOf',
-            [user.address],
-          )
-          .then((res: any) => {
-            if (+res > 0) {
-              setLiquidities((arr: any) => [...arr, data.user.liquidityPositions[i]]);
-            }
-          })
-          .catch((err) => {
-            console.log('check lp balance', err);
-          });
+      if (data.user.liquidityPositions) {
+        for (let i = 0; i < data.user.liquidityPositions.length; i += 1) {
+          metamaskService
+            .callContractMethodFromNewContract(
+              data.user.liquidityPositions[i].pair.id,
+              Web3Config.PAIR.ABI,
+              'balanceOf',
+              [user.address],
+            )
+            .then((res: any) => {
+              if (+res > 0) {
+                setLiquidities((arr: any) => [...arr, data.user.liquidityPositions[i]]);
+              }
+            })
+            .catch((err) => {
+              console.log('check lp balance', err);
+            });
+        }
       }
     },
     [metamaskService, user.address],
@@ -93,7 +95,7 @@ const YourLiquidity: React.FC = observer(() => {
   }, [user.address, getUserLiquidities]);
 
   React.useEffect(() => {
-    if (userLiquidities && !loading) {
+    if (userLiquidities && userLiquidities.user && !loading) {
       handleCheckLiquidity(userLiquidities);
     }
   }, [userLiquidities, loading, handleCheckLiquidity]);
@@ -177,9 +179,7 @@ const YourLiquidity: React.FC = observer(() => {
             ''
           )}
 
-          {user.address &&
-          !loading &&
-          (!userLiquidities || !userLiquidities.user.liquidityPositions.length) ? (
+          {user.address && !loading && !liquidities.length ? (
             <div className="text-center text-med text-purple box-f-fd-c box-f-ai-c">
               <div className="y-liquidity__text">No liquidity found.</div>
             </div>
