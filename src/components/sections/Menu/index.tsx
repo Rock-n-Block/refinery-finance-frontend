@@ -18,9 +18,10 @@ import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
 interface IMenuProps {
   mobile?: boolean;
+  onClick?: () => void;
 }
 
-const Menu: React.FC<IMenuProps> = React.memo(({ mobile }) => {
+const Menu: React.FC<IMenuProps> = React.memo(({ mobile, onClick }) => {
   const navItems = [
     {
       text: 'Home',
@@ -81,6 +82,7 @@ const Menu: React.FC<IMenuProps> = React.memo(({ mobile }) => {
             to={item.link}
             className="menu__nav-item"
             key={nextId()}
+            onClick={onClick}
             isActive={(_, location) => {
               if (
                 (item.activePaths && item.activePaths.includes(location.pathname)) ||

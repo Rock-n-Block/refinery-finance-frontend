@@ -7,6 +7,10 @@ import { Menu } from '../index';
 const Header: React.FC = React.memo(() => {
   const [isBurger, setIsBurger] = useState(false);
 
+  const handleClose = () => {
+    setIsBurger(false);
+  };
+
   return (
     <>
       <section className="header">
@@ -25,7 +29,9 @@ const Header: React.FC = React.memo(() => {
           <img src={logo} alt="logo" />
         </div>
       </section>
-      {isBurger && <Menu mobile />}
+      <div className={`menu-mob ${isBurger && 'menu-mob--active'}`}>
+        <Menu mobile onClick={handleClose} />
+      </div>
     </>
   );
 });
