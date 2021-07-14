@@ -179,7 +179,9 @@ const YourLiquidity: React.FC = observer(() => {
 
           {user.address &&
           !loading &&
-          (!userLiquidities || !userLiquidities.user.liquidityPositions.length) ? (
+          (!userLiquidities ||
+            !userLiquidities.user ||
+            !userLiquidities.user.liquidityPositions.length) ? (
             <div className="text-center text-med text-purple box-f-fd-c box-f-ai-c">
               <div className="y-liquidity__text">No liquidity found.</div>
             </div>
