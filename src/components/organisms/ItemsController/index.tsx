@@ -7,7 +7,7 @@ import './ItemsController.scss';
 const ItemsController: React.FC = React.memo(() => {
   return (
     <div className="i-contr box-f-ai-c box-f-jc-sb">
-      <div className="box-f-ai-c">
+      <div className="box-f-ai-c i-contr_box--1">
         <Switch
           colorScheme="white"
           text={<span className="text-purple text-bold">Staked only</span>}

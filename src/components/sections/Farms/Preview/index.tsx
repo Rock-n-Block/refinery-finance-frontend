@@ -22,8 +22,8 @@ const Preview: React.FC = React.memo(() => {
         </div>
       </div>
       <div className="farms-preview__auc">
-        <div className="box-f-ai-c box-f-jc-sb">
-          <div className="box-f-ai-c">
+        <div className="box-f-ai-c box-f-jc-sb farms-preview__box--info">
+          <div className="box-f-ai-c ">
             <img src={AucImg} alt="auction" className="farms-preview__auc-img" />
             <span className="text-upper text-bold text-purple">
               ACTION REQUIRED for all LP token holders

@@ -21,6 +21,8 @@
     position: relative;
     border-radius: 0;
     height: 100%;
+    overflow: auto;
+    box-shadow: none;
   }
 
   &__logo {

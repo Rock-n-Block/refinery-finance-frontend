@@ -16,6 +16,10 @@ body {
   font-weight: 400;
 
   color: #000;
+
+  &.hide-scroll {
+    overflow: hidden;
+  }
 }
 
 * {
@@ -51,6 +55,10 @@ body {
 main {
   flex-grow: 2;
   padding-left: 227px;
+  @include b(tablet) {
+    padding-top: 92px !important;
+    padding-left: 0;
+  }
 }
 
 .row {

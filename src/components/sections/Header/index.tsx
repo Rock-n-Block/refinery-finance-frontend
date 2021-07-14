@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import logo from '@/assets/img/icons/logo-header.svg';
 
@@ -16,6 +16,13 @@ const Header: React.FC = React.memo(() => {
   const handleClose = () => {
     setIsBurger(false);
   };
+
+  useEffect(() => {
+    if (isBurger) {
+      document.body.classList.add('hide-scroll');
+    } else document.body.classList.remove('hide-scroll');
+  }, [isBurger]);
+
   return (
     <>
       <section className="header">

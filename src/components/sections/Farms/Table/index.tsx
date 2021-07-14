@@ -10,9 +10,9 @@ const Table: React.FC = React.memo(() => {
       <div className="farms-table__head">
         <div />
         <div className="text-ssm text-gray-l-2">Earned</div>
-        <div className="text-bold text-purple">APR</div>
-        <div className="text-bold text-purple">Liquidity</div>
-        <div className="text-bold text-purple">Multiplier</div>
+        <div className="text-bold text-purple farms-table--apr">APR</div>
+        <div className="text-bold text-purple farms-table--liquidity">Liquidity</div>
+        <div className="text-bold text-purple farms-table--multiplier">Multiplier</div>
       </div>
       <FarmsTableRow />
       <FarmsTableRow />
