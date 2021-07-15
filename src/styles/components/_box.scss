@@ -1,3 +1,5 @@
+@import '../mixins/media.scss';
+
 .box {
   &-f {
     display: flex;
@@ -72,5 +74,27 @@
 
   &-fit {
     width: fit-content;
+  }
+}
+
+.t-box {
+  &-b {
+    @include b(tablet) {
+      display: block;
+    }
+  }
+
+  &-none {
+    @include b(tablet) {
+      display: none;
+    }
+  }
+}
+
+.m-box {
+  &-b {
+    @include b(mobile) {
+      display: block;
+    }
   }
 }

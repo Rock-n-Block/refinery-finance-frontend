@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
+
+import { Menu } from '../index';
+
 import './Header.scss';
 import logo from '@/assets/img/icons/logo-header.svg';
 
-import { Menu } from '../index';
-import { useMst } from '../../../store';
-import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
-import { Button } from '../../atoms';
-
 const Header: React.FC = React.memo(() => {
   const [isBurger, setIsBurger] = useState(false);
-
-  const connector = useWalletConnectorContext();
-  const { user } = useMst();
 
   const handleClose = () => {
     setIsBurger(false);
@@ -30,7 +26,7 @@ const Header: React.FC = React.memo(() => {
           tabIndex={0}
           role="button"
           onKeyDown={() => {}}
-          className={`header-burger ${isBurger && 'header-burger--active'}`}
+          className={classNames('header-burger', { 'header-burger--active': isBurger })}
           onClick={() => setIsBurger(!isBurger)}
         >
           <div className="header-burger__line header-burger__line--1" />
@@ -42,14 +38,7 @@ const Header: React.FC = React.memo(() => {
         </div>
       </section>
       <div className={`menu-mob ${isBurger && 'menu-mob--active'}`}>
-        {!user.address ? (
-          <Button className="header-mob__connect" onClick={connector.connect}>
-            <span className="text-bold text-white">Connect Wallet</span>
-          </Button>
-        ) : (
-          ''
-        )}
-        <Menu mobile onClick={handleClose} />
+        <Menu onClick={handleClose} />
       </div>
     </>
   );

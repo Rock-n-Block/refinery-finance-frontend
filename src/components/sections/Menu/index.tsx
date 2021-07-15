@@ -2,6 +2,10 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import nextId from 'react-id-generator';
 
+import { Button } from '../../atoms';
+import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
+import { useMst } from '../../../store';
+
 import './Menu.scss';
 
 import LogoImg from '@/assets/img/icons/logo.svg';
@@ -17,11 +21,12 @@ import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
 interface IMenuProps {
-  mobile?: boolean;
   onClick?: () => void;
 }
 
-const Menu: React.FC<IMenuProps> = React.memo(({ mobile, onClick }) => {
+const Menu: React.FC<IMenuProps> = React.memo(({ onClick }) => {
+  const { connect } = useWalletConnectorContext();
+  const { user } = useMst();
   const navItems = [
     {
       text: 'Home',
@@ -73,8 +78,8 @@ const Menu: React.FC<IMenuProps> = React.memo(({ mobile, onClick }) => {
     },
   ];
   return (
-    <div className={`menu box-f-fd-c ${mobile && 'menu-mobile'}`}>
-      {!mobile && <img src={LogoImg} alt="refinery finance" className="menu__logo" />}
+    <div className="menu box-f-fd-c">
+      <img src={LogoImg} alt="refinery finance" className="menu__logo" />
       <div className="menu__nav">
         {navItems.map((item) => (
           <NavLink
@@ -102,6 +107,15 @@ const Menu: React.FC<IMenuProps> = React.memo(({ mobile, onClick }) => {
           </NavLink>
         ))}
       </div>
+      {!user.address ? (
+        <Button className="menu__connect" size="md" onClick={connect}>
+          <span className="text-bold text-white">Connect Wallet</span>
+        </Button>
+      ) : (
+        <Button className="menu__connect" size="md">
+          <span className="text-bold text-white text-address">{user.address}</span>
+        </Button>
+      )}
       <div className="menu__balance box-purple-l box-f-ai-c">
         <img src={LogoMiniImg} alt="refinery finance" className="menu__balance-img" />
         <span className="text-purple">$37.166</span>

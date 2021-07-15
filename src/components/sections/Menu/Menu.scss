@@ -9,15 +9,15 @@
   background: #ffffff;
   box-shadow: 0px 12px 40px rgba(85, 32, 142, 0.25);
   border-radius: 0px 30px 30px 0px;
+  max-width: 240px;
+  @include b(tablet) {
+    max-width: 100%;
+  }
   height: 100vh;
+  transition: 0.4s ease;
 
   @include b(tablet) {
-    &:not(.menu-mobile) {
-      display: none !important;
-    }
-  }
-
-  &-mobile {
+    left: -100%;
     position: relative;
     border-radius: 0;
     height: 100%;
@@ -29,6 +29,9 @@
     margin-left: 30px;
     margin-bottom: 10px;
     width: 157px;
+    @include b(tablet) {
+      display: none;
+    }
   }
   &__nav {
     flex-grow: 2;
@@ -84,7 +87,7 @@
       margin-right: 15px;
     }
   }
-  &-mobile {
+  @include b(tablet) {
     .menu__balance {
       display: flex;
       justify-content: center;
@@ -112,5 +115,9 @@
         }
       }
     }
+  }
+  &__connect {
+    width: 100%;
+    margin-bottom: 20px;
   }
 }

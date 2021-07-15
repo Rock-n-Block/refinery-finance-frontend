@@ -21,7 +21,6 @@
 
     &--info {
       @include b(mobile) {
-        display: block !important;
         button {
           margin-top: 15px;
         }

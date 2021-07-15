@@ -4,13 +4,6 @@
   margin-top: 40px;
   @include b(tablet) {
     margin-top: 30px;
-    display: block !important;
-  }
-
-  &_box--1 {
-    @include b(tablet) {
-      display: block !important;
-    }
   }
 
   &__radio {
