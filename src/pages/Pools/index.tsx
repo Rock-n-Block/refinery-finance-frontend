@@ -78,7 +78,7 @@ const Pools: React.FC = () => {
         <div className="row">
           <PoolsPreview />
           <ItemsController />
-          <div className="pools__content box-f">
+          <div className="pools__content">
             {pools.map((pool) => (
               <PoolCard
                 {...pool}

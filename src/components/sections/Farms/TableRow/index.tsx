@@ -1,6 +1,7 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
 
 import { Button, InputNumber, Popover } from '../../../atoms';
 import { useMst } from '../../../../store';
@@ -12,6 +13,7 @@ import CalcImg from '../../../../assets/img/icons/calc.svg';
 import InfoImg from '../../../../assets/img/icons/info.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 import CheckImg from '@/assets/img/icons/check.svg';
+import ArrowPurple from '../../../../assets/img/icons/arrow-btn.svg';
 
 const TableRow: React.FC = observer(() => {
   const { user, modals } = useMst();
@@ -50,17 +52,22 @@ const TableRow: React.FC = observer(() => {
         role="button"
         tabIndex={0}
       >
-        <div className="farms-table-row__currencies box-f-ai-c">
-          <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
-          <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
+        <div className="farms-table-row__currencies box-f-ai-c t-box-b">
+          <div className="box">
+            <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
+            <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
+          </div>
           <div className="text-upper text-smd">BTC-BNB</div>
         </div>
-        <div className="text-gray-l-2 text-smd box-f-ai-c">
+        <div className="farms-table-row__earned text-gray-l-2 text-smd ">
+          <div className="text-gray text-ssm farms-table-row__extra-text t-box-b">Earned</div>
           <span>0</span>
         </div>
-        <div className="box-f-ai-c text-smd farms-table-row__item">
+        <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
+          <div className="text-gray text-ssm farms-table-row__extra-text t-box-b">APR</div>
           <span className="farms-table-row__text-md">73.77%</span>
           <div
+            className="farms-table-row__apr_button"
             onClick={handleOpenRoiModal}
             onKeyDown={handleOpenRoiModal}
             role="button"
@@ -69,7 +76,7 @@ const TableRow: React.FC = observer(() => {
             <img src={CalcImg} alt="calc" />
           </div>
         </div>
-        <div className="box-f-ai-c text-smd farms-table-row__item">
+        <div className="farms-table-row__liquidity box-f-ai-c text-smd farms-table-row__item t-box-none">
           <span className="farms-table-row__text text-med text-purple">$1,662,947,888</span>
           <Popover
             content={
@@ -81,7 +88,7 @@ const TableRow: React.FC = observer(() => {
             <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
           </Popover>
         </div>
-        <div className="box-f-ai-c text-smd farms-table-row__item">
+        <div className="farms-table-row__multiplier box-f-ai-c text-smd farms-table-row__item t-box-none">
           <span className="farms-table-row__text-md text-med text-purple">1x</span>
           <Popover
             content={
@@ -94,16 +101,25 @@ const TableRow: React.FC = observer(() => {
           </Popover>
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
-          <Button
-            colorScheme="outline-purple"
-            size="smd"
-            arrow
-            toggle
-            isActive={isOpenDetails}
-            onToggle={handleChangeDetails}
+          <div
+            className={classNames('farms-table-row__item--mob t-box-b', {
+              'farms-table-row__item--mob_active': isOpenDetails,
+            })}
           >
-            <span className="text-purple text-med">Details</span>
-          </Button>
+            <img src={ArrowPurple} alt="arrow" />
+          </div>
+          <div className="farms-table-row__item--pc t-box-none">
+            <Button
+              colorScheme="outline-purple"
+              size="smd"
+              arrow
+              toggle
+              isActive={isOpenDetails}
+              onToggle={handleChangeDetails}
+            >
+              <span>Details</span>
+            </Button>
+          </div>
         </div>
       </div>
       <CSSTransition
@@ -115,7 +131,7 @@ const TableRow: React.FC = observer(() => {
         }}
         classNames="show"
       >
-        <div className="farms-table-row__details box-purple-l box-f-ai-c box-f-jc-sb">
+        <div className="farms-table-row__details box-purple-l">
           <div className="farms-table-row__details-links">
             <a
               href="/"
@@ -143,7 +159,7 @@ const TableRow: React.FC = observer(() => {
               <span className="text-purple text-ssmd">Core</span>
             </div>
           </div>
-          <div className="box-f-ai-c">
+          <div className="farms-table-row__buttons box-f-ai-c t-box-b">
             <div className="farms-table-row__details-box">
               <div className="farms-table-row__details-title text-purple text-ssm text-med text-upper">
                 CAKE EARNED

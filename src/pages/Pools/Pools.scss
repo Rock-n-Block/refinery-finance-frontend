@@ -1,8 +1,20 @@
+@import '../../styles/mixins/media.scss';
+
 .pools {
   padding-top: 25px;
   padding-bottom: 25px;
   &__content {
+    padding: 0 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    @include b(desktop) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @include b(mobile) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+    grid-column-gap: 23px;
+    grid-row-gap: 30px;
     margin: 40px -11px 0;
-    flex-wrap: wrap;
   }
 }

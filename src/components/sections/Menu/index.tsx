@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import nextId from 'react-id-generator';
-import { observer } from 'mobx-react-lite';
 
 import { Button } from '../../atoms';
 import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
@@ -21,7 +20,11 @@ import TeamsImg from '../../../assets/img/icons/teams.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
-const Menu: React.FC = observer(() => {
+interface IMenuProps {
+  onClick?: () => void;
+}
+
+const Menu: React.FC<IMenuProps> = React.memo(({ onClick }) => {
   const { connect } = useWalletConnectorContext();
   const { user } = useMst();
   const navItems = [
@@ -84,6 +87,7 @@ const Menu: React.FC = observer(() => {
             to={item.link}
             className="menu__nav-item"
             key={nextId()}
+            onClick={onClick}
             isActive={(_, location) => {
               if (
                 (item.activePaths && item.activePaths.includes(location.pathname)) ||

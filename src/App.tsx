@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { Menu } from './components/sections';
+import { Header } from './components/sections';
 import { MetamaskErrModal, RoiModal } from './components/molecules';
 import {
   TradePage,
@@ -29,7 +29,7 @@ const App: React.FC = observer(() => {
 
   return (
     <div className="ref-finance">
-      <Menu />
+      <Header />
       <Switch>
         <Route
           exact

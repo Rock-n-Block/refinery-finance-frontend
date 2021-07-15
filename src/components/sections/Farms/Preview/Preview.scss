@@ -1,4 +1,6 @@
 @import 'src/styles/vars';
+@import 'src/styles/mixins/media';
+
 .farms-preview {
   border-radius: 40px;
   overflow: hidden;
@@ -11,12 +13,33 @@
     background-repeat: no-repeat;
     background-position: 0 14px, 100%;
     background-size: auto, auto 100%;
+
+    @include b(mobile) {
+      background-image: url(../../../../assets/img/sections/farms/bg-1.svg);
+      padding: 40px 10px 20px 40px;
+    }
+
+    &--info {
+      @include b(mobile) {
+        button {
+          margin-top: 15px;
+        }
+      }
+    }
+  }
+  &__title {
+    @include b(mobile) {
+      font-size: 40px !important;
+    }
   }
   &__sibtitle {
     margin-top: 16px;
   }
   &__auc {
     padding: 21px 26px;
+    @include b(mobile) {
+      padding: 23px 10px;
+    }
     &-img {
       margin-right: 14px;
     }
@@ -24,6 +47,9 @@
   &__details {
     margin-top: 15px;
     margin-left: 58px;
+    @include b(mobile) {
+      margin-left: 0;
+    }
   }
 
   .show-enter {

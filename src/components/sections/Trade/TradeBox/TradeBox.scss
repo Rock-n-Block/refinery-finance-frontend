@@ -1,7 +1,14 @@
 @import 'src/styles/vars';
+@import 'src/styles/mixins/media';
+
 .trade-box {
   padding: 30px;
   margin-top: 40px;
+  
+  @include b(extramobile) {
+    padding: 20px;
+  }
+
   &__title {
     width: fit-content;
   }
