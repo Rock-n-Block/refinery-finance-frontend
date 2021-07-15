@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js/bignumber';
 
 import { TradeBox, ChooseTokens } from '..';
 import { ITokens } from '../../../../types';
-import { Button } from '../../../atoms';
+import { Button, Popover } from '../../../atoms';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
 import MetamaskService from '../../../../services/web3';
@@ -164,6 +164,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         } catch (err) {
           console.log(err, 'err');
         }
+      } else {
+        setExchange(undefined);
       }
     }, [
       tokensData.from.token,
@@ -207,31 +209,42 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         (exchange.second || exchange.second === 0) &&
         (exchange.share || exchange.share === 0) ? (
           <div className="add-liquidity__info">
-            <div className="add-liquidity__info-title text-smd text-purple text-center">
+            <div className="add-liquidity__info-title text-smd text-purple">
               Prices and pool share
             </div>
-            <div className="add-liquidity__info-content">
+            <div className="add-liquidity__info-content text-med">
               <div className="add-liquidity__info-item">
-                <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  {new BigNumber(exchange.first).toString(10)}
-                </div>
-                <div className="text-ssm text-center text-purple">
-                  {tokensData.from.token.symbol} per {tokensData.to.token.symbol}
+                <Popover content={<span>{new BigNumber(exchange.first).toString(10)}</span>}>
+                  <div className="text text-center text-purple add-liquidity__info-item-title">
+                    {new BigNumber(exchange.first).toFixed(4).toString()}
+                  </div>
+                </Popover>
+                <div className="text-sm text-center text-gray text-center text-purple">
+                  {tokensData.from.token.symbol}
+                  <br /> per {tokensData.to.token.symbol}
                 </div>
               </div>
               <div className="add-liquidity__info-item">
-                <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  {new BigNumber(exchange.second).toString(10)}
-                </div>
-                <div className="text-ssm text-center text-purple">
-                  {tokensData.to.token.symbol} per {tokensData.from.token.symbol}
+                <Popover content={<span>{new BigNumber(exchange.second).toString(10)}</span>}>
+                  <div className="text text-center text-purple add-liquidity__info-item-title">
+                    {new BigNumber(exchange.second).toFixed(4).toString()}
+                  </div>
+                </Popover>
+                <div className="text-sm text-center text-gray text-center text-purple">
+                  {tokensData.to.token.symbol}
+                  <br /> per {tokensData.from.token.symbol}
                 </div>
               </div>
               <div className="add-liquidity__info-item">
-                <div className="text-ssm text-center text-purple add-liquidity__info-item-title">
-                  {exchange.share < 0.001 ? 0 : new BigNumber(exchange.share).toString(10)}%
+                <Popover content={<span>{new BigNumber(exchange.share).toString(10)}</span>}>
+                  <div className="text text-center text-purple add-liquidity__info-item-title">
+                    {exchange.share < 0.01 ? '<0.01' : new BigNumber(exchange.share).toString(10)}%
+                  </div>
+                </Popover>
+                <div className="text-sm text-center text-gray text-center text-purple">
+                  Share
+                  <br /> of Pool
                 </div>
-                <div className="text-ssm text-center text-purple">Share of Pool</div>
               </div>
             </div>
           </div>

@@ -1,16 +1,9 @@
 @import 'src/styles/vars';
 .add-liquidity {
   &__info {
-    border: 1px solid rgba(black, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    padding: 20px 0;
-    margin-top: 20px;
-    background: $gray-l;
-    &-title {
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(black, 0.1);
-    }
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(black, 0.1);
     &-content {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -19,8 +12,16 @@
     }
     &-item {
       &-title {
-        margin-bottom: 5px;
+        margin-bottom: 10px;
       }
+    }
+    &-content {
+      border: 1px solid rgba(black, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 20px 0;
+      margin-top: 20px;
+      background: $gray-l;
     }
   }
   &__btn {

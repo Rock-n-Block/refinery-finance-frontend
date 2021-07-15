@@ -26,7 +26,11 @@ interface ITradeWrapper {
   isLoadingExchange: boolean;
 }
 
-const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compProps?: any) => {
+const TradeWrapper = (
+  Component: React.FC<any>,
+  getExchangeMethod: 'quote' | 'getAmountOut',
+  compProps?: any,
+) => {
   class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
     constructor(props: any) {
       super(props);
@@ -61,25 +65,29 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
     }
 
     componentDidMount() {
-      const interval = setInterval(async () => {
-        if (
-          this.state.pairAddress &&
-          this.state.tokensData.from.token &&
-          this.state.tokensData.to.token &&
-          this.state.tokensData.to.amount &&
-          this.state.tokensData.from.amount
-        ) {
-          this.handleGetExchange(this.state.tokensData, 'from');
-        }
-      }, 60000);
+      if (getExchangeMethod !== 'quote') {
+        const interval = setInterval(async () => {
+          if (
+            this.state.pairAddress &&
+            this.state.tokensData.from.token &&
+            this.state.tokensData.to.token &&
+            this.state.tokensData.to.amount &&
+            this.state.tokensData.from.amount
+          ) {
+            this.handleGetExchange(this.state.tokensData, 'from');
+          }
+        }, 60000);
 
-      this.setState({
-        resurvesInterval: interval,
-      });
+        this.setState({
+          resurvesInterval: interval,
+        });
+      }
     }
 
     componentWillUnmount() {
-      clearInterval(this.state.resurvesInterval);
+      if (this.state.resurvesInterval) {
+        clearInterval(this.state.resurvesInterval);
+      }
     }
 
     async handleApproveTokens() {
@@ -124,12 +132,34 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
           [tokens.from.token?.address, tokens.to.token?.address],
         );
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
-          this.setState({
-            tokensResurves: null,
-            pairAddress: '',
-            tokensData: tokens,
-            isLoadingExchange: false,
-          });
+          this.setState({});
+          if (type === 'from') {
+            this.setState({
+              tokensResurves: null,
+              pairAddress: '',
+              isLoadingExchange: false,
+              tokensData: {
+                to: tokens.to,
+                from: {
+                  token: tokens.from.token,
+                  amount: NaN,
+                },
+              },
+            });
+          } else {
+            this.setState({
+              tokensResurves: null,
+              pairAddress: '',
+              isLoadingExchange: false,
+              tokensData: {
+                from: tokens.from,
+                to: {
+                  token: tokens.to.token,
+                  amount: NaN,
+                },
+              },
+            });
+          }
           return;
         }
         this.setState({

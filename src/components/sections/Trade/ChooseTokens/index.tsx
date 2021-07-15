@@ -357,8 +357,8 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                 <div
                   className="choose-tokens__currency box-f-ai-c"
                   onClick={() => handleOpenSelectTokenModal('from')}
-                  onKeyDown={() => handleOpenSelectTokenModal('from')}
-                  tabIndex={0}
+                  onKeyDown={() => {}}
+                  tabIndex={-1}
                   role="button"
                 >
                   <img
@@ -406,9 +406,11 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
             <div
               className="box-circle"
               onClick={handleSwapPositions}
-              onKeyDown={handleSwapPositions}
+              onKeyDown={() => {
+                console.log(1);
+              }}
               role="button"
-              tabIndex={0}
+              tabIndex={-1}
             >
               {' '}
             </div>
@@ -423,8 +425,8 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                 <div
                   className="choose-tokens__currency box-f-ai-c"
                   onClick={() => handleOpenSelectTokenModal('to')}
-                  onKeyDown={() => handleOpenSelectTokenModal('to')}
-                  tabIndex={0}
+                  onKeyDown={() => {}}
+                  tabIndex={-1}
                   role="button"
                 >
                   <img
