@@ -34,14 +34,8 @@
 
   &__extra-text {
     display: none;
-    @include b(tablet) {
-      display: block;
-    }
   }
   &__currencies {
-    @include b(tablet) {
-      display: block !important;
-    }
     &-item {
       width: 24px;
       height: 24px;
@@ -60,16 +54,9 @@
   }
   &__apr {
     @include b(tablet) {
-      display: block !important;
       &_button {
         display: none;
       }
-    }
-  }
-  &__liquidity,
-  &__multiplier {
-    @include b(tablet) {
-      display: none !important;
     }
   }
 
@@ -79,15 +66,6 @@
       transition: 0.4s ease;
       &_active {
         transform: rotate(-180deg);
-      }
-      @include b(tablet) {
-        display: block;
-      }
-    }
-
-    &--pc {
-      @include b(tablet) {
-        display: none;
       }
     }
 
@@ -109,7 +87,6 @@
   &__buttons {
     @include b(tablet) {
       grid-row: 1;
-      display: block !important;
     }
   }
   &__details {
