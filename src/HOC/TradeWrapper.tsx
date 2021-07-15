@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useWalletConnectorContext } from '../services/MetamaskConnect';
+import { walletConnectorContext } from '../services/MetamaskConnect';
 import Web3Config from '../services/web3/config';
 import MetamaskService from '../services/web3';
 import { IToken, ITokens } from '../types';
@@ -19,7 +19,6 @@ interface ITradeWrapper {
     };
   };
   tokensResurves: any;
-  // isPairExist: true | undefined | null;
   resurvesInterval: any;
   pairAddress: string;
   maxFrom: number | string;
@@ -28,9 +27,7 @@ interface ITradeWrapper {
 }
 
 const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compProps?: any) => {
-  const { metamaskService } = useWalletConnectorContext();
-
-  return class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
+  class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
     constructor(props: any) {
       super(props);
 
@@ -88,7 +85,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
     async handleApproveTokens() {
       try {
         if (!this.state.isAllowanceFrom && this.state.tokensData.from.token) {
-          await metamaskService.approveToken({
+          await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
             approvedAddress: Web3Config.ROUTER.ADDRESS,
             tokenAddress: this.state.tokensData.from.token.address,
@@ -98,7 +95,7 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
           });
         }
         if (!this.state.isAllowanceTo && this.state.tokensData.to.token) {
-          await metamaskService.approveToken({
+          await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
             approvedAddress: Web3Config.ROUTER.ADDRESS,
             tokenAddress: this.state.tokensData.to.token.address,
@@ -121,10 +118,11 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
         this.setState({
           isLoadingExchange: true,
         });
-        const pairAddr = await metamaskService.callContractMethod('FACTORY', 'getPair', [
-          tokens.from.token?.address,
-          tokens.to.token?.address,
-        ]);
+        const pairAddr = await this.context.metamaskService.callContractMethod(
+          'FACTORY',
+          'getPair',
+          [tokens.from.token?.address, tokens.to.token?.address],
+        );
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
           this.setState({
             tokensResurves: null,
@@ -145,19 +143,19 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
           (tokens.from.amount || tokens.to.amount) &&
           pairAddr
         ) {
-          const token0 = await metamaskService.callContractMethodFromNewContract(
+          const token0 = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
             Web3Config.PAIR.ABI,
             'token0',
           );
 
-          const token1 = await metamaskService.callContractMethodFromNewContract(
+          const token1 = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
             Web3Config.PAIR.ABI,
             'token1',
           );
 
-          const resurves = await metamaskService.callContractMethodFromNewContract(
+          const resurves = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
             Web3Config.PAIR.ABI,
             'getReserves',
@@ -186,14 +184,18 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
               maxTo: MetamaskService.amountFromGwei(resurve2, +tokens.to.token.decimals),
             });
 
-            const quote = await metamaskService.callContractMethod('ROUTER', getExchangeMethod, [
-              MetamaskService.calcTransactionAmount(
-                tokens.from.amount,
-                +tokens.from.token.decimals,
-              ),
-              resurve1,
-              resurve2,
-            ]);
+            const quote = await this.context.metamaskService.callContractMethod(
+              'ROUTER',
+              getExchangeMethod,
+              [
+                MetamaskService.calcTransactionAmount(
+                  tokens.from.amount,
+                  +tokens.from.token.decimals,
+                ),
+                resurve1,
+                resurve2,
+              ],
+            );
 
             this.setState({
               tokensData: {
@@ -226,11 +228,15 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
               maxTo: MetamaskService.amountFromGwei(resurve1, +tokens.to.token.decimals),
             });
 
-            const quote = await metamaskService.callContractMethod('ROUTER', getExchangeMethod, [
-              MetamaskService.calcTransactionAmount(tokens.to.amount, +tokens.to.token.decimals),
-              resurve1,
-              resurve2,
-            ]);
+            const quote = await this.context.metamaskService.callContractMethod(
+              'ROUTER',
+              getExchangeMethod,
+              [
+                MetamaskService.calcTransactionAmount(tokens.to.amount, +tokens.to.token.decimals),
+                resurve1,
+                resurve2,
+              ],
+            );
 
             this.setState({
               tokensData: {
@@ -319,7 +325,11 @@ const TradeWrapper = (Component: React.FC<any>, getExchangeMethod: string, compP
         />
       );
     }
-  };
+  }
+
+  TradeWrapperComponent.contextType = walletConnectorContext;
+
+  return TradeWrapperComponent;
 };
 
 export default TradeWrapper;

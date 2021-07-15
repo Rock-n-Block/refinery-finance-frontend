@@ -86,6 +86,12 @@ const Liquidity: React.FC = observer(() => {
     }
   }, [user.address, getUserTrx]);
 
+  // React.useEffect(() => {
+  //   return () => {
+  //     console.log('clean');
+  //   };
+  // }, []);
+
   React.useEffect(() => {
     if (!error && userTrx && userTrx.liquidityPositionSnapshots) {
       const trxData: IRecentTx[] = [];
