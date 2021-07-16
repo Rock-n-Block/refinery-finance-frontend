@@ -25,7 +25,7 @@ const RemoveLiquidity: React.FC = observer(() => {
 
   const [liquidityInfo, setLiquidityInfo] = React.useState<ILiquidityInfo>();
   const [isTokensApprove, setTokensApprove] = React.useState<boolean>(false);
-  const [lpBalance, setLpBalance] = React.useState<number | string>('');
+  const [lpBalance, setLpBalance] = React.useState<string>('');
 
   const btns = [25, 50, 75];
 
@@ -186,7 +186,7 @@ const RemoveLiquidity: React.FC = observer(() => {
               pathname: '/trade/liquidity/receive',
               state: {
                 address: liquidityInfo?.address,
-                lpTokens: +new BigNumber(lpBalance)
+                lpTokens: new BigNumber(lpBalance)
                   .multipliedBy(new BigNumber(percent).dividedBy(100))
                   .toString(10),
                 token0: {

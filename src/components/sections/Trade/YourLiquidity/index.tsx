@@ -121,7 +121,7 @@ const YourLiquidity: React.FC = observer(() => {
               className="recent-txs__scroll"
               style={{
                 width: '100%',
-                height: liquidities.length > 3 ? '50vh' : `${liquidities.length * 75}px`,
+                height: liquidities.length > 3 ? '50vh' : `${liquidities.length * 76}px`,
               }}
             >
               {liquidities.map((liquidity: any) => (

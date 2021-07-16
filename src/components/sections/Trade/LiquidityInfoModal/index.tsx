@@ -117,6 +117,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
     >
       {info ? (
         <div className="liquidity-info__content">
+          <div className="text-purple text-smd text-bold">Your Liquidity</div>
           <div className="liquidity-info__title box-f-ai-c">
             <img src={UnknownImg} alt={info.token0.symbol} />
             <img src={UnknownImg} alt={info.token1.symbol} />

@@ -16,7 +16,7 @@ import './Receive.scss';
 import BnbImg from '@/assets/img/currency/unknown.svg';
 
 interface IReceiveState extends ILiquidityInfo {
-  lpTokens: string | number;
+  lpTokens: string;
 }
 
 const Receive: React.FC = observer(() => {
@@ -83,7 +83,7 @@ const Receive: React.FC = observer(() => {
               )}
             </div>
             <div className="receive__item-currency box-f-ai-c">
-              <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
+              <div className="text-upper text-smd">{liquidityInfo?.token1.symbol}</div>
               <img src={BnbImg} alt="" />
             </div>
           </div>
