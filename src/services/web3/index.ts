@@ -124,9 +124,8 @@ export default class MetamaskService {
   }
 
   createContract(contractName: string, tokenAddress: string, abi: Array<any>) {
-    const contract = this.getContract(tokenAddress, abi);
-
     if (!this.contracts[contractName]) {
+      const contract = this.getContract(tokenAddress, abi);
       this.contracts = {
         ...this.contracts,
         [contractName]: contract,
@@ -308,8 +307,18 @@ export default class MetamaskService {
     return this.web3Provider.eth.personal.sign(msg, this.walletAddress, '');
   }
 
-  async callContractMethod(contractName: string, methodName: string, data?: any[]) {
+  async callContractMethod(
+    contractName: string,
+    methodName: string,
+    data?: any[],
+    contractAddress?: string,
+    contractAbi?: Array<any>,
+  ) {
     try {
+      if (!this.contracts[contractName] && contractAddress && contractAbi) {
+        await this.createContract(contractName, contractAddress, contractAbi);
+      }
+
       if (this.contracts[contractName]) {
         const method = await this.contracts[contractName].methods[methodName];
         if (data) {
@@ -318,7 +327,6 @@ export default class MetamaskService {
         return await method().call();
       }
     } catch (err) {
-      debugger;
       throw new Error(err);
     }
     return new Error(`contract ${contractName} didn't created`);

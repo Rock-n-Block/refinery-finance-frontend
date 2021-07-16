@@ -4,10 +4,11 @@ import moment from 'moment';
 import { useLazyQuery, gql } from '@apollo/client';
 import { observer } from 'mobx-react-lite';
 
-import { Exchange, ExchangeSettings, RecentTxs } from '..';
+import { ExchangeSettings, RecentTxs } from '..';
 import { ISettings, IRecentTx } from '../../../../types';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
 import { useMst } from '../../../../store';
+import Exchange from '../Exchange';
 
 const GET_USER_TRX = gql`
   query Swap($address: String!) {
@@ -31,6 +32,8 @@ const GET_USER_TRX = gql`
   }
 `;
 
+const ExchangeComp = TradeWrapper(Exchange, 'getAmountOut');
+
 const Swap: React.FC = observer(() => {
   const { user } = useMst();
 
@@ -52,8 +55,6 @@ const Swap: React.FC = observer(() => {
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
-
-  const ExchangeComp = TradeWrapper(Exchange, 'getAmountOut', settings);
 
   React.useEffect(() => {
     if (user.address) {
@@ -110,7 +111,7 @@ const Swap: React.FC = observer(() => {
 
   return (
     <Switch>
-      <Route exact path="/trade/swap" render={() => <ExchangeComp />} />
+      <Route exact path="/trade/swap" render={() => <ExchangeComp settings={settings} />} />
       <Route
         exact
         path="/trade/swap/settings"

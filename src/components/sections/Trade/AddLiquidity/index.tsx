@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import BigNumber from 'bignumber.js/bignumber';
 
 import { TradeBox, ChooseTokens } from '..';
-import { ITokens } from '../../../../types';
+import { ITokens, ISettings } from '../../../../types';
 import { Button, Popover } from '../../../atoms';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
@@ -20,7 +20,7 @@ interface IAddLiquidity {
   isAllowanceFrom: boolean;
   isAllowanceTo: boolean;
   handleApproveTokens: () => void;
-  txDeadlineUtc: number;
+  settings: ISettings;
   tokensResurves: any;
 }
 
@@ -39,7 +39,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     isAllowanceFrom,
     handleApproveTokens,
     isAllowanceTo,
-    txDeadlineUtc,
+    settings,
     tokensResurves,
     isLoadingExchange,
   }) => {
@@ -50,6 +50,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     const [isLoading, setLoading] = React.useState<boolean>(false);
 
     const handleCreatePair = async () => {
+      console.log(settings, 'txDeadlineUtc');
       try {
         if (tokensData.from.token && tokensData.to.token) {
           setLoading(true);
@@ -76,10 +77,11 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
                 +tokensData.to.token.decimals,
               ),
               user.address,
-              txDeadlineUtc,
+              settings.txDeadlineUtc,
             ],
           });
           setLoading(false);
+          delete localStorage['refinery-finance-quote'];
         }
       } catch (err) {
         setLoading(false);
@@ -238,7 +240,10 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
               <div className="add-liquidity__info-item">
                 <Popover content={<span>{new BigNumber(exchange.share).toString(10)}</span>}>
                   <div className="text text-center text-purple add-liquidity__info-item-title">
-                    {exchange.share < 0.01 ? '<0.01' : new BigNumber(exchange.share).toString(10)}%
+                    {exchange.share < 0.01
+                      ? '<0.01'
+                      : new BigNumber(exchange.share).toFixed(4).toString()}
+                    %
                   </div>
                 </Popover>
                 <div className="text-sm text-center text-gray text-center text-purple">

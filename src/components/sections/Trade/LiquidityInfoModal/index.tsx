@@ -176,7 +176,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
               },
             }}
           >
-            <span>remove</span>
+            <span>Remove</span>
           </Button>
         </div>
       ) : (

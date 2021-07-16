@@ -6,15 +6,17 @@ import rootStore from '../../store';
 import MetamaskService from '../web3';
 import configWeb3 from '../web3/config';
 
+export interface IwalletConnectorContext {
+  metamaskService: MetamaskService;
+  connect: () => void;
+  disconnect: () => void;
+}
+
 const metamaskService = new MetamaskService({
   testnet: 'kovan',
 });
 
-export const walletConnectorContext = createContext<{
-  metamaskService: MetamaskService;
-  connect: () => void;
-  disconnect: () => void;
-}>({
+export const walletConnectorContext = createContext<IwalletConnectorContext>({
   metamaskService,
   connect: (): void => {},
   disconnect: (): void => {},
@@ -74,14 +76,6 @@ class Connector extends React.Component<any, any> {
 
   disconnect = () => {
     rootStore.user.disconnect();
-
-    // if (
-    //   ['/create/single', '/create/multi', '/profile', '/create'].includes(
-    //     this.props.location.pathname,
-    //   )
-    // ) {
-    //   this.props.history.push('/');
-    // }
   };
 
   render() {

@@ -31,12 +31,15 @@ const TradeWrapper = (
   getExchangeMethod: 'quote' | 'getAmountOut',
   compProps?: any,
 ) => {
-  class TradeWrapperComponent extends React.Component<any, ITradeWrapper> {
+  class TradeWrapperComponent extends React.Component<any, ITradeWrapper, any> {
+    // context!: React.ContextType<typeof walletConnectorContext>;
+
     constructor(props: any) {
       super(props);
 
       this.state = {
-        tokensData: {
+        tokensData: (localStorage[`refinery-finance-${getExchangeMethod}`] &&
+          JSON.parse(localStorage[`refinery-finance-${getExchangeMethod}`])) || {
           from: {
             token: undefined,
             amount: NaN,
@@ -48,7 +51,6 @@ const TradeWrapper = (
         },
         isAllowanceFrom: true,
         isAllowanceTo: true,
-        // isPairExist: undefined,
         tokensResurves: undefined,
         resurvesInterval: null,
         pairAddress: '',
@@ -65,6 +67,7 @@ const TradeWrapper = (
     }
 
     componentDidMount() {
+      this.handleGetExchange(this.state.tokensData, 'from');
       if (getExchangeMethod !== 'quote') {
         const interval = setInterval(async () => {
           if (
@@ -82,6 +85,10 @@ const TradeWrapper = (
           resurvesInterval: interval,
         });
       }
+    }
+
+    componentDidUpdate() {
+      localStorage[`refinery-finance-${getExchangeMethod}`] = JSON.stringify(this.state.tokensData);
     }
 
     componentWillUnmount() {
@@ -126,11 +133,15 @@ const TradeWrapper = (
         this.setState({
           isLoadingExchange: true,
         });
+
         const pairAddr = await this.context.metamaskService.callContractMethod(
           'FACTORY',
           'getPair',
           [tokens.from.token?.address, tokens.to.token?.address],
+          Web3Config.FACTORY.ADDRESS,
+          Web3Config.FACTORY.ABI,
         );
+        console.log(pairAddr, 'pairAddr');
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
           this.setState({});
           if (type === 'from') {
@@ -356,7 +367,6 @@ const TradeWrapper = (
       );
     }
   }
-
   TradeWrapperComponent.contextType = walletConnectorContext;
 
   return TradeWrapperComponent;

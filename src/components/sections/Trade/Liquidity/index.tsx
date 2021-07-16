@@ -9,10 +9,10 @@ import {
   ExchangeSettings,
   RecentTxs,
   ImportPool,
-  AddLiquidity,
   RemoveLiquidity,
   Receive,
 } from '..';
+import AddLiquidity from '../AddLiquidity';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
 import { ISettings, IRecentTx } from '../../../../types';
 import { useMst } from '../../../../store';
@@ -52,6 +52,8 @@ const GET_USER_TRX = gql`
   }
 `;
 
+const AddLiquidityComp = TradeWrapper(AddLiquidity, 'quote');
+
 const Liquidity: React.FC = observer(() => {
   const { user } = useMst();
 
@@ -73,8 +75,6 @@ const Liquidity: React.FC = observer(() => {
   const handleSaveSettings = (settingsObj: ISettings): void => {
     setSettings(settingsObj);
   };
-
-  const AddLiquidityComp = TradeWrapper(AddLiquidity, 'quote', settings);
 
   React.useEffect(() => {
     if (user.address) {
@@ -144,7 +144,11 @@ const Liquidity: React.FC = observer(() => {
     <Switch>
       <Route exact path="/trade/liquidity" component={YourLiquidity} />
       <Route exact path="/trade/liquidity/find" component={ImportPool} />
-      <Route exact path="/trade/liquidity/add" component={AddLiquidityComp} />
+      <Route
+        exact
+        path="/trade/liquidity/add"
+        render={() => <AddLiquidityComp settings={settings} />}
+      />
       <Route exact path="/trade/liquidity/remove" component={RemoveLiquidity} />
       <Route exact path="/trade/liquidity/receive" component={Receive} />
       <Route
