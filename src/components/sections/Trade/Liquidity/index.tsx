@@ -126,7 +126,7 @@ const Liquidity: React.FC = observer(() => {
 
         if (pairObj.transaction.mints.length) {
           pairObj.transaction.mints.forEach((mintTx: any) => {
-            dataItem.type = 'Mint';
+            dataItem.type = 'Add Liquidity';
             dataItem.from.value = mintTx.amount0;
             dataItem.to.value = mintTx.amount1;
             dataItem.address = mintTx.transaction.id;
