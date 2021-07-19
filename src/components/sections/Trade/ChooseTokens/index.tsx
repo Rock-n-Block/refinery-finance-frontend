@@ -166,10 +166,13 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
       if (initialTokenData) {
         setTokenFrom(initialTokenData.to.token);
         setTokenTo(initialTokenData.from.token);
-        handleChangeTokens({
-          from: initialTokenData.to,
-          to: initialTokenData.from,
-        });
+        handleChangeTokens(
+          {
+            from: initialTokenData.to,
+            to: initialTokenData.from,
+          },
+          'from',
+        );
       }
     };
 
