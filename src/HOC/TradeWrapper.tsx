@@ -11,11 +11,11 @@ interface ITradeWrapper {
   tokensData: {
     from: {
       token: IToken | undefined;
-      amount: number;
+      amount: number | string;
     };
     to: {
       token: IToken | undefined;
-      amount: number;
+      amount: number | string;
     };
   };
   tokensResurves: any;
@@ -145,7 +145,7 @@ const TradeWrapper = (
           Web3Config.FACTORY.ADDRESS,
           Web3Config.FACTORY.ABI,
         );
-        console.log(pairAddr, 'pairAddr');
+
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
           if (type === 'from') {
             this.setState((prev) => ({
@@ -255,7 +255,7 @@ const TradeWrapper = (
                 },
                 to: {
                   token: tokens.to.token,
-                  amount: +MetamaskService.amountFromGwei(+quote, +tokens.to.token.decimals),
+                  amount: MetamaskService.amountFromGwei(quote, +tokens.to.token.decimals),
                 },
               },
             });
@@ -292,7 +292,7 @@ const TradeWrapper = (
               tokensData: {
                 from: {
                   token: tokens.from.token,
-                  amount: +MetamaskService.amountFromGwei(+quote, +tokens.from.token.decimals),
+                  amount: MetamaskService.amountFromGwei(quote, +tokens.from.token.decimals),
                 },
                 to: {
                   token: tokens.to.token,

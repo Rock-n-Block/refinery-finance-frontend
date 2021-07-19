@@ -10,11 +10,11 @@ export interface IToken {
 export interface ITokens {
   from: {
     token: IToken | undefined;
-    amount: number;
+    amount: number | string;
   };
   to: {
     token: IToken | undefined;
-    amount: number;
+    amount: number | string;
   };
 }
 

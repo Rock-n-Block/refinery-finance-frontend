@@ -45,14 +45,14 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
     const [tokenFrom, setTokenFrom] = React.useState<IToken | undefined>(
       initialTokenData ? initialTokenData.from.token : undefined,
     );
-    const [tokenFromQuantity, setTokenFromQuantity] = React.useState<number>(
+    const [tokenFromQuantity, setTokenFromQuantity] = React.useState<number | string>(
       initialTokenData ? initialTokenData.from.amount : NaN,
     );
 
     const [tokenTo, setTokenTo] = React.useState<IToken | undefined>(
       initialTokenData ? initialTokenData.to.token : undefined,
     );
-    const [tokenToQuantity, setTokenToQuantity] = React.useState<number>(
+    const [tokenToQuantity, setTokenToQuantity] = React.useState<number | string>(
       initialTokenData ? initialTokenData.to.amount : NaN,
     );
 
