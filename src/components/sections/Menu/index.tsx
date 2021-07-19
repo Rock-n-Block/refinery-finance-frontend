@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 
 import { Button } from '../../atoms';
 import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
+import { WalletModal } from '..';
 import { useMst } from '../../../store';
 
 import './Menu.scss';
@@ -78,60 +79,73 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
       img: TeamsImg,
     },
   ];
+
+  const [isWalletModalVisible, setWalletModalVisible] = React.useState<boolean>(false);
+
   return (
-    <div className="menu box-f-fd-c">
-      <img src={LogoImg} alt="refinery finance" className="menu__logo" />
-      <div className="menu__nav">
-        {navItems.map((item) => (
-          <NavLink
-            exact
-            to={item.link}
-            className="menu__nav-item"
-            key={nextId()}
-            onClick={onClick}
-            isActive={(_, location) => {
-              if (
-                (item.activePaths && item.activePaths.includes(location.pathname)) ||
-                (item.link !== '/' && location.pathname.indexOf(item.link) > -1)
-              ) {
-                return true;
-              }
-              return item.link === location.pathname;
-            }}
-          >
-            <div className="menu__nav-item-box box-f-ai-c">
-              <div className="menu__nav-item-img box-f-c">
-                <img src={item.img} alt="" />
+    <>
+      <div className="menu box-f-fd-c">
+        <img src={LogoImg} alt="refinery finance" className="menu__logo" />
+        <div className="menu__nav">
+          {navItems.map((item) => (
+            <NavLink
+              exact
+              to={item.link}
+              className="menu__nav-item"
+              key={nextId()}
+              onClick={onClick}
+              isActive={(_, location) => {
+                if (
+                  (item.activePaths && item.activePaths.includes(location.pathname)) ||
+                  (item.link !== '/' && location.pathname.indexOf(item.link) > -1)
+                ) {
+                  return true;
+                }
+                return item.link === location.pathname;
+              }}
+            >
+              <div className="menu__nav-item-box box-f-ai-c">
+                <div className="menu__nav-item-img box-f-c">
+                  <img src={item.img} alt="" />
+                </div>
+                <span className="text-purple">{item.text}</span>
               </div>
-              <span className="text-purple">{item.text}</span>
-            </div>
-          </NavLink>
-        ))}
+            </NavLink>
+          ))}
+        </div>
+        <div className="menu__connect-box">
+          {!user.address ? (
+            <Button className="menu__connect" size="md" onClick={connect}>
+              <span className="text-bold text-white">Connect Wallet</span>
+            </Button>
+          ) : (
+            <Button className="menu__connect" size="md" onClick={() => setWalletModalVisible(true)}>
+              <span className="text-bold text-white text-address">{user.address}</span>
+            </Button>
+          )}
+        </div>
+        <div className="menu__balance box-purple-l box-f-ai-c">
+          <img src={LogoMiniImg} alt="refinery finance" className="menu__balance-img" />
+          <span className="text-purple">$37.166</span>
+        </div>
+        <div className="menu__socials box-f-ai-c">
+          <a href="/" className="menu__socials-item menu__socials-item-tg box-f-c">
+            <TgImg />
+          </a>
+          <a href="/" className="menu__socials-item box-f-c">
+            <TwImg />
+          </a>
+        </div>
       </div>
-      <div className="menu__connect-box">
-        {!user.address ? (
-          <Button className="menu__connect" size="md" onClick={connect}>
-            <span className="text-bold text-white">Connect Wallet</span>
-          </Button>
-        ) : (
-          <Button className="menu__connect" size="md">
-            <span className="text-bold text-white text-address">{user.address}</span>
-          </Button>
-        )}
-      </div>
-      <div className="menu__balance box-purple-l box-f-ai-c">
-        <img src={LogoMiniImg} alt="refinery finance" className="menu__balance-img" />
-        <span className="text-purple">$37.166</span>
-      </div>
-      <div className="menu__socials box-f-ai-c">
-        <a href="/" className="menu__socials-item menu__socials-item-tg box-f-c">
-          <TgImg />
-        </a>
-        <a href="/" className="menu__socials-item box-f-c">
-          <TwImg />
-        </a>
-      </div>
-    </div>
+      {user.address ? (
+        <WalletModal
+          isVisible={isWalletModalVisible}
+          handleClose={() => setWalletModalVisible(false)}
+        />
+      ) : (
+        ''
+      )}
+    </>
   );
 });
 

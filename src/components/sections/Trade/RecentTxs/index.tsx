@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Scrollbar } from 'react-scrollbars-custom';
 
 import { useMst } from '../../../../store';
-import { Button } from '../../../atoms';
+import { Button, Popover } from '../../../atoms';
 import { IRecentTx } from '../../../../types';
 
 import './RecentTxs.scss';
@@ -72,7 +72,9 @@ const RecentTxs: React.FC<IRecentTxs> = observer(({ items }) => {
                 </a>
               </div>
               <div className="recent-txs__item-box box-f-ai-c box-f-jc-sb">
-                <div className="text-med text-smd">{tx.from.value}</div>
+                <Popover content={tx.from.value}>
+                  <div className="text-med text-smd text-address">{tx.from.value}</div>
+                </Popover>
                 <div className="box-f-ai-c recent-txs__item-currency">
                   <div className="recent-txs__item-currency-name text-gray">{tx.from.symbol}</div>
                   <img
@@ -83,7 +85,9 @@ const RecentTxs: React.FC<IRecentTxs> = observer(({ items }) => {
                 </div>
               </div>
               <div className="recent-txs__item-box box-f-ai-c box-f-jc-sb">
-                <div className="text-med text-smd">{tx.to.value}</div>
+                <Popover content={tx.to.value}>
+                  <div className="text-med text-smd text-address">{tx.to.value}</div>
+                </Popover>
                 <div className="box-f-ai-c recent-txs__item-currency">
                   <div className="recent-txs__item-currency-name text-gray">{tx.to.symbol}</div>
                   <img

@@ -30,12 +30,14 @@
       height: 1px;
     }
     div {
-      display: block;
       margin-left: 13px;
       min-width: 36px;
       cursor: pointer;
       height: 36px;
       background: $gray-l;
+    }
+    img {
+      margin-bottom: -3px;
     }
   }
   &__select {

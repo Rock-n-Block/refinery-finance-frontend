@@ -12,6 +12,7 @@ import { useMst } from '../../../../store';
 import './ChooseTokens.scss';
 
 import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
+import ArrowCImg from '@/assets/img/icons/arrow-circle.svg';
 import UnknownImg from '@/assets/img/currency/unknown.svg';
 
 export interface IChooseTokens {
@@ -58,8 +59,8 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
     const [isModalVisible, setModalVisible] = React.useState<boolean>(false);
     const [tokenType, setTokenType] = React.useState<'from' | 'to'>('from');
 
-    const [balanceFrom, setBalanceFrom] = React.useState<number | string>('');
-    const [balanceTo, setBalanceTo] = React.useState<number | string>('');
+    const [balanceFrom, setBalanceFrom] = React.useState<string>('');
+    const [balanceTo, setBalanceTo] = React.useState<string>('');
 
     const handleCloseSelectTokenModal = (): void => {
       setModalVisible(false);
@@ -378,9 +379,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     }
                   />
                   {balanceFrom ? (
-                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${
-                      balanceFrom > 100000 ? (+balanceFrom).toFixed() : +(+balanceFrom).toFixed(8)
-                    }`}</div>
+                    <div className="choose-tokens__balance text-sm text-gray text-med text-address">{`Balance: ${balanceFrom}`}</div>
                   ) : (
                     ''
                   )}
@@ -404,7 +403,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
           )}
           <div className="choose-tokens__line box-f-ai-c">
             <div
-              className="box-circle"
+              className="box-circle box-f-c"
               onClick={handleSwapPositions}
               onKeyDown={() => {
                 console.log(1);
@@ -412,7 +411,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
               role="button"
               tabIndex={-1}
             >
-              {' '}
+              <img src={ArrowCImg} alt="" />
             </div>
           </div>
           {tokenTo ? (
@@ -444,9 +443,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     max={maxTo && maxTo < balanceTo ? maxTo : balanceTo}
                   />
                   {balanceTo ? (
-                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${
-                      balanceTo > 100000 ? (+balanceTo).toFixed() : +(+balanceTo).toFixed(8)
-                    }`}</div>
+                    <div className="choose-tokens__balance text-sm text-gray text-med text-address">{`Balance: ${balanceTo}`}</div>
                   ) : (
                     ''
                   )}
