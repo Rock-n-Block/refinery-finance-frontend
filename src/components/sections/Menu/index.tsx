@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import nextId from 'react-id-generator';
+import { observer } from 'mobx-react-lite';
 
 import { Button } from '../../atoms';
 import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
@@ -24,7 +25,7 @@ interface IMenuProps {
   onClick?: () => void;
 }
 
-const Menu: React.FC<IMenuProps> = React.memo(({ onClick }) => {
+const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
   const { connect } = useWalletConnectorContext();
   const { user } = useMst();
   const navItems = [
@@ -107,15 +108,17 @@ const Menu: React.FC<IMenuProps> = React.memo(({ onClick }) => {
           </NavLink>
         ))}
       </div>
-      {!user.address ? (
-        <Button className="menu__connect" size="md" onClick={connect}>
-          <span className="text-bold text-white">Connect Wallet</span>
-        </Button>
-      ) : (
-        <Button className="menu__connect" size="md">
-          <span className="text-bold text-white text-address">{user.address}</span>
-        </Button>
-      )}
+      <div className="menu__connect-box">
+        {!user.address ? (
+          <Button className="menu__connect" size="md" onClick={connect}>
+            <span className="text-bold text-white">Connect Wallet</span>
+          </Button>
+        ) : (
+          <Button className="menu__connect" size="md">
+            <span className="text-bold text-white text-address">{user.address}</span>
+          </Button>
+        )}
+      </div>
       <div className="menu__balance box-purple-l box-f-ai-c">
         <img src={LogoMiniImg} alt="refinery finance" className="menu__balance-img" />
         <span className="text-purple">$37.166</span>
