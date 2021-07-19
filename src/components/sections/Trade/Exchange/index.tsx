@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 import { TradeBox, ChooseTokens } from '..';
 import { Button } from '../../../atoms';
-import { ITokens } from '../../../../types';
+import { ITokens, ISettings } from '../../../../types';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import { useMst } from '../../../../store';
 import MetamaskService from '../../../../services/web3';
@@ -18,7 +18,7 @@ interface IExchange {
   isAllowanceFrom: boolean;
   isAllowanceTo: boolean;
   handleApproveTokens: () => void;
-  txDeadlineUtc: number;
+  settings: ISettings;
   tokensResurves: any;
   maxFrom: '';
   maxTo: '';
@@ -36,7 +36,7 @@ const Exchange: React.FC<IExchange> = observer(
     isAllowanceTo,
     maxFrom,
     maxTo,
-    txDeadlineUtc,
+    settings,
     tokensResurves,
     isLoadingExchange,
   }) => {
@@ -60,7 +60,7 @@ const Exchange: React.FC<IExchange> = observer(
               ),
               [tokensData.from.token.address, tokensData.to.token.address],
               user.address,
-              txDeadlineUtc,
+              settings.txDeadlineUtc,
             ],
           });
           setTokensData({
