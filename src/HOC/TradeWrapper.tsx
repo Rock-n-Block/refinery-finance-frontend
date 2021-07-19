@@ -31,8 +31,12 @@ const TradeWrapper = (
   getExchangeMethod: 'quote' | 'getAmountOut',
   compProps?: any,
 ) => {
-  class TradeWrapperComponent extends React.Component<any, ITradeWrapper, any> {
-    // context!: React.ContextType<typeof walletConnectorContext>;
+  return class TradeWrapperComponent extends React.Component<any, ITradeWrapper, any> {
+    // eslint-disable-next-line react/static-property-placement
+    static contextType = walletConnectorContext;
+
+    // eslint-disable-next-line react/static-property-placement
+    context!: React.ContextType<typeof walletConnectorContext>;
 
     constructor(props: any) {
       super(props);
@@ -362,7 +366,7 @@ const TradeWrapper = (
           setAllowanceFrom={this.handleChangeAllowanceFrom}
           setAllowanceTo={this.handleChangeAllowanceTo}
           isAllowanceFrom={this.state.isAllowanceFrom}
-          isAllowanceTo={this.state.isAllowanceFrom}
+          isAllowanceTo={this.state.isAllowanceTo}
           handleApproveTokens={this.handleApproveTokens}
           tokensResurves={this.state.tokensResurves}
           maxFrom={this.state.maxFrom}
@@ -371,10 +375,10 @@ const TradeWrapper = (
         />
       );
     }
-  }
-  TradeWrapperComponent.contextType = walletConnectorContext;
+  };
+  // TradeWrapperComponent.contextType = walletConnectorContext;
 
-  return TradeWrapperComponent;
+  // return TradeWrapperComponent;
 };
 
 export default TradeWrapper;

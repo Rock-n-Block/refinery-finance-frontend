@@ -173,49 +173,61 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
       }
     };
 
-    const handleCheckAllowance = async (inputValue: number | string) => {
-      try {
-        const promises: any[] = [];
-        if (tokenFrom?.address) {
-          promises.push(
-            metamaskService.checkTokenAllowance({
-              contractName: 'ERC20',
-              approvedAddress: Web3Config.ROUTER.ADDRESS,
-              tokenAddress: tokenFrom?.address,
-              approveSum: +inputValue,
-            }),
-          );
-        }
-        if (tokenTo?.address) {
-          promises.push(
-            metamaskService.checkTokenAllowance({
-              contractName: 'ERC20',
-              approvedAddress: Web3Config.ROUTER.ADDRESS,
-              tokenAddress: tokenTo?.address,
-              approveSum: +inputValue,
-            }),
-          );
-        }
-        const result = await Promise.all(promises);
-        if (changeTokenFromAllowance) {
-          changeTokenFromAllowance(!!result[0]);
-        }
-        if (changeTokenToAllowance) {
-          changeTokenToAllowance(!!result[1]);
-        }
-        return result;
-      } catch (err) {
-        console.log(err, 'err check token allowance');
+    const handleCheckAllowance = React.useCallback(
+      async (inputValue?: number | string) => {
+        try {
+          const promises: any[] = [];
+          if (tokenFrom?.address) {
+            promises.push(
+              metamaskService.checkTokenAllowance({
+                contractName: 'ERC20',
+                approvedAddress: Web3Config.ROUTER.ADDRESS,
+                tokenAddress: tokenFrom?.address,
+                approveSum: inputValue ? +inputValue : +initialTokenData.from.amount,
+              }),
+            );
+          }
+          if (tokenTo?.address) {
+            promises.push(
+              metamaskService.checkTokenAllowance({
+                contractName: 'ERC20',
+                approvedAddress: Web3Config.ROUTER.ADDRESS,
+                tokenAddress: tokenTo?.address,
+                approveSum: inputValue ? +inputValue : +initialTokenData.to.amount,
+              }),
+            );
+          }
+          const result = await Promise.all(promises);
 
-        if (changeTokenFromAllowance) {
-          changeTokenFromAllowance(false);
+          if (changeTokenFromAllowance) {
+            changeTokenFromAllowance(!!result[0]);
+          }
+          if (changeTokenToAllowance) {
+            changeTokenToAllowance(!!result[1]);
+          }
+          return result;
+        } catch (err) {
+          console.log(err, 'err check token allowance');
+
+          if (changeTokenFromAllowance) {
+            changeTokenFromAllowance(false);
+          }
+          if (changeTokenToAllowance) {
+            changeTokenToAllowance(false);
+          }
+          return '';
         }
-        if (changeTokenToAllowance) {
-          changeTokenToAllowance(false);
-        }
-        return '';
-      }
-    };
+      },
+      [
+        changeTokenFromAllowance,
+        changeTokenToAllowance,
+        initialTokenData.from.amount,
+        initialTokenData.to.amount,
+        metamaskService,
+        tokenFrom?.address,
+        tokenTo?.address,
+      ],
+    );
 
     const handleChangeTokensQuantity = async (type: 'from' | 'to', quantity: number) => {
       if (type === 'from') {
@@ -344,6 +356,10 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
       handleGetBalance('from');
       handleGetBalance('to');
     }, [handleGetBalance, initialTokenData.from.token, initialTokenData.to.token]);
+
+    React.useEffect(() => {
+      handleCheckAllowance();
+    }, [handleCheckAllowance]);
 
     return (
       <>
