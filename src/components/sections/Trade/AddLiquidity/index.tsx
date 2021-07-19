@@ -82,6 +82,16 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
           });
           setLoading(false);
           delete localStorage['refinery-finance-quote'];
+          setTokensData({
+            from: {
+              token: tokensData.from.token,
+              amount: NaN,
+            },
+            to: {
+              token: tokensData.to.token,
+              amount: NaN,
+            },
+          });
         }
       } catch (err) {
         setLoading(false);

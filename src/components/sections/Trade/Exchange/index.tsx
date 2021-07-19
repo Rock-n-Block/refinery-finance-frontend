@@ -63,6 +63,7 @@ const Exchange: React.FC<IExchange> = observer(
               settings.txDeadlineUtc,
             ],
           });
+          delete localStorage['refinery-finance-getAmountOut'];
           setTokensData({
             from: {
               token: tokensData.from.token,
