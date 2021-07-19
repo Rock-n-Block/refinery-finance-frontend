@@ -5,7 +5,7 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js/bignumber';
 
 import { TradeBox } from '..';
-import { Button } from '../../../atoms';
+import { Button, Popover } from '../../../atoms';
 import { ILiquidityInfo } from '../../../../types';
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import MetamaskService from '../../../../services/web3';
@@ -63,12 +63,19 @@ const Receive: React.FC = observer(() => {
       {liquidityInfo && liquidityInfo.token0.receive && liquidityInfo.token1.receive ? (
         <div className="receive__box">
           <div className="receive__item box-f-ai-c box-f-jc-sb">
-            <div className="text-lmd">
-              {MetamaskService.amountFromGwei(
+            <Popover
+              content={MetamaskService.amountFromGwei(
                 liquidityInfo.token0.receive,
                 +liquidityInfo.token0.decimals,
               )}
-            </div>
+            >
+              <div className="text-lmd text-address">
+                {MetamaskService.amountFromGwei(
+                  liquidityInfo.token0.receive,
+                  +liquidityInfo.token0.decimals,
+                )}
+              </div>
+            </Popover>
             <div className="receive__item-currency box-f-ai-c">
               <div className="text-upper text-smd">{liquidityInfo?.token0.symbol}</div>
               <img src={BnbImg} alt="" />
@@ -76,12 +83,19 @@ const Receive: React.FC = observer(() => {
           </div>
           <div className="text-purple text-lmd text-med receive__plus">+</div>
           <div className="receive__item box-f-ai-c box-f-jc-sb">
-            <div className="text-lmd">
-              {MetamaskService.amountFromGwei(
+            <Popover
+              content={MetamaskService.amountFromGwei(
                 liquidityInfo.token1.receive,
                 +liquidityInfo.token1.decimals,
               )}
-            </div>
+            >
+              <div className="text-lmd text-address">
+                {MetamaskService.amountFromGwei(
+                  liquidityInfo.token1.receive,
+                  +liquidityInfo.token1.decimals,
+                )}
+              </div>
+            </Popover>
             <div className="receive__item-currency box-f-ai-c">
               <div className="text-upper text-smd">{liquidityInfo?.token1.symbol}</div>
               <img src={BnbImg} alt="" />
@@ -102,7 +116,9 @@ const Receive: React.FC = observer(() => {
           <div className="box-f-ai-c">
             <img src={BnbImg} alt="" />
             <img src={BnbImg} alt="" />
-            <span>{MetamaskService.amountFromGwei(liquidityInfo?.lpTokens, 18)}</span>
+            <span className=" text-address">
+              {MetamaskService.amountFromGwei(liquidityInfo?.lpTokens, 18)}
+            </span>
           </div>
         </div>
       ) : (

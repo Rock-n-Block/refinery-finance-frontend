@@ -27,6 +27,9 @@
       margin-bottom: 10px;
       display: block;
     }
+    span + div {
+      padding-top: 3px;
+    }
   }
   &__price {
     &__item {

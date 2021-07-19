@@ -399,7 +399,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   ) : (
                     ''
                   )}
-                  {maxFrom && tokenFromQuantity > maxFrom ? (
+                  {maxFrom && +tokenFromQuantity > maxFrom ? (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxFrom}`}</div>
                   ) : (
                     ''
@@ -463,7 +463,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   ) : (
                     ''
                   )}
-                  {maxTo && tokenToQuantity > maxTo ? (
+                  {maxTo && +tokenToQuantity > maxTo ? (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxTo}`}</div>
                   ) : (
                     ''
