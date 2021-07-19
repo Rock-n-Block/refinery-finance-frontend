@@ -143,9 +143,8 @@ const TradeWrapper = (
         );
         console.log(pairAddr, 'pairAddr');
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
-          this.setState({});
           if (type === 'from') {
-            this.setState({
+            this.setState((prev) => ({
               tokensResurves: null,
               pairAddress: '',
               isLoadingExchange: false,
@@ -153,12 +152,15 @@ const TradeWrapper = (
                 to: tokens.to,
                 from: {
                   token: tokens.from.token,
-                  amount: NaN,
+                  amount:
+                    prev.tokensData.from.token?.symbol !== tokens.from.token?.symbol
+                      ? NaN
+                      : tokens.from.amount,
                 },
               },
-            });
+            }));
           } else {
-            this.setState({
+            this.setState((prev) => ({
               tokensResurves: null,
               pairAddress: '',
               isLoadingExchange: false,
@@ -166,10 +168,13 @@ const TradeWrapper = (
                 from: tokens.from,
                 to: {
                   token: tokens.to.token,
-                  amount: NaN,
+                  amount:
+                    prev.tokensData.to.token?.symbol !== tokens.to.token?.symbol
+                      ? NaN
+                      : tokens.to.amount,
                 },
               },
-            });
+            }));
           }
           return;
         }
