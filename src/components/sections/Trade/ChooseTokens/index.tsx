@@ -356,6 +356,11 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
     }, [initialTokenData?.from.amount, initialTokenData?.to.amount]);
 
     React.useEffect(() => {
+      setTokenFrom(initialTokenData.from.token);
+      setTokenTo(initialTokenData.to.token);
+    }, [initialTokenData.from.token, initialTokenData.to.token]);
+
+    React.useEffect(() => {
       handleGetBalance('from');
       handleGetBalance('to');
     }, [handleGetBalance, initialTokenData.from.token, initialTokenData.to.token]);
