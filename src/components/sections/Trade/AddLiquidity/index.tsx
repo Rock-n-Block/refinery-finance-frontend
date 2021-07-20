@@ -22,6 +22,7 @@ interface IAddLiquidity {
   handleApproveTokens: () => void;
   settings: ISettings;
   tokensResurves: any;
+  isApproving: boolean;
 }
 
 interface IPrices {
@@ -42,6 +43,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     settings,
     tokensResurves,
     isLoadingExchange,
+    isApproving,
   }) => {
     const { metamaskService, connect } = useWalletConnectorContext();
     const { user } = useMst();
@@ -84,11 +86,11 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
           delete localStorage['refinery-finance-quote'];
           setTokensData({
             from: {
-              token: tokensData.from.token,
+              token: undefined,
               amount: NaN,
             },
             to: {
-              token: tokensData.to.token,
+              token: undefined,
               amount: NaN,
             },
           });
@@ -313,7 +315,11 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         tokensData.to.token &&
         tokensData.to.amount &&
         tokensData.from.amount ? (
-          <Button className="add-liquidity__btn" onClick={handleApproveTokens}>
+          <Button
+            className="add-liquidity__btn"
+            onClick={handleApproveTokens}
+            loading={isApproving}
+          >
             <span className="text-white text-bold text-smd">Approve tokens</span>
           </Button>
         ) : (

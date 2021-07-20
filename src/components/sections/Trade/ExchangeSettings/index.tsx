@@ -114,6 +114,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
                 value={slippageInputValue}
                 colorScheme="outline"
                 inputSize="sm"
+                max={100}
                 inputPrefix="%"
                 onFocus={handleFocusSlippageInput}
                 onChange={handleChangeSlippageInput}

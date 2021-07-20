@@ -23,6 +23,7 @@ interface IExchange {
   maxFrom: '';
   maxTo: '';
   isLoadingExchange: boolean;
+  isApproving: boolean;
 }
 
 const Exchange: React.FC<IExchange> = observer(
@@ -39,6 +40,7 @@ const Exchange: React.FC<IExchange> = observer(
     settings,
     tokensResurves,
     isLoadingExchange,
+    isApproving,
   }) => {
     const { connect, metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
@@ -66,11 +68,11 @@ const Exchange: React.FC<IExchange> = observer(
           delete localStorage['refinery-finance-getAmountOut'];
           setTokensData({
             from: {
-              token: tokensData.from.token,
+              token: undefined,
               amount: NaN,
             },
             to: {
-              token: tokensData.to.token,
+              token: undefined,
               amount: NaN,
             },
           });
@@ -146,7 +148,7 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.from.amount &&
           tokensResurves !== null &&
           user.address ? (
-            <Button className="exchange__btn" onClick={handleApproveTokens}>
+            <Button className="exchange__btn" onClick={handleApproveTokens} loading={isApproving}>
               <span className="text-white text-bold text-smd">Approve tokens</span>
             </Button>
           ) : (

@@ -24,6 +24,7 @@ interface ITradeWrapper {
   maxFrom: number | string;
   maxTo: number | string;
   isLoadingExchange: boolean;
+  isApproving: boolean;
 }
 
 const TradeWrapper = (
@@ -61,6 +62,7 @@ const TradeWrapper = (
         maxFrom: '',
         maxTo: '',
         isLoadingExchange: false,
+        isApproving: false,
       };
 
       this.handleChangeTokensData = this.handleChangeTokensData.bind(this);
@@ -104,6 +106,9 @@ const TradeWrapper = (
     async handleApproveTokens() {
       try {
         if (!this.state.isAllowanceFrom && this.state.tokensData.from.token) {
+          this.setState({
+            isApproving: true,
+          });
           await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
             approvedAddress: Web3Config.ROUTER.ADDRESS,
@@ -123,10 +128,14 @@ const TradeWrapper = (
             isAllowanceTo: true,
           });
         }
+        this.setState({
+          isApproving: false,
+        });
       } catch (err) {
         this.setState({
           isAllowanceFrom: false,
           isAllowanceTo: false,
+          isApproving: false,
         });
         console.log('err approve tokens', err);
       }
@@ -372,6 +381,7 @@ const TradeWrapper = (
           maxFrom={this.state.maxFrom}
           maxTo={this.state.maxTo}
           isLoadingExchange={this.state.isLoadingExchange}
+          isApproving={this.state.isApproving}
         />
       );
     }
