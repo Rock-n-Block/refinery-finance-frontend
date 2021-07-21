@@ -26,10 +26,12 @@ const Receive: React.FC = observer(() => {
   const { user } = useMst();
 
   const [liquidityInfo, setLiquidityInfo] = React.useState<IReceiveState>();
+  const [isActiveTx, setIsActiveTx] = React.useState<boolean>(false);
 
   const handleRemoveLiquidity = async () => {
     try {
       if (liquidityInfo && liquidityInfo?.token0.receive && liquidityInfo?.token1.receive) {
+        setIsActiveTx(true);
         await metamaskService.createTransaction({
           method: 'removeLiquidity',
           contractName: 'ROUTER',
@@ -46,6 +48,7 @@ const Receive: React.FC = observer(() => {
         history.push('/trade/liquidity');
       }
     } catch (err) {
+      setIsActiveTx(false);
       console.log('remove liquidity', err);
     }
   };
@@ -141,7 +144,7 @@ const Receive: React.FC = observer(() => {
       ) : (
         ''
       )}
-      <Button className="receive__btn" onClick={handleRemoveLiquidity}>
+      <Button className="receive__btn" onClick={handleRemoveLiquidity} loading={isActiveTx}>
         <span className="text-white text-bold text-md">Confirm</span>
       </Button>
     </TradeBox>
