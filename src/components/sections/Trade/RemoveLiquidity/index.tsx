@@ -25,6 +25,7 @@ const RemoveLiquidity: React.FC = observer(() => {
 
   const [liquidityInfo, setLiquidityInfo] = React.useState<ILiquidityInfo>();
   const [isTokensApprove, setTokensApprove] = React.useState<boolean>(false);
+  const [isTokensApproving, setTokensApproving] = React.useState<boolean>(false);
   const [lpBalance, setLpBalance] = React.useState<string>('');
 
   const btns = [25, 50, 75];
@@ -63,16 +64,19 @@ const RemoveLiquidity: React.FC = observer(() => {
   const handleApprove = async () => {
     try {
       if (liquidityInfo && user.address) {
+        setTokensApproving(true);
         await metamaskService.approveToken({
           contractName: 'PAIR',
           approvedAddress: Web3Config.ROUTER.ADDRESS,
           tokenAddress: liquidityInfo?.address,
         });
 
+        setTokensApproving(false);
         setTokensApprove(true);
       }
     } catch (err) {
       console.log('approve lp', err);
+      setTokensApproving(false);
       setTokensApprove(false);
     }
   };
@@ -171,15 +175,18 @@ const RemoveLiquidity: React.FC = observer(() => {
       ) : (
         ''
       )}
-      <div className="r-liquidity__btns box-f-ai-c box-f-jc-sb">
+      <div className="r-liquidity__btns box-f-ai-c box-f-jc-e">
         {!isTokensApprove ? (
-          <Button onClick={handleApprove}>
+          <Button onClick={handleApprove} loading={isTokensApproving}>
             <span className="text-white text-bold text-md">Approve</span>
           </Button>
         ) : (
-          <div className="" />
+          <div />
         )}
-        {liquidityInfo && liquidityInfo.token0.deposited && liquidityInfo.token1.deposited ? (
+        {isTokensApprove &&
+        liquidityInfo &&
+        liquidityInfo.token0.deposited &&
+        liquidityInfo.token1.deposited ? (
           <Button
             disabled={!isTokensApprove}
             link={{
