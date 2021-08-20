@@ -78,6 +78,11 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
       link: '/teams',
       img: TeamsImg,
     },
+    {
+      text: 'DAO',
+      link: '/dao',
+      // img: TeamsImg,
+    },
   ];
 
   const [isWalletModalVisible, setWalletModalVisible] = React.useState<boolean>(false);

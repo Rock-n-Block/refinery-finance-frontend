@@ -12,6 +12,7 @@ import {
   CollectiblesPage,
   TeamsPage,
   TeamPage,
+  DaoPage,
 } from './pages';
 import { useMst } from './store';
 
@@ -55,6 +56,7 @@ const App: React.FC = observer(() => {
         <Route exact path="/collectibles" component={CollectiblesPage} />
         <Route exact path="/teams" component={TeamsPage} />
         <Route exact path="/team/:id" component={TeamPage} />
+        <Route exact path="/dao" component={DaoPage} />
       </Switch>
       <MetamaskErrModal />
       <RoiModal />
