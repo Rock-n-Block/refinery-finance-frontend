@@ -2,33 +2,9 @@
 @import 'src/styles/mixins/media';
 @import 'src/styles/typography';
 
-$desktop-menu-width: 240px;
-$default-horizontal-padding: 48px;
-$default-vertical-padding: 22px;
 $section-margin: 60px;
 
 .dao {
-  padding: {
-    top: $default-vertical-padding;
-    right: $default-horizontal-padding;
-    bottom: $default-vertical-padding;
-    left: $default-horizontal-padding + $desktop-menu-width;
-  }
-
-  background-image: url(~@/assets/img/bg-c.svg);
-  background-repeat: no-repeat;
-  background-size: auto auto;
-  background-position: center;
-
-  @include b(tablet) {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  &__content {
-    border-radius: 40px;
-  }
-
   &__wrapper {
     padding: $section-margin;
 
@@ -54,18 +30,6 @@ $section-margin: 60px;
       padding-left: 20px;
       padding-right: 20px;
     }
-  }
-}
-
-.section {
-  &__header {
-    padding: 27px 32px;
-    background: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
-    border-radius: 40px 40px 0px 0px;
-  }
-
-  &__body {
-    padding: 20px;
   }
 }
 
@@ -123,7 +87,6 @@ $section-margin: 60px;
   min-width: 300px;
 
   @include b(mobile) {
-    // flex-direction: row;
     padding-left: 0;
   }
 
@@ -132,21 +95,7 @@ $section-margin: 60px;
   }
 }
 
-.information {
-  padding: 20px;
-  background: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
-  border-radius: 10px;
-
-  &__title {
-    // font-family: Rubik;
-    // font-style: normal;
-    // font-weight: bold;
-    // font-size: 18px;
-    // line-height: 21px;
-  }
-
-  &__content {}
-
+.additional-information {
   &__content-row {
     display: flex;
     flex-direction: row;

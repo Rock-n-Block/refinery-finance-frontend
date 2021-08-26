@@ -1,32 +1,6 @@
-@import 'src/styles/vars';
 @import 'src/styles/mixins/media';
 
-$desktop-menu-width: 240px;
-$default-horizontal-padding: 48px;
-$default-vertical-padding: 22px;
-
 .dao-list {
-  padding: {
-    top: $default-vertical-padding;
-    right: $default-horizontal-padding;
-    bottom: $default-vertical-padding;
-    left: $default-horizontal-padding + $desktop-menu-width;
-  }
-
-  background-image: url(~@/assets/img/bg-c.svg);
-  background-repeat: no-repeat;
-  background-size: auto auto;
-  background-position: center;
-
-  @include b(tablet) {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  &__content {
-    border-radius: 40px;
-  }
-
   &__list-wrapper {
     padding: 60px;
 

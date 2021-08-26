@@ -1,11 +1,8 @@
 import React from 'react';
 
-// import { Link } from 'react-router-dom';
-// import classNames from 'classnames';
 import './DaoList.scss';
 
-// import Button from '@/components/atoms/Button';
-import { DaoPreview } from '@/components/sections/Dao';
+import { DaoPreview, DaoWrapper } from '@/components/sections/Dao';
 import { DaoListItemsList } from '@/components/sections/DaoList';
 
 const mockData = {
@@ -46,16 +43,12 @@ const mockData = {
 const DaoList: React.FC = () => {
   const { items } = mockData;
   return (
-    <main className="dao-list">
-      <div className="row">
-        <div className="dao-list__content box-purple-l">
-          <DaoPreview />
-          <div className="dao-list__list-wrapper">
-            <DaoListItemsList items={items} />
-          </div>
-        </div>
+    <DaoWrapper>
+      <DaoPreview />
+      <div className="dao-list__list-wrapper">
+        <DaoListItemsList items={items} />
       </div>
-    </main>
+    </DaoWrapper>
   );
 };
 export default DaoList;

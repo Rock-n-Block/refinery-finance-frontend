@@ -16,7 +16,7 @@ const Preview: React.FC = () => {
             each proposal yourself or delegate your votes to a third party.
           </p>
         </div>
-        <Button className="dao-preview__button">
+        <Button className="dao-preview__button" link="/dao/proposal/create">
           <span className="text-white text-smd text-bold">Create Proposal</span>
         </Button>
       </div>

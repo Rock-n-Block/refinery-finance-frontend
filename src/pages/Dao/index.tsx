@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import './Dao.scss';
 
-// import { DaoListItemsList } from '@/components/sections/DaoList';
 import exampleAvatarPng from '@/assets/img/REMOVE_ME-avatar.png';
 import Button from '@/components/atoms/Button';
-import { DaoPreview } from '@/components/sections/Dao';
+import { DaoInformation, DaoPreview, DaoSection, DaoWrapper } from '@/components/sections/Dao';
 
 const mockData = {
   id: '1',
@@ -169,140 +167,116 @@ const Dao: React.FC = () => {
     console.log(`retrieve data by id=${id}`);
   }, [id]);
   return (
-    <main className="dao">
-      <div className="row">
-        <div className="dao__content box-purple-l">
-          <DaoPreview />
-          <div className="dao__wrapper">
-            <div className="dao__title text-purple text-bold">{title}</div>
-            <section className="section document dao__section box-shadow box-white">
-              <div className="document__wrapper">
-                <div className="document__column">
-                  <div className="document__text" dangerouslySetInnerHTML={{ __html: text }} />
-                </div>
-                <div className="document__column information-column text-ssm">
-                  <div
-                    className={classNames(
-                      'document__status',
-                      `document__status_${status}`,
-                      'btn',
-                      'btn-ssm',
-                      'text-ssmd',
-                    )}
-                  >
-                    {status}
-                  </div>
-                  <section className="document__information information">
-                    <div className="information__title text-purple text-bold text-smd">
-                      Information
-                    </div>
-                    <div className="information__content">
-                      <ul>
-                        {additionalInformation.map((item) => {
-                          return (
-                            <li key={item.id} className="information__content-row">
-                              <div className="information__option-name text-purple">
-                                {item.option}
-                              </div>
-                              <div className="information__option-value">{item.value}</div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </section>
-
-                  <section className="document__information information">
-                    <div className="information__title text-purple text-bold text-smd">
-                      Current results
-                    </div>
-                    <div className="information__content">
-                      <ul className="votes-progression">
-                        <li className="votes-progression__item">
-                          <div className="votes-progression__captions text-purple">
-                            <div className="votes-progression__option">Vote FOR1.64k RARI</div>
-                            <div className="votes-progression__value">100%</div>
-                          </div>
-                          <div className="votes-progression__progress-bar votes-progression__progress-bar_active" />
-                        </li>
-                        <li className="votes-progression__item">
-                          <div className="votes-progression__captions text-purple">
-                            <div className="votes-progression__option">Author</div>
-                            <div className="votes-progression__value">0%</div>
-                          </div>
-                          <div className="votes-progression__progress-bar" />
-                        </li>
-                      </ul>
-                    </div>
-                  </section>
-                </div>
+    <DaoWrapper>
+      <DaoPreview />
+      <div className="dao__wrapper">
+        <div className="dao__title text-purple text-bold">{title}</div>
+        <section className="section document dao__section box-shadow box-white">
+          <div className="document__wrapper">
+            <div className="document__column">
+              <div className="document__text" dangerouslySetInnerHTML={{ __html: text }} />
+            </div>
+            <div className="document__column information-column text-ssm">
+              <div
+                className={classNames(
+                  'document__status',
+                  `document__status_${status}`,
+                  'btn',
+                  'btn-ssm',
+                  'text-ssmd',
+                )}
+              >
+                {status}
               </div>
-            </section>
+              <DaoInformation className="document__information" title="Information">
+                <ul>
+                  {additionalInformation.map((item) => {
+                    return (
+                      <li key={item.id} className="additional-information__content-row">
+                        <div className="additional-information__option-name text-purple">
+                          {item.option}
+                        </div>
+                        <div className="additional-information__option-value">{item.value}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </DaoInformation>
 
-            <section className="section dao__section box-shadow box-white">
-              <div className="section__wrapper">
-                <div className="section__header text-purple text-slg text-bold">Cast your vote</div>
-                <div className="section__body">
-                  <div className="buttons-group">
-                    <Button
-                      className={classNames('buttons-group__button', {
-                        'buttons-group__button_active': votedOption === 0,
-                      })}
-                      colorScheme="outline-purple"
-                      size="smd"
-                      onClick={() => setVotedOption(0)}
-                    >
-                      Vote for
-                    </Button>
-                    <Button
-                      className={classNames('buttons-group__button', {
-                        'buttons-group__button_active': votedOption === 1,
-                      })}
-                      colorScheme="outline-purple"
-                      size="smd"
-                      onClick={() => setVotedOption(1)}
-                    >
-                      Vote Against
-                    </Button>
-                    <Button className="buttons-group__submit-button" colorScheme="purple">
-                      <span className="text-bold">Vote</span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="section dao__section box-shadow box-white">
-              <div className="section__wrapper">
-                <div className="section__header text-purple text-slg text-bold">Votes</div>
-                <div className="section__body">
-                  <ul className="votes-list">
-                    {votes.map((item, index) => {
-                      return (
-                        <li
-                          key={JSON.stringify(item) + String(index)}
-                          className="votes-list__item text-smd"
-                        >
-                          <div className="votes-list__avatar">
-                            <img src={exampleAvatarPng} alt="avatar" />
-                          </div>
-                          <div className="votes-list__name">{item.person.name}</div>
-                          <div className="votes-list__vote">{item.chosenOption}</div>
-                          <div className="votes-list__tokens">
-                            <div className="votes-list__tokens-value text-purple">{item.value}</div>
-                            <div className="votes-list__tokens-name">{item.valueCategory}</div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-            </section>
+              <DaoInformation className="document__information" title="Current results">
+                <ul className="votes-progression">
+                  <li className="votes-progression__item">
+                    <div className="votes-progression__captions text-purple">
+                      <div className="votes-progression__option">Vote FOR1.64k RARI</div>
+                      <div className="votes-progression__value">100%</div>
+                    </div>
+                    <div className="votes-progression__progress-bar votes-progression__progress-bar_active" />
+                  </li>
+                  <li className="votes-progression__item">
+                    <div className="votes-progression__captions text-purple">
+                      <div className="votes-progression__option">Author</div>
+                      <div className="votes-progression__value">0%</div>
+                    </div>
+                    <div className="votes-progression__progress-bar" />
+                  </li>
+                </ul>
+              </DaoInformation>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <DaoSection className="dao__section" title="Cast your vote">
+          <div className="buttons-group">
+            <Button
+              className={classNames('buttons-group__button', {
+                'buttons-group__button_active': votedOption === 0,
+              })}
+              colorScheme="outline-purple"
+              size="smd"
+              onClick={() => setVotedOption(0)}
+            >
+              Vote for
+            </Button>
+            <Button
+              className={classNames('buttons-group__button', {
+                'buttons-group__button_active': votedOption === 1,
+              })}
+              colorScheme="outline-purple"
+              size="smd"
+              onClick={() => setVotedOption(1)}
+            >
+              Vote Against
+            </Button>
+            <Button className="buttons-group__submit-button" colorScheme="purple">
+              <span className="text-bold">Vote</span>
+            </Button>
+          </div>
+        </DaoSection>
+
+        <DaoSection className="dao__section" title="Votes">
+          <ul className="votes-list">
+            {votes.map((item, index) => {
+              return (
+                <li
+                  key={JSON.stringify(item) + String(index)}
+                  className="votes-list__item text-smd"
+                >
+                  <div className="votes-list__avatar">
+                    <img src={exampleAvatarPng} alt="avatar" />
+                  </div>
+                  <div className="votes-list__name">{item.person.name}</div>
+                  <div className="votes-list__vote">{item.chosenOption}</div>
+                  <div className="votes-list__tokens">
+                    <div className="votes-list__tokens-value text-purple">{item.value}</div>
+                    <div className="votes-list__tokens-name">{item.valueCategory}</div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </DaoSection>
       </div>
-    </main>
+    </DaoWrapper>
   );
 };
 export default Dao;

@@ -1,0 +1,27 @@
+@import 'src/styles/vars';
+
+.EasyMDEContainer .CodeMirror {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+
+.CodeMirror-code {
+  color: $purple;
+}
+
+.editor-toolbar {
+  padding: 0;
+  border: none;
+
+  a,
+  button {
+    color: $purple;
+
+    &:hover,
+    &.active {
+      background-color: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
+      border: none;
+    }
+  }
+}
