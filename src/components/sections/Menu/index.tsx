@@ -19,6 +19,7 @@ import LotteryImg from '../../../assets/img/icons/lottery.svg';
 import PoolsImg from '../../../assets/img/icons/pools.svg';
 import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
 import TeamsImg from '../../../assets/img/icons/teams.svg';
+import DaoImg from '@/assets/img/icons/dao.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
 
@@ -81,7 +82,7 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
     {
       text: 'DAO',
       link: '/dao',
-      // img: TeamsImg,
+      img: DaoImg,
     },
   ];
 
