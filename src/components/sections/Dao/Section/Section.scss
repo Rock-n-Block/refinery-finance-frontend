@@ -1,7 +1,9 @@
+@import 'src/styles/vars';
+
 .section {
   &__header {
     padding: 27px 32px;
-    background: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
+    background: $bg-gradient;
     border-radius: 40px 40px 0px 0px;
   }
 

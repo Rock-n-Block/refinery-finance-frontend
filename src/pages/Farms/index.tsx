@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { FarmsPreview, FarmsTable } from '../../components/sections/Farms';
-import { ItemsController } from '../../components/organisms';
+import { ItemsController } from '@/components/organisms';
+import { FarmsPreview, FarmsTable } from '@/components/sections/Farms';
 
 import './Farms.scss';
 
@@ -10,7 +10,7 @@ const Farms: React.FC = () => {
     <main className="farms">
       <div className="row">
         <FarmsPreview />
-        <ItemsController />
+        <ItemsController radioGroupClassName="farms__i-contr" />
         <FarmsTable />
       </div>
     </main>

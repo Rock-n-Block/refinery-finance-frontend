@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button as BtnAntd } from 'antd';
 import classNames from 'classnames';
 
-import 'antd/lib/button/style/css';
-import './Button.scss';
+import { ReactComponent as ArrowImg } from '@/assets/img/icons/arrow-btn.svg';
 
-import { ReactComponent as ArrowImg } from '../../../assets/img/icons/arrow-btn.svg';
+import 'antd/lib/button/style/css';
+
+import './Button.scss';
 
 export interface IColorScheme {
   colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple' | 'gray' | 'purple-l';

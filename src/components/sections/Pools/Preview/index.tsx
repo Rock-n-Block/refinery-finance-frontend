@@ -1,18 +1,17 @@
 import React from 'react';
 
-import { Button } from '../../../atoms';
+import InfoImg from '@/assets/img/icons/info.svg';
+import BgImg from '@/assets/img/sections/pools/bg-2.svg';
+import { Button } from '@/components/atoms';
 
 import './Preview.scss';
-
-import InfoImg from '../../../../assets/img/icons/info.svg';
-import BgImg from '../../../../assets/img/sections/pools/bg-2.svg';
 
 const Preview: React.FC = () => {
   return (
     <div className="pools-preview box-f-ai-c box-f-jc-sb">
       <img src={BgImg} alt="" className="pools-preview__bg" />
       <div className="pools-preview__box">
-        <h1 className="pools-preview__title h1-lg text-white text-bold">Syrup Pools</h1>
+        <h1 className="pools-preview__title h1-lg text-white text-bold">Rocket Pools</h1>
         <div className="pools-preview__subtitle text-white">
           Simply stake tokens to earn. <br />
           High APR, low risk.

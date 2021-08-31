@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import cn from 'classnames';
 
-import { PoolsPreview, PoolCard } from '../../components/sections/Pools';
-import { ItemsController, StakeUnstakeModal } from '../../components/organisms';
-import { IPoolCard } from '../../components/sections/Pools/PoolCard';
+import { ReactComponent as CardViewIcon } from '@/assets/img/icons/card-view.svg';
+import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg';
+import { Button } from '@/components/atoms';
+import { ItemsController, StakeUnstakeModal } from '@/components/organisms';
+import { PoolCard, PoolsPreview } from '@/components/sections/Pools';
+import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 
 import './Pools.scss';
 
@@ -72,12 +76,65 @@ const Pools: React.FC = () => {
       },
     },
   ];
+
+  const [isListView, setIsListView] = useState(false);
+
+  const prefixContainer = [
+    {
+      key: 'list-view-mode',
+      icon: ListViewIcon,
+      handler: () => setIsListView(true),
+      activeClassCondition: isListView,
+    },
+    {
+      key: 'card-view-mode',
+      icon: CardViewIcon,
+      handler: () => setIsListView(false),
+      activeClassCondition: !isListView,
+    },
+  ];
   return (
     <>
       <main className="pools">
         <div className="row">
           <PoolsPreview />
-          <ItemsController />
+          <ItemsController
+            prefixContainer={
+              <>
+                <div className="pools__i-contr-prefix box-f-ai-c">
+                  {prefixContainer.map((item) => {
+                    const { key, handler, activeClassCondition } = item;
+                    return (
+                      <Button
+                        key={key}
+                        className="pools__i-contr-button"
+                        colorScheme="white"
+                        size="ssm"
+                        onClick={handler}
+                      >
+                        <item.icon
+                          className={cn('pools__i-contr-icon', {
+                            'pools__i-contr-icon_active': activeClassCondition,
+                          })}
+                        />
+                      </Button>
+                    );
+                  })}
+                </div>
+              </>
+            }
+            radioGroupOptions={[
+              {
+                text: 'Live',
+                value: 'live',
+              },
+              {
+                text: 'Finished',
+                value: 'finished',
+              },
+            ]}
+            radioGroupClassName="pools__i-contr"
+          />
           <div className="pools__content">
             {pools.map((pool) => (
               <PoolCard

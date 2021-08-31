@@ -1,6 +1,8 @@
+@import 'src/styles/vars';
+
 .information {
   padding: 20px;
-  background: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
+  background: $bg-gradient;
   border-radius: 10px;
 
   &__title {}
