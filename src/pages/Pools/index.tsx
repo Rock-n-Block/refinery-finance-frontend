@@ -33,7 +33,7 @@ const Pools: React.FC = () => {
       },
       type: 'earn',
       apr: {
-        value: 150,
+        value: 143.3323,
         items: [
           {
             timeframe: '1D',
@@ -41,9 +41,9 @@ const Pools: React.FC = () => {
             rf: 0.12,
           },
           {
-            timeframe: '1D',
-            roi: 0.19,
-            rf: 0.12,
+            timeframe: '7D',
+            roi: 1.43,
+            rf: 0.88,
           },
         ],
       },
@@ -60,7 +60,7 @@ const Pools: React.FC = () => {
       },
       type: 'auto',
       apr: {
-        value: 150,
+        value: 90.6,
         items: [
           {
             timeframe: '1D',
@@ -68,9 +68,9 @@ const Pools: React.FC = () => {
             rf: 0.12,
           },
           {
-            timeframe: '1D',
-            roi: 0.19,
-            rf: 0.12,
+            timeframe: '7D',
+            roi: 1.43,
+            rf: 0.88,
           },
         ],
       },

@@ -10,7 +10,15 @@ import 'antd/lib/button/style/css';
 import './Button.scss';
 
 export interface IColorScheme {
-  colorScheme?: 'yellow' | 'outline' | 'white' | 'outline-purple' | 'purple' | 'gray' | 'purple-l';
+  colorScheme?:
+    | 'yellow'
+    | 'outline'
+    | 'white'
+    | 'outline-purple'
+    | 'outline-green'
+    | 'purple'
+    | 'gray'
+    | 'purple-l';
 }
 
 export interface ISize {

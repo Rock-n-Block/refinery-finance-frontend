@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
+import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+
 import { useMst } from '../../../store';
 import { Modal } from '..';
 
 import './RoiModal.scss';
-
-import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 
 const RoiModal: React.FC = observer(() => {
   const { modals } = useMst();
@@ -25,7 +25,7 @@ const RoiModal: React.FC = observer(() => {
             <div>RF PER $1,000</div>
           </div>
           {modals.roi.items.map((item) => (
-            <div className="m-roi__table-row text-smd">
+            <div key={item.timeframe} className="m-roi__table-row text-smd">
               <div>{item.timeframe}</div>
               <div>{item.roi}%</div>
               <div>{item.rf}</div>

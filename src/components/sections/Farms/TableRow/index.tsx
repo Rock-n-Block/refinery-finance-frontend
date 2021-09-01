@@ -1,19 +1,18 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
-import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
 
-import { Button, InputNumber, Popover } from '../../../atoms';
-import { useMst } from '../../../../store';
+import BnbImg from '@/assets/img/currency/bnb.svg';
+import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
+import CalcImg from '@/assets/img/icons/calc.svg';
+import CheckImg from '@/assets/img/icons/check.svg';
+import InfoImg from '@/assets/img/icons/info.svg';
+import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import { Button, InputNumber, Popover } from '@/components/atoms';
+import { useMst } from '@/store';
 
 import './TableRow.scss';
-
-import BnbImg from '../../../../assets/img/currency/bnb.svg';
-import CalcImg from '../../../../assets/img/icons/calc.svg';
-import InfoImg from '../../../../assets/img/icons/info.svg';
-import OpenLinkImg from '@/assets/img/icons/open-link.svg';
-import CheckImg from '@/assets/img/icons/check.svg';
-import ArrowPurple from '../../../../assets/img/icons/arrow-btn.svg';
 
 const TableRow: React.FC = observer(() => {
   const { user, modals } = useMst();
@@ -36,12 +35,23 @@ const TableRow: React.FC = observer(() => {
         rf: 0.12,
       },
       {
-        timeframe: '1D',
-        roi: 0.19,
-        rf: 0.12,
+        timeframe: '7D',
+        roi: 1.43,
+        rf: 0.88,
       },
     ]);
   };
+
+  const renderPopover = () => (
+    <Popover
+      content={
+        <span className="text-med text text-purple">Total amount of NAME staked in this pool</span>
+      }
+      overlayInnerStyle={{ borderRadius: '20px' }}
+    >
+      <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
+    </Popover>
+  );
 
   return (
     <div className="farms-table-row">
@@ -78,27 +88,11 @@ const TableRow: React.FC = observer(() => {
         </div>
         <div className="farms-table-row__liquidity box-f-ai-c text-smd farms-table-row__item t-box-none">
           <span className="farms-table-row__text text-med text-purple">$1,662,947,888</span>
-          <Popover
-            content={
-              <span className="text-med text text-purple">
-                Total amount of NAME staked in this pool
-              </span>
-            }
-          >
-            <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
-          </Popover>
+          {renderPopover()}
         </div>
         <div className="farms-table-row__multiplier box-f-ai-c text-smd farms-table-row__item t-box-none">
           <span className="farms-table-row__text-md text-med text-purple">1x</span>
-          <Popover
-            content={
-              <span className="text-med text text-purple">
-                Total amount of NAME staked in this pool
-              </span>
-            }
-          >
-            <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
-          </Popover>
+          {renderPopover()}
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
           <div

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -6,11 +6,16 @@ import { observer } from 'mobx-react-lite';
 import CalcImg from '@/assets/img/icons/calc.svg';
 import InfoImg from '@/assets/img/icons/info.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import { ReactComponent as RefreshAutoIcon } from '@/assets/img/icons/refresh-auto.svg';
 import RefreshImg from '@/assets/img/icons/refresh.svg';
 import { Button, Popover } from '@/components/atoms';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
 import { IToken } from '@/types';
+
+import 'antd/lib/select/style/css';
+
+import DropdownSelector from './DropdownSelector';
 
 import './PoolCard.scss';
 
@@ -31,12 +36,39 @@ export interface IPoolCard {
   };
 }
 
+interface IOpenLinkProps {
+  className?: string;
+  href: string;
+  text: string;
+}
+
+const OpenLink: React.FC<IOpenLinkProps> = ({ className, href, text }) => {
+  return (
+    <a href={href} className={classNames(className, 'box-f-ai-c box-fit')}>
+      <span className="text-purple text-ssm">{text}</span>
+      <img src={OpenLinkImg} alt="" />
+    </a>
+  );
+};
+
+const mockData = {
+  totalStaked: '78,790,501',
+  performanceFee: 2,
+};
+
 const PoolCard: React.FC<IPoolCard> = observer(
   ({ className, tokenEarn, tokenStake, type, apr }) => {
     const { metamaskService } = useWalletConnectorContext();
     const { modals, user } = useMst();
 
-    const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);
+    const [isDetailsOpen, setDetailsOpen] = useState<boolean>(false);
+    const [isChooseFarmModeOpen, setChooseFarmModeOpen] = useState(false);
+    const [farmMode, setFarmMode] = useState<typeof type>('manual');
+
+    const farmModes = ['Auto', 'Manual'];
+
+    const handleOpenChooseFarmMode = () => setChooseFarmModeOpen(true);
+    const handleCloseChooseFarmMode = () => setChooseFarmModeOpen(false);
 
     const handleOpenArp = (): void => {
       modals.roi.open(apr.items);
@@ -48,28 +80,24 @@ const PoolCard: React.FC<IPoolCard> = observer(
           <div>
             <div className="p-card__title text-slg text-purple text-bold">
               <span className="text-capitalize">{type}</span>{' '}
-              {type === 'manual' && tokenEarn ? (
+              {type === 'manual' && tokenEarn && (
                 <span className="text-upper">{tokenEarn.name}</span>
-              ) : (
-                ''
               )}
-              {type === 'auto' ? <span className="text-upper">{tokenStake.name}</span> : ''}
+              {type === 'auto' && <span className="text-upper">{tokenStake.name}</span>}
             </div>
             <div className="p-card__subtitle text-smd text-purple text-med">
-              {type === 'manual' && tokenEarn ? (
+              {type === 'manual' && tokenEarn && (
                 <>
                   <span className="capitalize">Earn</span> <span>{tokenEarn.name}</span>,{' '}
                   <span>stake</span> <span className="text-upper">{tokenStake.name}</span>
                 </>
-              ) : (
-                ''
               )}
-              {type === 'auto' ? 'Automatic restaking' : ''}
-              {type === 'earn' ? `Stake ${tokenStake.name}` : ''}
+              {type === 'auto' && 'Automatic restaking'}
+              {type === 'earn' && `Stake ${tokenStake.name}`}
             </div>
           </div>
           <div className="p-card__icons">
-            {tokenEarn ? <img src={tokenEarn.logoURI} alt="" /> : ''}
+            {tokenEarn && <img src={tokenEarn.logoURI} alt="" />}
             <img src={tokenStake.logoURI} alt="" />
           </div>
         </div>
@@ -84,12 +112,12 @@ const PoolCard: React.FC<IPoolCard> = observer(
             role="button"
             tabIndex={0}
           >
-            <span className="text-smd">{apr.value}%</span>
-            <img src={CalcImg} alt="" />
+            <span className="text-smd">{Number(apr.value).toFixed(2).replace('.', ',')}%</span>
+            <img src={CalcImg} alt="calculator" />
           </div>
         </div>
         <div className="p-card__box p-card__content">
-          {user.address && type === 'auto' ? (
+          {user.address && type === 'auto' && (
             <div className="p-card__auto">
               <div className="p-card__auto-title text-purple text-smd text-med">
                 Recent {tokenStake.name} profit:
@@ -98,10 +126,8 @@ const PoolCard: React.FC<IPoolCard> = observer(
                 0.1% unstaking fee if withdrawn within 72h
               </div>
             </div>
-          ) : (
-            ''
           )}
-          {user.address && type === 'earn' && tokenEarn ? (
+          {user.address && type === 'earn' && tokenEarn && (
             <>
               <div className="p-card__earned box-f box-f-jc-sb">
                 <div>
@@ -114,36 +140,78 @@ const PoolCard: React.FC<IPoolCard> = observer(
                 </Button>
               </div>
             </>
-          ) : (
-            ''
           )}
-          {user.address ? (
+          {user.address && (
             <>
               <div className="text-purple text-med text-smd p-card__unlock-text">Start Farming</div>
               <Button className="p-card__unlock-btn">
                 <span className="text-white text-smd text-bold">Enable</span>
               </Button>
             </>
-          ) : (
-            ''
           )}
-          {!user.address ? (
+          {!user.address && (
             <div className="p-card__unlock">
               <div className="text-purple text-med text-smd p-card__unlock-text">Start Earning</div>
-              <Button className="p-card__unlock-btn" onClick={metamaskService.connect}>
+              <Button className="p-card__unlock-btn" onClick={() => metamaskService.connect()}>
                 <span className="text-white text-smd text-bold">Unlock Wallet</span>
               </Button>
             </div>
-          ) : (
-            ''
           )}
         </div>
-        <div className="p-card__box">
+        <div className="p-card__box p-card__footer">
           <div className="box-f-ai-c box-f-jc-sb">
-            <Button size="smd" colorScheme="outline-purple" noclick>
-              <img src={RefreshImg} alt="" />
-              <span className="text text-med text-purple">Manual</span>
-            </Button>
+            <DropdownSelector
+              className="p-card__footer-dropdown"
+              items={farmModes}
+              open={isChooseFarmModeOpen}
+              defaultValue={farmModes[1]}
+              onChange={(value) => {
+                setFarmMode((value as string).toLowerCase() as typeof type);
+              }}
+              onDropdownVisibleChange={handleCloseChooseFarmMode}
+            >
+              {farmMode === 'auto' && (
+                <Button
+                  className={classNames(
+                    'p-card__footer-button',
+                    'p-card__footer-button-with-icon',
+                    'p-card__footer-button-with-icon_auto',
+                  )}
+                  size="smd"
+                  colorScheme="outline-green"
+                  arrow
+                  onClick={handleOpenChooseFarmMode}
+                >
+                  <div className="box-f-c">
+                    <RefreshAutoIcon />
+                  </div>
+                  <span className="p-card__footer-button-text text text-med text-green">
+                    {farmModes[0]}
+                  </span>
+                </Button>
+              )}
+              {farmMode === 'manual' && (
+                <Button
+                  className={classNames('p-card__footer-button', 'p-card__footer-button-with-icon')}
+                  size="smd"
+                  colorScheme="outline-purple"
+                  arrow
+                  onClick={handleOpenChooseFarmMode}
+                >
+                  <img src={RefreshImg} alt="" />
+                  <span className="p-card__footer-button-text text text-med text-purple">
+                  {farmModes[1]}
+                  </span>
+                </Button>
+              )}
+            </DropdownSelector>
+
+            <Popover
+              content={<span className="text-med text text-purple">??????????</span>}
+              overlayInnerStyle={{ borderRadius: '20px' }}
+            >
+              <img className="p-card__footer-info-popover" src={InfoImg} alt="" />
+            </Popover>
             <Button
               toggle
               size="smd"
@@ -152,7 +220,9 @@ const PoolCard: React.FC<IPoolCard> = observer(
               isActive={isDetailsOpen}
               onToggle={(value) => setDetailsOpen(value)}
             >
-              <span className="text text-med text-purple">Details</span>
+              <span className="text text-med text-purple">
+                {isDetailsOpen ? 'Hide' : 'Details'}
+              </span>
             </Button>
           </div>
           <CSSTransition
@@ -170,13 +240,14 @@ const PoolCard: React.FC<IPoolCard> = observer(
                   Total staked:
                 </div>
                 <div className="p-card__details-item-value text-smd box-f-ai-c">
-                  <span>78,790,501</span>
+                  <span>{mockData.totalStaked}</span>
                   <Popover
                     content={
                       <span className="text-med text text-purple">
                         Total amount of NAME staked in this pool
                       </span>
                     }
+                    overlayInnerStyle={{ borderRadius: '20px' }}
                   >
                     <img src={InfoImg} alt="" />
                   </Popover>
@@ -186,16 +257,12 @@ const PoolCard: React.FC<IPoolCard> = observer(
                 <div className="p-card__details-item-name text-smd text-purple text-med">
                   Performance Fee:
                 </div>
-                <div className="p-card__details-item-value text-smd box-f-ai-c">2%</div>
+                <div className="p-card__details-item-value text-smd box-f-ai-c">
+                  {mockData.performanceFee}%
+                </div>
               </div>
-              <a href="/" className="p-card__details-item box-f-ai-c box-fit">
-                <span className="text-purple text-ssm">View Project Site</span>
-                <img src={OpenLinkImg} alt="" />
-              </a>
-              <a href="/" className="p-card__details-item box-f-ai-c box-fit">
-                <span className="text-purple text-ssm">View Contract</span>
-                <img src={OpenLinkImg} alt="" />
-              </a>
+              <OpenLink className="p-card__details-item" href="/" text="View Project Site" />
+              <OpenLink className="p-card__details-item" href="/" text="View Contract" />
             </div>
           </CSSTransition>
         </div>

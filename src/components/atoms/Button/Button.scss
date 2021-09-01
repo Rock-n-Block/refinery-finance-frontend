@@ -102,6 +102,37 @@
         }
       }
     }
+
+    &-green {
+      @extend .btn-outline-purple;
+      color: $green;
+      border-color: $green;
+
+      &:hover,
+      &:focus {
+        color: $green;
+        border-color: $green;
+      }
+
+      svg {
+        path {
+          stroke: $green;
+        }
+      }
+
+      &.active {
+        background: $green;
+      }
+      &.noclick {
+        &:active,
+        &.active {
+          color: $green !important;
+          span {
+            color: $green !important;
+          }
+        }
+      }
+    }
   }
   &-purple {
     background: $purple;
