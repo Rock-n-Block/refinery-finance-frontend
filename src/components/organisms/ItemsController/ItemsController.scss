@@ -1,5 +1,7 @@
 @import 'src/styles/mixins/media.scss';
 
+$sort-width: 40%;
+
 .i-contr {
   margin-top: 40px;
 
@@ -24,8 +26,19 @@
     }
   }
 
+  &__sort {
+    @include b(tablet) {
+      width: $sort-width;
+    }
+  }
+
   &__search {
     max-width: 190px;
     margin-left: 20px;
+
+    @include b(tablet) {
+      width: calc(100% - #{$sort-width} - 20px);
+      max-width: initial;
+    }
   }
 }

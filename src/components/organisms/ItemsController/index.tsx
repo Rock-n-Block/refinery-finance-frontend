@@ -47,8 +47,8 @@ const ItemsController: React.FC<IItemsController> = React.memo(
           />
         </div>
         <div className="box-f-ai-c">
-          <SortSelect label="Sort by " />
-          <Search colorScheme="gray" placeholder="Search Farms" className="i-contr__search" />
+          <SortSelect className="i-contr__sort" label="Sort by " />
+          <Search className="i-contr__search" colorScheme="gray" placeholder="Search Farms" />
         </div>
       </div>
     );

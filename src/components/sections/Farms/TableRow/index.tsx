@@ -170,7 +170,7 @@ const TableRow: React.FC = observer(() => {
             </div>
             <div className="farms-table-row__details-box">
               <div className="farms-table-row__details-title text-purple text-ssm text-med text-upper">
-                CAKE EARNED
+                start farming
               </div>
               {user.address ? (
                 <Button size="lg">

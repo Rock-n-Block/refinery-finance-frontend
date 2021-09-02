@@ -5,10 +5,10 @@ import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
 import InfoImg from '@/assets/img/icons/info.svg';
-import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 import { ReactComponent as RefreshAutoIcon } from '@/assets/img/icons/refresh-auto.svg';
 import RefreshImg from '@/assets/img/icons/refresh.svg';
 import { Button, Popover } from '@/components/atoms';
+import OpenLink from '@/components/sections/Pools/OpenLink';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
 import { IToken } from '@/types';
@@ -35,21 +35,6 @@ export interface IPoolCard {
     items: IAPR[];
   };
 }
-
-interface IOpenLinkProps {
-  className?: string;
-  href: string;
-  text: string;
-}
-
-const OpenLink: React.FC<IOpenLinkProps> = ({ className, href, text }) => {
-  return (
-    <a href={href} className={classNames(className, 'box-f-ai-c box-fit')}>
-      <span className="text-purple text-ssm">{text}</span>
-      <img src={OpenLinkImg} alt="" />
-    </a>
-  );
-};
 
 const mockData = {
   totalStaked: '78,790,501',
@@ -103,7 +88,7 @@ const PoolCard: React.FC<IPoolCard> = observer(
         </div>
         <div className="p-card__arp p-card__box box-f-ai-c box-f-jc-sb">
           <span className="text-smd text-purple text-med text-upper">
-            {type === 'auto' ? 'apy' : 'arp'}
+            {type === 'auto' ? 'apy' : 'apr'}
           </span>
           <div
             className="p-card__arp-percent box-pointer"
@@ -135,6 +120,9 @@ const PoolCard: React.FC<IPoolCard> = observer(
                   <div className="p-card__earned-numb text-blue-d text-smd">0</div>
                   <div className="text-gray text-smd">~ 0 USD</div>
                 </div>
+                <Button colorScheme="purple" size="smd" disabled>
+                  <span className="text-white text">Collect</span>
+                </Button>
                 <Button colorScheme="purple" size="smd">
                   <span className="text-white text">Collect</span>
                 </Button>
@@ -200,7 +188,7 @@ const PoolCard: React.FC<IPoolCard> = observer(
                 >
                   <img src={RefreshImg} alt="" />
                   <span className="p-card__footer-button-text text text-med text-purple">
-                  {farmModes[1]}
+                    {farmModes[1]}
                   </span>
                 </Button>
               )}

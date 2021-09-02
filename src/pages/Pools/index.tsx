@@ -5,7 +5,7 @@ import { ReactComponent as CardViewIcon } from '@/assets/img/icons/card-view.svg
 import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg';
 import { Button } from '@/components/atoms';
 import { ItemsController, StakeUnstakeModal } from '@/components/organisms';
-import { PoolCard, PoolsPreview } from '@/components/sections/Pools';
+import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
 import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 
 import './Pools.scss';
@@ -85,12 +85,14 @@ const Pools: React.FC = () => {
       icon: ListViewIcon,
       handler: () => setIsListView(true),
       activeClassCondition: isListView,
+      title: 'List View',
     },
     {
       key: 'card-view-mode',
       icon: CardViewIcon,
       handler: () => setIsListView(false),
       activeClassCondition: !isListView,
+      title: 'Card View',
     },
   ];
   return (
@@ -103,11 +105,12 @@ const Pools: React.FC = () => {
               <>
                 <div className="pools__i-contr-prefix box-f-ai-c">
                   {prefixContainer.map((item) => {
-                    const { key, handler, activeClassCondition } = item;
+                    const { key, handler, activeClassCondition, title } = item;
                     return (
                       <Button
                         key={key}
                         className="pools__i-contr-button"
+                        title={title}
                         colorScheme="white"
                         size="ssm"
                         onClick={handler}
@@ -136,13 +139,21 @@ const Pools: React.FC = () => {
             radioGroupClassName="pools__i-contr"
           />
           <div className="pools__content">
-            {pools.map((pool) => (
-              <PoolCard
-                {...pool}
-                key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
-                type={pool.type}
-              />
-            ))}
+            <div className={`pools__content-${isListView ? 'list' : 'card'}-view`}>
+              {isListView ? (
+                <PoolTable data={pools} />
+              ) : (
+                pools.map((pool) => {
+                  return (
+                    <PoolCard
+                      {...pool}
+                      key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
+                      type={pool.type}
+                    />
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </main>
