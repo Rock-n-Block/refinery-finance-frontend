@@ -1,0 +1,12 @@
+@import 'src/styles/mixins/media';
+
+.dao-list {
+  &__list-wrapper {
+    padding: 60px;
+
+    @include b(mobile) {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+}

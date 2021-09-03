@@ -5,3 +5,6 @@ export { default as PoolsPage } from './Pools';
 export { default as CollectiblesPage } from './Collectibles';
 export { default as TeamsPage } from './Teams';
 export { default as TeamPage } from './Team';
+export { default as DaoListPage } from './DaoList';
+export { default as DaoPage } from './Dao';
+export { default as DaoProposalPage } from './DaoProposal';
