@@ -58,9 +58,9 @@ $columns-tablet: 1fr 1fr 1fr .1fr;
 
   &__recent-profit {
     @include b(tablet) {
-      span {
-        color: #000 !important;
-      }
+      // span {
+      //   color: #000 !important;
+      // }
     }
 
     &-value {
@@ -149,51 +149,6 @@ $columns-tablet: 1fr 1fr 1fr .1fr;
       }
     }
 
-    &-dropdown {
-      position: absolute;
-      top: 6px;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      visibility: hidden;
-      pointer-events: none;
-
-      &-button-with-icon {
-        padding-left: 8px;
-
-        &_auto {
-          padding-top: 8px;
-          padding-bottom: 8px;
-
-          &:hover {
-            &> :first-child {
-              svg {
-                animation: rotation 0.7s infinite linear;
-              }
-            }
-          }
-
-          &> :first-child {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: $green;
-
-            svg {
-              path {
-                stroke: initial;
-              }
-            }
-          }
-        }
-      }
-
-      &-button-text {
-        padding-left: 10px;
-        line-height: 100% !important;
-      }
-    }
-
     &-info-popover {
       width: 20px;
       height: 20px;
@@ -209,14 +164,16 @@ $columns-tablet: 1fr 1fr 1fr .1fr;
         margin-left: 10px;
       }
 
+      &-start-staking-button {
+        @include b(tablet) {
+          width: 100%;
+          padding: 17px 0;
+        }
+      }
+
       @include b(tablet) {
         text-align: center;
         padding: 20px 10px;
-
-        .btn-yellow {
-          width: 100% !important;
-          padding: 17px 0 !important;
-        }
 
         &+& {
           margin: 10px 0;

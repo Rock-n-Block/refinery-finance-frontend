@@ -54,58 +54,13 @@ $card-bg-color: #F9F9F9;
 
   &__footer {}
 
-  &__footer-dropdown {
-    position: absolute;
-    top: 6px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  &__footer-button-with-icon {
-    padding-left: 8px;
-
-    &_auto {
-      padding-top: 8px;
-      padding-bottom: 8px;
-
-      &:hover {
-        &> :first-child {
-          svg {
-            animation: rotation 0.7s infinite linear;
-          }
-        }
-      }
-
-      &> :first-child {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: $green;
-
-        svg {
-          path {
-            stroke: initial;
-          }
-        }
-      }
-    }
-  }
-
-  &__footer-button-text {
-    padding-left: 10px;
-    line-height: 100% !important;
-  }
-
   &__footer-info-popover {
     width: 20px;
     height: 20px;
     margin: 0 auto 0 8px;
   }
 
-  &__arp {
+  &__apr {
     &-percent {
       img {
         margin-left: 10px;

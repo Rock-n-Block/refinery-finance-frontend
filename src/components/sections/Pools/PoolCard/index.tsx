@@ -4,18 +4,16 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
-import InfoImg from '@/assets/img/icons/info.svg';
-import { ReactComponent as RefreshAutoIcon } from '@/assets/img/icons/refresh-auto.svg';
-import RefreshImg from '@/assets/img/icons/refresh.svg';
-import { Button, Popover } from '@/components/atoms';
+import { Button } from '@/components/atoms';
+import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
 import OpenLink from '@/components/sections/Pools/OpenLink';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
-import { IToken } from '@/types';
+import { IPoolFarmingMode, IToken, PoolFarmingMode } from '@/types';
 
 import 'antd/lib/select/style/css';
 
-import DropdownSelector from './DropdownSelector';
+import { AutoFarmingPopover, ManualFarmingPopover, TotalStakedPopover } from '../Popovers';
 
 import './PoolCard.scss';
 
@@ -29,7 +27,7 @@ export interface IPoolCard {
   className?: string;
   tokenEarn?: IToken;
   tokenStake: IToken;
-  type: 'earn' | 'manual' | 'auto';
+  type: IPoolFarmingMode;
   apr: {
     value: number | string;
     items: IAPR[];
@@ -47,15 +45,8 @@ const PoolCard: React.FC<IPoolCard> = observer(
     const { modals, user } = useMst();
 
     const [isDetailsOpen, setDetailsOpen] = useState<boolean>(false);
-    const [isChooseFarmModeOpen, setChooseFarmModeOpen] = useState(false);
-    const [farmMode, setFarmMode] = useState<typeof type>('manual');
 
-    const farmModes = ['Auto', 'Manual'];
-
-    const handleOpenChooseFarmMode = () => setChooseFarmModeOpen(true);
-    const handleCloseChooseFarmMode = () => setChooseFarmModeOpen(false);
-
-    const handleOpenArp = (): void => {
+    const handleOpenApr = (): void => {
       modals.roi.open(apr.items);
     };
 
@@ -86,14 +77,14 @@ const PoolCard: React.FC<IPoolCard> = observer(
             <img src={tokenStake.logoURI} alt="" />
           </div>
         </div>
-        <div className="p-card__arp p-card__box box-f-ai-c box-f-jc-sb">
+        <div className="p-card__apr p-card__box box-f-ai-c box-f-jc-sb">
           <span className="text-smd text-purple text-med text-upper">
-            {type === 'auto' ? 'apy' : 'apr'}
+            {type === PoolFarmingMode.auto ? 'apy' : 'apr'}
           </span>
           <div
-            className="p-card__arp-percent box-pointer"
-            onClick={handleOpenArp}
-            onKeyDown={handleOpenArp}
+            className="p-card__apr-percent box-pointer"
+            onClick={handleOpenApr}
+            onKeyDown={handleOpenApr}
             role="button"
             tabIndex={0}
           >
@@ -120,10 +111,10 @@ const PoolCard: React.FC<IPoolCard> = observer(
                   <div className="p-card__earned-numb text-blue-d text-smd">0</div>
                   <div className="text-gray text-smd">~ 0 USD</div>
                 </div>
-                <Button colorScheme="purple" size="smd" disabled>
+                <Button colorScheme="yellow" size="smd" disabled>
                   <span className="text-white text">Collect</span>
                 </Button>
-                <Button colorScheme="purple" size="smd">
+                <Button colorScheme="yellow" size="smd">
                   <span className="text-white text">Collect</span>
                 </Button>
               </div>
@@ -148,58 +139,12 @@ const PoolCard: React.FC<IPoolCard> = observer(
         </div>
         <div className="p-card__box p-card__footer">
           <div className="box-f-ai-c box-f-jc-sb">
-            <DropdownSelector
-              className="p-card__footer-dropdown"
-              items={farmModes}
-              open={isChooseFarmModeOpen}
-              defaultValue={farmModes[1]}
-              onChange={(value) => {
-                setFarmMode((value as string).toLowerCase() as typeof type);
-              }}
-              onDropdownVisibleChange={handleCloseChooseFarmMode}
-            >
-              {farmMode === 'auto' && (
-                <Button
-                  className={classNames(
-                    'p-card__footer-button',
-                    'p-card__footer-button-with-icon',
-                    'p-card__footer-button-with-icon_auto',
-                  )}
-                  size="smd"
-                  colorScheme="outline-green"
-                  arrow
-                  onClick={handleOpenChooseFarmMode}
-                >
-                  <div className="box-f-c">
-                    <RefreshAutoIcon />
-                  </div>
-                  <span className="p-card__footer-button-text text text-med text-green">
-                    {farmModes[0]}
-                  </span>
-                </Button>
-              )}
-              {farmMode === 'manual' && (
-                <Button
-                  className={classNames('p-card__footer-button', 'p-card__footer-button-with-icon')}
-                  size="smd"
-                  colorScheme="outline-purple"
-                  arrow
-                  onClick={handleOpenChooseFarmMode}
-                >
-                  <img src={RefreshImg} alt="" />
-                  <span className="p-card__footer-button-text text text-med text-purple">
-                    {farmModes[1]}
-                  </span>
-                </Button>
-              )}
-            </DropdownSelector>
-
-            <Popover
-              content={<span className="text-med text text-purple">??????????</span>}
-              overlayInnerStyle={{ borderRadius: '20px' }}
-            >
-              <img className="p-card__footer-info-popover" src={InfoImg} alt="" />
-            </Popover>
+            <FarmingModeStatus type={type} />
+            {type === PoolFarmingMode.auto ? (
+              <AutoFarmingPopover className="p-card__footer-info-popover" />
+            ) : (
+              <ManualFarmingPopover className="p-card__footer-info-popover" />
+            )}
             <Button
               toggle
               size="smd"
@@ -229,16 +174,7 @@ const PoolCard: React.FC<IPoolCard> = observer(
                 </div>
                 <div className="p-card__details-item-value text-smd box-f-ai-c">
                   <span>{mockData.totalStaked}</span>
-                  <Popover
-                    content={
-                      <span className="text-med text text-purple">
-                        Total amount of NAME staked in this pool
-                      </span>
-                    }
-                    overlayInnerStyle={{ borderRadius: '20px' }}
-                  >
-                    <img src={InfoImg} alt="" />
-                  </Popover>
+                  <TotalStakedPopover symbol={tokenStake.symbol} />
                 </div>
               </div>
               <div className="p-card__details-item box-f-ai-c box-f-jc-sb ">

@@ -12,9 +12,9 @@ const RecentProfit: React.FC<IRecentProfitColumnProps> = ({ name, value, usdValu
     <div className="pools-table-row__recent-profit text-gray-l-2 text-smd">
       <div className="pools-table-row__extra-text t-box-b text-gray text-ssm">{name}</div>
       <div className="pools-table-row__recent-profit-value">
-        <div className="text-smd">{value.toFixed(1)}</div>
+        <div className="text-smd">{value}</div>
         <div className="text-ssm">
-          <span>{usdValue.toFixed(0)} </span>
+          <span>{usdValue} </span>
           <span>USD</span>
         </div>
       </div>

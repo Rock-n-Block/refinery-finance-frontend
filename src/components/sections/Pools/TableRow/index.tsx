@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import BnbImg from '@/assets/img/currency/bnb.svg';
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
-import InfoImg from '@/assets/img/icons/info.svg';
-import { ReactComponent as RefreshAutoIcon } from '@/assets/img/icons/refresh-auto.svg';
-import RefreshImg from '@/assets/img/icons/refresh.svg';
-import { Button, InputNumber, Popover } from '@/components/atoms';
+import { Button, InputNumber } from '@/components/atoms';
+import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
 import OpenLink from '@/components/sections/Pools/OpenLink';
 import { IPoolCard } from '@/components/sections/Pools/PoolCard';
-import DropdownSelector from '@/components/sections/Pools/PoolCard/DropdownSelector';
+import { AutoFarmingPopover, ManualFarmingPopover } from '@/components/sections/Pools/Popovers';
 import {
   AprColumn,
   EndsInColumn,
@@ -19,6 +17,7 @@ import {
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
 import { useMst } from '@/store';
+import { PoolFarmingMode } from '@/types';
 
 import './TableRow.scss';
 
@@ -63,14 +62,6 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
   };
 
   const { tokenStake, apr, type } = data;
-
-  const [isChooseFarmModeOpen, setChooseFarmModeOpen] = useState(false);
-  const [farmMode, setFarmMode] = useState<typeof type>('manual');
-
-  const farmModes = ['Auto', 'Manual'];
-
-  const handleOpenChooseFarmMode = () => setChooseFarmModeOpen(true);
-  const handleCloseChooseFarmMode = () => setChooseFarmModeOpen(false);
 
   return (
     <div className="pools-table-row">
@@ -137,77 +128,28 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
       >
         <div className="pools-table-row__details box-purple-l">
           <div className="pools-table-row__details-links">
-            <PoolOpenLink
+            <OpenLink
               className="pools-table-row__details-links-item"
               href="/"
               text="See Token Info"
             />
-            <PoolOpenLink
+            <OpenLink
               className="pools-table-row__details-links-item"
               href="/"
               text="View Project Site"
             />
-            <PoolOpenLink
+            <OpenLink
               className="pools-table-row__details-links-item"
               href="/"
               text="View Contract"
             />
             <div className="box-f-c">
-              <DropdownSelector
-                className="pools-table-row__details-dropdown"
-                items={farmModes}
-                open={isChooseFarmModeOpen}
-                defaultValue={farmModes[1]}
-                onChange={(value) => {
-                  setFarmMode((value as string).toLowerCase() as typeof type);
-                }}
-                onDropdownVisibleChange={handleCloseChooseFarmMode}
-              >
-                {farmMode === 'auto' && (
-                  <Button
-                    className={classNames(
-                      'pools-table-row__details-dropdown-button-with-icon',
-                      'pools-table-row__details-dropdown-button-with-icon_auto',
-                    )}
-                    size="smd"
-                    colorScheme="outline-green"
-                    arrow
-                    onClick={handleOpenChooseFarmMode}
-                  >
-                    <div className="box-f-c">
-                      <RefreshAutoIcon />
-                    </div>
-                    <span className="pools-table-row__details-dropdown-button-text text text-med text-green">
-                      {farmModes[0]}
-                    </span>
-                  </Button>
-                )}
-                {farmMode === 'manual' && (
-                  <Button
-                    className={classNames('pools-table-row__details-dropdown-button-with-icon')}
-                    size="smd"
-                    colorScheme="outline-purple"
-                    arrow
-                    onClick={handleOpenChooseFarmMode}
-                  >
-                    <img src={RefreshImg} alt="" />
-                    <span className="pools-table-row__details-dropdown-button-text text text-med text-purple">
-                      {farmModes[1]}
-                    </span>
-                  </Button>
-                )}
-              </DropdownSelector>
-              <Popover
-                className="pools-table-row__details-info-popover"
-                content={
-                  <span className="text-med text text-purple">
-                    Total amount of {tokenStake.symbol} staked in this pool
-                  </span>
-                }
-                overlayInnerStyle={{ borderRadius: '20px' }}
-              >
-                <img src={InfoImg} alt="" />
-              </Popover>
+              <FarmingModeStatus type={type} />
+              {type === PoolFarmingMode.auto ? (
+                <AutoFarmingPopover className="pools-table-row__details-info-popover" />
+              ) : (
+                <ManualFarmingPopover className="pools-table-row__details-info-popover" />
+              )}
             </div>
           </div>
           <div className="pools-table-row__buttons box-f-ai-c t-box-b">
@@ -219,7 +161,11 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
                 colorScheme="white"
                 placeholder="0.0"
                 inputPrefix={
-                  <Button colorScheme="purple" size="ssm">
+                  <Button
+                    // className="pools-table-row__details-box-collect-profit"
+                    colorScheme="yellow"
+                    size="ssm"
+                  >
                     <span className="text-white text-ssmd text-med">Collect</span>
                   </Button>
                 }
@@ -229,7 +175,11 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
               <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
                 start staking
               </div>
-              <Button size="lg" onClick={user.address ? () => {} : () => {}}>
+              <Button
+                className="pools-table-row__details-box-start-staking-button"
+                size="lg"
+                onClick={user.address ? () => {} : () => {}}
+              >
                 <span className="text-smd text-white text-bold">
                   {user.address ? 'Enable' : 'Unlock Wallet'}
                 </span>

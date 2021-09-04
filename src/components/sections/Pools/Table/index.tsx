@@ -39,7 +39,6 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
     <div className="pools-table box-shadow box-white box-overflow-v">
       <div className="pools-table__head t-box-none">
         <div />
-        {/* <div className="text-ssm text-gray-l-2">Earned</div> */}
         {columns.map(({ name, style = 'default' }) => (
           <div
             key={name}
@@ -51,13 +50,9 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
             {name}
           </div>
         ))}
-        {/* <div className="text-bold text-purple">APR</div>
-        <div className="text-bold text-purple">Liquidity</div>
-        <div className="text-bold text-purple">Multiplier</div> */}
       </div>
       <PoolTableRow data={data[0]} columns={columns} />
       <PoolTableRow data={data[1]} columns={columns} />
-      {/* <PoolTableRow /> */}
     </div>
   );
 });
