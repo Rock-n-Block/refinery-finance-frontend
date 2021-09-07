@@ -77,8 +77,16 @@ $card-bg-color: #F9F9F9;
   &__earned {
     margin-bottom: 30px;
 
-    &-numb {
+    &-profit-value {
       margin: 10px 0 5px;
+    }
+  }
+
+  &__staked {
+    @extend .p-card__earned;
+
+    &-value {
+      @extend .p-card__earned-profit-value;
     }
   }
 
@@ -104,6 +112,10 @@ $card-bg-color: #F9F9F9;
   &__auto {
     &-profit {
       margin: 15px 0 30px;
+    }
+
+    &-info {
+      max-width: 50%;
     }
   }
 

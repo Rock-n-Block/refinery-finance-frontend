@@ -18,8 +18,13 @@ interface ITableProps {
   data: IPoolCard[];
 }
 
+interface IColumn {
+  style?: IColumnStyle;
+  name: string;
+}
+
 const Table: React.FC<ITableProps> = React.memo(({ data }) => {
-  const columns: Array<{ style?: IColumnStyle; name: string }> = [
+  const columns: IColumn[] = [
     {
       style: 'disabled',
       name: `Recent CAKE profit`,
@@ -51,8 +56,13 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
           </div>
         ))}
       </div>
-      <PoolTableRow data={data[0]} columns={columns} />
-      <PoolTableRow data={data[1]} columns={columns} />
+      {data.map((rowData) => (
+        <PoolTableRow
+          key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
+          data={rowData}
+          columns={columns}
+        />
+      ))}
     </div>
   );
 });

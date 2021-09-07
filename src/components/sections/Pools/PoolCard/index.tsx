@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -7,13 +7,17 @@ import CalcImg from '@/assets/img/icons/calc.svg';
 import { Button } from '@/components/atoms';
 import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
 import OpenLink from '@/components/sections/Pools/OpenLink';
-import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
 import { IPoolFarmingMode, IToken, PoolFarmingMode } from '@/types';
 
 import 'antd/lib/select/style/css';
 
+import CollectButton from '../CollectButton';
 import { AutoFarmingPopover, ManualFarmingPopover, TotalStakedPopover } from '../Popovers';
+import StakeUnstakeButtons from '../StakeUnstakeButtons';
+import StakingSection from '../StakingSection';
+
+import { durationFormatter } from './utils';
 
 import './PoolCard.scss';
 
@@ -34,15 +38,100 @@ export interface IPoolCard {
   };
 }
 
+interface ITitleProps {
+  className?: string;
+  farmMode: IPoolFarmingMode;
+  tokenEarn?: IToken;
+  tokenStake: IToken;
+}
+
+type ISubtitleProps = ITitleProps;
+
 const mockData = {
-  totalStaked: '78,790,501',
-  performanceFee: 2,
+  timeLeft: 2 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000 + 31 * 60 * 1000,
 };
+
+const Title: React.FC<ITitleProps> = ({ className, farmMode, tokenStake, tokenEarn }) => {
+  return (
+    <div className={classNames(className, 'text-slg text-purple text-bold')}>
+      <span className="text-capitalize">{farmMode}</span>{' '}
+      {farmMode === PoolFarmingMode.manual && tokenEarn && (
+        <span className="text-upper">{tokenEarn.symbol}</span>
+      )}
+      {farmMode === PoolFarmingMode.auto && <span className="text-upper">{tokenStake.symbol}</span>}
+    </div>
+  );
+};
+
+const Subtitle: React.FC<ISubtitleProps> = ({ className, farmMode, tokenStake, tokenEarn }) => {
+  return (
+    <div className={classNames(className, 'text-smd text-purple text-med')}>
+      {farmMode === PoolFarmingMode.manual && tokenEarn && (
+        <>
+          <span className="capitalize">Earn</span> <span>{tokenEarn.symbol}</span>,{' '}
+          <span>stake</span> <span className="text-upper">{tokenStake.symbol}</span>
+        </>
+      )}
+      {farmMode === PoolFarmingMode.auto && 'Automatic restaking'}
+      {farmMode === PoolFarmingMode.earn && `Stake ${tokenStake.symbol}`}
+    </div>
+  );
+};
+
+const Details: React.FC<{ tokenStake: IToken }> = React.memo(({ tokenStake }) => {
+  const mockDetailsData = { totalStaked: '78,790,501', performanceFee: 2 };
+  const { totalStaked, performanceFee } = mockDetailsData;
+  const items = [
+    {
+      title: 'Total staked:',
+      value: (
+        <>
+          <span>{totalStaked}</span>
+          <TotalStakedPopover symbol={tokenStake.symbol} />
+        </>
+      ),
+    },
+    {
+      title: 'Performance Fee:',
+      value: <>{performanceFee}%</>,
+    },
+  ];
+
+  const links = [
+    {
+      href: '/',
+      text: 'View Project Site',
+    },
+    {
+      href: '/',
+      text: 'View Contract',
+    },
+  ];
+  return (
+    <div className="p-card__details">
+      {items.map(({ title, value }) => {
+        return (
+          <div key={title} className="p-card__details-item box-f-ai-c box-f-jc-sb ">
+            <div className="p-card__details-item-name text-smd text-purple text-med">{title}</div>
+            <div className="p-card__details-item-value text-smd box-f-ai-c">{value}</div>
+          </div>
+        );
+      })}
+      {links.map(({ href, text }) => (
+        <OpenLink key={href + text} className="p-card__details-item" href={href} text={text} />
+      ))}
+    </div>
+  );
+});
 
 const PoolCard: React.FC<IPoolCard> = observer(
   ({ className, tokenEarn, tokenStake, type, apr }) => {
-    const { metamaskService } = useWalletConnectorContext();
     const { modals, user } = useMst();
+
+    const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
+    const [MOCK_convertedRecentProfit, MOCK_setConvertedRecentProfit] = useState(0);
+    const [MOCK_timeLeft, MOCK_setTimeLeft] = useState(mockData.timeLeft);
+    const [MOCK_convertedStakedValue, MOCK_setConvertedStakedValue] = useState(0);
 
     const [isDetailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -50,27 +139,58 @@ const PoolCard: React.FC<IPoolCard> = observer(
       modals.roi.open(apr.items);
     };
 
+    const collectHandler = () => {
+      MOCK_setRecentProfit(0);
+    };
+
+    const hasConnectedWallet = Boolean(user.address);
+    const hasStakedValue = Boolean(modals.stakeUnstake.stakedValue);
+
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        MOCK_setRecentProfit(0.0003);
+      }, 2000);
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }, []);
+
+    useEffect(() => {
+      const intervalId = setInterval(() => {
+        if (MOCK_timeLeft === 0) clearInterval(intervalId);
+        MOCK_setTimeLeft(MOCK_timeLeft - 60 * 1000);
+      }, 1000);
+      return () => {
+        clearInterval(intervalId);
+      };
+    }, [MOCK_timeLeft]);
+
+    useEffect(() => {
+      const USD_IN_TOKEN = 27;
+      MOCK_setConvertedRecentProfit(MOCK_recentProfit * USD_IN_TOKEN);
+    }, [MOCK_recentProfit]);
+
+    useEffect(() => {
+      const USD_IN_TOKEN = 27;
+      MOCK_setConvertedStakedValue(modals.stakeUnstake.stakedValue * USD_IN_TOKEN);
+    }, [modals.stakeUnstake.stakedValue]);
+
     return (
       <div className={classNames('p-card box-shadow', className)}>
         <div className="p-card__head box-f-ai-c box-f-jc-sb">
           <div>
-            <div className="p-card__title text-slg text-purple text-bold">
-              <span className="text-capitalize">{type}</span>{' '}
-              {type === 'manual' && tokenEarn && (
-                <span className="text-upper">{tokenEarn.name}</span>
-              )}
-              {type === 'auto' && <span className="text-upper">{tokenStake.name}</span>}
-            </div>
-            <div className="p-card__subtitle text-smd text-purple text-med">
-              {type === 'manual' && tokenEarn && (
-                <>
-                  <span className="capitalize">Earn</span> <span>{tokenEarn.name}</span>,{' '}
-                  <span>stake</span> <span className="text-upper">{tokenStake.name}</span>
-                </>
-              )}
-              {type === 'auto' && 'Automatic restaking'}
-              {type === 'earn' && `Stake ${tokenStake.name}`}
-            </div>
+            <Title
+              className="p-card__title"
+              farmMode={type}
+              tokenStake={tokenStake}
+              tokenEarn={tokenEarn}
+            />
+            <Subtitle
+              className="p-card__subtitle"
+              farmMode={type}
+              tokenStake={tokenStake}
+              tokenEarn={tokenEarn}
+            />
           </div>
           <div className="p-card__icons">
             {tokenEarn && <img src={tokenEarn.logoURI} alt="" />}
@@ -93,7 +213,7 @@ const PoolCard: React.FC<IPoolCard> = observer(
           </div>
         </div>
         <div className="p-card__box p-card__content">
-          {user.address && type === 'auto' && (
+          {hasConnectedWallet && type === PoolFarmingMode.auto && !hasStakedValue && (
             <div className="p-card__auto">
               <div className="p-card__auto-title text-purple text-smd text-med">
                 Recent {tokenStake.name} profit:
@@ -103,38 +223,60 @@ const PoolCard: React.FC<IPoolCard> = observer(
               </div>
             </div>
           )}
-          {user.address && type === 'earn' && tokenEarn && (
+          {hasConnectedWallet && type === PoolFarmingMode.auto && hasStakedValue && (
+            <div className="p-card__auto">
+              <div className="p-card__auto-title box-f box-f-jc-sb text-purple text-smd text-med">
+                <div className="">Recent {tokenStake.name} profit:</div>
+                <div>{MOCK_recentProfit}</div>
+              </div>
+
+              <div className="p-card__auto-profit box-f box-f-jc-sb">
+                <div className="p-card__auto-info text-smd text-blue-d">
+                  0.1% unstaking fee if withdrawn within 72h
+                </div>
+                <div className="text-purple text-smd text-med">
+                  {durationFormatter(MOCK_timeLeft)}
+                </div>
+              </div>
+            </div>
+          )}
+          {hasConnectedWallet && type === PoolFarmingMode.earn && tokenEarn && (
             <>
               <div className="p-card__earned box-f box-f-jc-sb">
                 <div>
-                  <div className="text-smd text-purple text-med">{tokenEarn.name} Earned</div>
-                  <div className="p-card__earned-numb text-blue-d text-smd">0</div>
-                  <div className="text-gray text-smd">~ 0 USD</div>
+                  <div className="text-smd text-purple text-med">{tokenEarn.symbol} Earned</div>
+                  <div className="p-card__earned-profit-value text-blue-d text-smd">
+                    {MOCK_recentProfit}
+                  </div>
+                  <div className="text-gray text-smd">~{MOCK_convertedRecentProfit} USD</div>
                 </div>
-                <Button colorScheme="yellow" size="smd" disabled>
-                  <span className="text-white text">Collect</span>
-                </Button>
-                <Button colorScheme="yellow" size="smd">
-                  <span className="text-white text">Collect</span>
-                </Button>
+                <CollectButton value={MOCK_recentProfit} collectHandler={collectHandler} />
               </div>
             </>
           )}
-          {user.address && (
-            <>
-              <div className="text-purple text-med text-smd p-card__unlock-text">Start Farming</div>
-              <Button className="p-card__unlock-btn">
-                <span className="text-white text-smd text-bold">Enable</span>
-              </Button>
-            </>
-          )}
-          {!user.address && (
-            <div className="p-card__unlock">
-              <div className="text-purple text-med text-smd p-card__unlock-text">Start Earning</div>
-              <Button className="p-card__unlock-btn" onClick={() => metamaskService.connect()}>
-                <span className="text-white text-smd text-bold">Unlock Wallet</span>
-              </Button>
+          {hasConnectedWallet && hasStakedValue ? (
+            <div className="p-card__staked">
+              <div className="text-smd text-purple text-med">
+                {tokenStake.symbol} Staked {type === PoolFarmingMode.auto && '(compounding)'}
+              </div>
+              <div className="box-f box-f-jc-sb box-f-ai-e">
+                <div>
+                  <div className="p-card__staked-value text-blue-d text-smd">
+                    {modals.stakeUnstake.stakedValue}
+                  </div>
+                  <div className="text-gray text-smd">~{MOCK_convertedStakedValue} USD</div>
+                </div>
+                <StakeUnstakeButtons />
+              </div>
             </div>
+          ) : (
+            <StakingSection
+              titleClassName="p-card__unlock-text text-smd text-capitalize"
+              buttonProps={{
+                className: 'p-card__unlock-btn',
+              }}
+              tokenSymbol={tokenStake.symbol}
+            />
           )}
         </div>
         <div className="p-card__box p-card__footer">
@@ -167,27 +309,7 @@ const PoolCard: React.FC<IPoolCard> = observer(
             }}
             classNames="show"
           >
-            <div className="p-card__details">
-              <div className="p-card__details-item box-f-ai-c box-f-jc-sb ">
-                <div className="p-card__details-item-name text-smd text-purple text-med">
-                  Total staked:
-                </div>
-                <div className="p-card__details-item-value text-smd box-f-ai-c">
-                  <span>{mockData.totalStaked}</span>
-                  <TotalStakedPopover symbol={tokenStake.symbol} />
-                </div>
-              </div>
-              <div className="p-card__details-item box-f-ai-c box-f-jc-sb ">
-                <div className="p-card__details-item-name text-smd text-purple text-med">
-                  Performance Fee:
-                </div>
-                <div className="p-card__details-item-value text-smd box-f-ai-c">
-                  {mockData.performanceFee}%
-                </div>
-              </div>
-              <OpenLink className="p-card__details-item" href="/" text="View Project Site" />
-              <OpenLink className="p-card__details-item" href="/" text="View Contract" />
-            </div>
+            <Details tokenStake={tokenStake} />
           </CSSTransition>
         </div>
       </div>

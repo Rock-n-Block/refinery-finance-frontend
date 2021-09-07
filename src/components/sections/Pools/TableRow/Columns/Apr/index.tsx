@@ -23,7 +23,7 @@ const Apr: React.FC<IAprColumnProps> = ({ name, value, modalHandler }) => {
         role="button"
         tabIndex={0}
       >
-        <img src={CalcImg} alt="calculator" />
+        <img className="pools-table-row__item-img-info" src={CalcImg} alt="calculator" />
       </div>
     </div>
   );

@@ -157,7 +157,7 @@ const Pools: React.FC = () => {
           </div>
         </div>
       </main>
-      <StakeUnstakeModal isVisible={false} handleClose={() => {}} />
+      <StakeUnstakeModal />
     </>
   );
 };

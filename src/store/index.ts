@@ -19,6 +19,10 @@ export const Store = RootModel.create({
     roi: {
       items: [],
     },
+    stakeUnstake: {
+      isOpen: false,
+      isStaking: true,
+    },
   },
   tokens: {
     default: [],

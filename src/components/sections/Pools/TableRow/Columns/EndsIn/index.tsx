@@ -26,7 +26,7 @@ const EndsIn: React.FC<IEndsInColumnProps> = ({ value, onlyDesktop }) => {
         <div>{value}</div> <div>blocks</div>
       </div>
       <div className="box">
-        <img src={TimerImg} alt="timer" className="pools-table-row__item-img-info" />
+        <img className="pools-table-row__item-img-info" src={TimerImg} alt="timer" />
       </div>
     </div>
   );

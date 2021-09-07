@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -17,7 +17,11 @@ import {
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
 import { useMst } from '@/store';
-import { PoolFarmingMode } from '@/types';
+import { IPoolFarmingMode, IToken, PoolFarmingMode } from '@/types';
+
+import CollectButton from '../CollectButton';
+import StakeUnstakeButtons from '../StakeUnstakeButtons';
+import StakingSection from '../StakingSection';
 
 import './TableRow.scss';
 
@@ -26,16 +30,77 @@ interface ITableRowProps {
   columns: any[];
 }
 
+interface IRecentProfitProps {
+  tokenStake: IToken;
+  value: number;
+  onCollect: () => void;
+}
+
 const mockData = {
-  recentProfit: 0,
-  recentProfitUsd: 0,
   totalStaked: '1,662,947,888',
   totalBlocks: '1,663,423',
+  currencyToConvert: 'USD',
 };
 
-const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
+const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode }> = ({ farmMode }) => {
+  const links = [
+    {
+      href: '/',
+      text: 'See Token Info',
+    },
+    {
+      href: '/',
+      text: 'View Project Site',
+    },
+    {
+      href: '/',
+      text: 'View Contract',
+    },
+  ];
+  return (
+    <div className="pools-table-row__details-links">
+      {links.map(({ href, text }) => (
+        <OpenLink
+          key={href + text}
+          className="pools-table-row__details-links-item"
+          href={href}
+          text={text}
+        />
+      ))}
+      <div className="box-f-c">
+        <FarmingModeStatus type={farmMode} />
+        {farmMode === PoolFarmingMode.auto ? (
+          <AutoFarmingPopover className="pools-table-row__details-info-popover" />
+        ) : (
+          <ManualFarmingPopover className="pools-table-row__details-info-popover" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RecentProfit: React.FC<IRecentProfitProps> = ({ tokenStake, value, onCollect }) => {
+  return (
+    <div className="pools-table-row__details-box">
+      <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
+        recent {tokenStake.symbol} profit
+      </div>
+      <InputNumber
+        colorScheme="white"
+        value={value}
+        inputPrefix={<CollectButton value={value} collectHandler={onCollect} />}
+        readOnly
+      />
+    </div>
+  );
+};
+
+const TableRow: React.FC<ITableRowProps> = observer(({ data, columns }) => {
   const { user, modals } = useMst();
-  const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
+  const [isOpenDetails, setOpenDetails] = useState(false);
+  const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
+  const [MOCK_convertedRecentProfit, MOCK_setConvertedRecentProfit] = useState(0);
+  const [MOCK_convertedStakedValue, MOCK_setConvertedStakedValue] = useState(0);
 
   const handleChangeDetails = (value: boolean): void => {
     setOpenDetails(value);
@@ -61,7 +126,32 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
     ]);
   };
 
+  const collectHandler = () => {
+    MOCK_setRecentProfit(0);
+  };
+
   const { tokenStake, apr, type } = data;
+  const hasConnectedWallet = Boolean(user.address);
+  const hasStakedValue = Boolean(modals.stakeUnstake.stakedValue);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      MOCK_setRecentProfit(0.0003);
+    }, 2000);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const USD_IN_TOKEN = 27;
+    MOCK_setConvertedRecentProfit(MOCK_recentProfit * USD_IN_TOKEN);
+  }, [MOCK_recentProfit]);
+
+  useEffect(() => {
+    const USD_IN_TOKEN = 27;
+    MOCK_setConvertedStakedValue(modals.stakeUnstake.stakedValue * USD_IN_TOKEN);
+  }, [modals.stakeUnstake.stakedValue]);
 
   return (
     <div className="pools-table-row">
@@ -89,8 +179,8 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
         </div>
         <RecentProfitColumn
           name={columns[0].name}
-          value={mockData.recentProfit}
-          usdValue={mockData.recentProfitUsd}
+          value={MOCK_recentProfit}
+          usdValue={MOCK_convertedRecentProfit}
         />
         <AprColumn name={columns[1].name} value={apr.value} modalHandler={handleOpenRoiModal} />
         <TotalStakedColumn value={mockData.totalStaked} onlyDesktop />
@@ -127,69 +217,47 @@ const TableRow: React.FC<ITableRowProps> = ({ data, columns }) => {
         classNames="show"
       >
         <div className="pools-table-row__details box-purple-l">
-          <div className="pools-table-row__details-links">
-            <OpenLink
-              className="pools-table-row__details-links-item"
-              href="/"
-              text="See Token Info"
-            />
-            <OpenLink
-              className="pools-table-row__details-links-item"
-              href="/"
-              text="View Project Site"
-            />
-            <OpenLink
-              className="pools-table-row__details-links-item"
-              href="/"
-              text="View Contract"
-            />
-            <div className="box-f-c">
-              <FarmingModeStatus type={type} />
-              {type === PoolFarmingMode.auto ? (
-                <AutoFarmingPopover className="pools-table-row__details-info-popover" />
-              ) : (
-                <ManualFarmingPopover className="pools-table-row__details-info-popover" />
-              )}
-            </div>
-          </div>
+          <DetailsLinks farmMode={type} />
           <div className="pools-table-row__buttons box-f-ai-c t-box-b">
+            <RecentProfit
+              tokenStake={tokenStake}
+              value={MOCK_recentProfit}
+              onCollect={collectHandler}
+            />
             <div className="pools-table-row__details-box">
-              <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
-                recent {tokenStake.symbol} profit
-              </div>
-              <InputNumber
-                colorScheme="white"
-                placeholder="0.0"
-                inputPrefix={
-                  <Button
-                    // className="pools-table-row__details-box-collect-profit"
-                    colorScheme="yellow"
-                    size="ssm"
-                  >
-                    <span className="text-white text-ssmd text-med">Collect</span>
-                  </Button>
-                }
-              />
-            </div>
-            <div className="pools-table-row__details-box">
-              <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
-                start staking
-              </div>
-              <Button
-                className="pools-table-row__details-box-start-staking-button"
-                size="lg"
-                onClick={user.address ? () => {} : () => {}}
-              >
-                <span className="text-smd text-white text-bold">
-                  {user.address ? 'Enable' : 'Unlock Wallet'}
-                </span>
-              </Button>
+              {hasConnectedWallet && hasStakedValue ? (
+                <>
+                  <div className="pools-table-row__details-title text-ssm text-upper text-purple text-med">
+                    {tokenStake.symbol} Staked {type === PoolFarmingMode.auto && '(compounding)'}
+                  </div>
+                  <div className="box-f box-f-jc-sb box-f-ai-e">
+                    <div className="pools-table-row__details-staked-values-group">
+                      <div className="pools-table-row__details-staked-value text-blue-d text-smd">
+                        {modals.stakeUnstake.stakedValue}
+                      </div>
+                      <div className="text-gray text-smd">
+                        ~{MOCK_convertedStakedValue} {mockData.currencyToConvert}
+                      </div>
+                    </div>
+                    <StakeUnstakeButtons />
+                  </div>
+                </>
+              ) : (
+                <StakingSection
+                  titleClassName="pools-table-row__details-title text-ssm text-upper"
+                  buttonProps={{
+                    className: 'pools-table-row__details-box-start-staking-button',
+                    size: 'lg',
+                  }}
+                  tokenSymbol={tokenStake.symbol}
+                />
+              )}
             </div>
           </div>
         </div>
       </CSSTransition>
     </div>
   );
-};
+});
 
-export default observer(TableRow);
+export default TableRow;

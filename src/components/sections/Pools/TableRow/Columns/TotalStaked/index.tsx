@@ -20,7 +20,7 @@ const TotalStaked: React.FC<ITotalStakedColumnProps> = ({ value, onlyDesktop = f
         },
       )}
     >
-      <span className="pools-table-row__text text-med text-purple">${value}</span>
+      <span className="text-med text-purple">${value}</span>
     </div>
   );
 };
