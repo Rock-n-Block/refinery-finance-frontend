@@ -10,6 +10,35 @@ import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 
 import './Pools.scss';
 
+enum PoolsContentView {
+  list = 'list',
+  card = 'card',
+}
+interface IPoolsContent {
+  view: PoolsContentView;
+  content: IPoolCard[];
+}
+
+const PoolsContent: React.FC<IPoolsContent> = ({ view, content }) => {
+  return (
+    <div className="pools__content">
+      <div className={`pools__content-${view}-view`}>
+        {view === PoolsContentView.list && <PoolTable data={content} />}
+        {view === PoolsContentView.card &&
+          content.map((pool) => {
+            return (
+              <PoolCard
+                {...pool}
+                key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
+                type={pool.type}
+              />
+            );
+          })}
+      </div>
+    </div>
+  );
+};
+
 const Pools: React.FC = () => {
   const pools: IPoolCard[] = [
     {
@@ -79,6 +108,8 @@ const Pools: React.FC = () => {
 
   const [isListView, setIsListView] = useState(false);
 
+  const [filteredPools, setFilteredPools] = useState(pools);
+
   const prefixContainer = [
     {
       key: 'list-view-mode',
@@ -95,6 +126,17 @@ const Pools: React.FC = () => {
       title: 'Card View',
     },
   ];
+
+  const filterPools = (inputValue: string) => {
+    return pools.filter(({ tokenStake }) =>
+      tokenStake.symbol.toUpperCase().startsWith(inputValue.toUpperCase()),
+    );
+  };
+
+  const handleSearch = (inputValue: string) => {
+    setFilteredPools(filterPools(inputValue));
+  };
+
   return (
     <>
       <main className="pools">
@@ -137,24 +179,14 @@ const Pools: React.FC = () => {
               },
             ]}
             radioGroupClassName="pools__i-contr"
+            searchPlaceholder="Search Pools"
+            searchDelay={300}
+            onSearchChange={handleSearch}
           />
-          <div className="pools__content">
-            <div className={`pools__content-${isListView ? 'list' : 'card'}-view`}>
-              {isListView ? (
-                <PoolTable data={pools} />
-              ) : (
-                pools.map((pool) => {
-                  return (
-                    <PoolCard
-                      {...pool}
-                      key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
-                      type={pool.type}
-                    />
-                  );
-                })
-              )}
-            </div>
-          </div>
+          <PoolsContent
+            view={isListView ? PoolsContentView.list : PoolsContentView.card}
+            content={filteredPools}
+          />
         </div>
       </main>
       <StakeUnstakeModal />

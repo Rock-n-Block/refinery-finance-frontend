@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { Form as FormAntd } from 'antd';
 
-import 'antd/lib/form/style/css';
-import 'antd/lib/time-picker/style/css';
-import 'antd/lib/date-picker/style/css';
-
-import './DaoProposal.scss';
-
 import Button from '@/components/atoms/Button';
 import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
-import throttle from '@/utils/Throttle';
+import { throttle } from '@/utils';
+
+import 'antd/lib/form/style/css';
+import 'antd/lib/time-picker/style/css';
+import 'antd/lib/date-picker/style/css';
+
+import './DaoProposal.scss';
 
 const DaoProposal: React.FC = () => {
   const [titleForm] = FormAntd.useForm();

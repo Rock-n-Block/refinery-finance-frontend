@@ -1,13 +1,12 @@
 import React from 'react';
 import cn from 'classnames';
 
-import { Button } from '../../../atoms';
-import NumberWithCommas from '../../../../utils/NumberWithCommas';
+import MemberImg from '@/assets/img/icons/member.svg';
+import WinImg from '@/assets/img/icons/win-cup.svg';
+import { Button } from '@/components/atoms';
+import { numberWithCommas } from '@/utils';
 
 import './TeamCard.scss';
-
-import WinImg from '@/assets/img/icons/win-cup.svg';
-import MemberImg from '@/assets/img/icons/member.svg';
 
 interface ITeamCard {
   place: number;
@@ -41,7 +40,7 @@ const TeamCard: React.FC<ITeamCard> = (props) => {
             <div className="teams-card__elem box-f-ai-c">
               <img src={MemberImg} alt="" />
               <span className="text-bold text-slg text-purple">
-                {NumberWithCommas(props.members)}
+                {numberWithCommas(props.members)}
               </span>
             </div>
           </div>

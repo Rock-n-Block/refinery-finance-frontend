@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import closeIcon from '@/assets/img/icons/cross.svg';
 import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
-import throttle from '@/utils/Throttle';
+import { throttle } from '@/utils';
 
 interface IChoicesFormProps {
   form: FormInstance;

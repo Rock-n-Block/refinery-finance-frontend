@@ -1,14 +1,14 @@
 import React from 'react';
-import cn from 'classnames';
 import { Input as AntdInput } from 'antd';
+import cn from 'classnames';
 
-import { Input, InputNumber, Button } from '..';
+import LupaImg from '../../../assets/img/icons/lupa.svg';
+import { Button, Input, InputNumber } from '..';
 
 import './Search.scss';
 
-import LupaImg from '../../../assets/img/icons/lupa.svg';
-
 interface ISearch {
+  className?: string;
   size?: 'sm' | 'lg' | 'md';
   realtime?: boolean;
   type?: 'text' | 'number';
@@ -17,11 +17,11 @@ interface ISearch {
   onChange?: (value: number | string) => void;
   btn?: boolean;
   colorScheme?: 'transparent' | 'gray';
-  className?: string;
 }
 
 const Search: React.FC<ISearch> = React.memo(
   ({
+    className,
     type = 'text',
     placeholder,
     size = 'sm',
@@ -29,7 +29,6 @@ const Search: React.FC<ISearch> = React.memo(
     onChange,
     btn,
     colorScheme = 'transparent',
-    className,
     value,
   }) => {
     const [inputValue, setInputValue] = React.useState<number | string>(value || '');
@@ -58,7 +57,7 @@ const Search: React.FC<ISearch> = React.memo(
     };
 
     const handleEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' && e.currentTarget.value) {
+      if (e.key === 'Enter' && e.currentTarget.value && !e.repeat) {
         return onChange && onChange(inputValue);
       }
       return undefined;
@@ -75,7 +74,7 @@ const Search: React.FC<ISearch> = React.memo(
         >
           <img src={LupaImg} alt="search" />
         </div>
-        {type === 'number' ? (
+        {type === 'number' && (
           <InputNumber
             onChange={handleChange}
             onKeyDown={handleEnterDown}
@@ -87,10 +86,8 @@ const Search: React.FC<ISearch> = React.memo(
               'text-md': size === 'lg',
             })}
           />
-        ) : (
-          ''
         )}
-        {type === 'text' ? (
+        {type === 'text' && (
           <Input
             value={inputValue}
             className={cn({
@@ -103,15 +100,11 @@ const Search: React.FC<ISearch> = React.memo(
             onKeyDown={handleEnterDown}
             colorScheme="transparent"
           />
-        ) : (
-          ''
         )}
-        {btn ? (
+        {btn && (
           <Button onClick={handleImgClick}>
             <span className="text-bold text-md text-white">Search</span>
           </Button>
-        ) : (
-          ''
         )}
       </div>
     );

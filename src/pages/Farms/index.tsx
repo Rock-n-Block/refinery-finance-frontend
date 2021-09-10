@@ -10,7 +10,7 @@ const Farms: React.FC = () => {
     <main className="farms">
       <div className="row">
         <FarmsPreview />
-        <ItemsController radioGroupClassName="farms__i-contr" />
+        <ItemsController radioGroupClassName="farms__i-contr" searchPlaceholder="Search Farms" />
         <FarmsTable />
       </div>
     </main>
