@@ -1,4 +1,6 @@
 import React from 'react';
+import { RadioChangeEvent } from 'antd/lib/radio';
+import { SwitchClickEventHandler } from 'antd/lib/switch';
 import cn from 'classnames';
 
 import { RadioGroup, Search, SortSelect, Switch } from '@/components/atoms';
@@ -12,7 +14,10 @@ interface IItemsController {
   radioGroupClassName?: string;
   searchPlaceholder?: string;
   searchDelay?: number;
-  onSearchChange?: (el: any) => void;
+  onSearchChange?: (value: string | number) => void;
+  onStakedSwitchChange?: SwitchClickEventHandler;
+  onRadioGroupChange?: (e: RadioChangeEvent) => void;
+  onSortSelectChange?: (value: any, option: any) => void;
 }
 
 const ItemsController: React.FC<IItemsController> = React.memo(
@@ -36,6 +41,9 @@ const ItemsController: React.FC<IItemsController> = React.memo(
     searchPlaceholder,
     searchDelay,
     onSearchChange,
+    onStakedSwitchChange,
+    onRadioGroupChange,
+    onSortSelectChange,
   }) => {
     let handleSearch: typeof onSearchChange | undefined;
     if (onSearchChange) {
@@ -49,6 +57,7 @@ const ItemsController: React.FC<IItemsController> = React.memo(
           <Switch
             colorScheme="white"
             text={<span className="i-contr__switch-text text-purple text-bold">Staked only</span>}
+            onChange={onStakedSwitchChange}
           />
           <RadioGroup
             className={cn('i-contr__radio', radioGroupClassName)}
@@ -56,10 +65,11 @@ const ItemsController: React.FC<IItemsController> = React.memo(
             buttonStyle="solid"
             defaultValue="live"
             items={radioGroupOptions}
+            onChange={onRadioGroupChange}
           />
         </div>
         <div className="box-f-ai-c">
-          <SortSelect className="i-contr__sort" label="Sort by " />
+          <SortSelect className="i-contr__sort" label="Sort by" onChange={onSortSelectChange} />
           <Search
             className="i-contr__search"
             colorScheme="gray"

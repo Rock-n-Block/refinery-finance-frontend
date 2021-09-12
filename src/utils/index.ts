@@ -40,12 +40,12 @@ export function throttle(func: (...props: any) => any, ms: number): (...args: an
 // TODO: remove any :D
 
 export function debounce(
-  func: (...props: any) => any,
+  func: (...props: any[]) => any,
   wait: number,
   immediate: boolean,
-): (...args: any[]) => void {
+): (...args: []) => void {
   let timeout: any;
-  return function debouncedFunc(...args: any[]) {
+  return function debouncedFunc(...args: []) {
     const context = this as any;
     const later = function later() {
       timeout = null;
