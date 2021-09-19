@@ -1,18 +1,104 @@
 import React from 'react';
+import BigNumber from 'bignumber.js/bignumber';
+import { observer } from 'mobx-react-lite';
 
-import InfoImg from '@/assets/img/icons/info.svg';
 import BgImg from '@/assets/img/sections/pools/bg-2.svg';
-import { Button, Popover } from '@/components/atoms';
+import { Button } from '@/components/atoms';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { getContract } from '@/services/web3/contractHelpers';
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { useMst } from '@/store';
+import { useSelectVaultData } from '@/store/pools/hooks';
+import { IReceipt } from '@/types';
+import { getFullDisplayBalance } from '@/utils/formatBalance';
+
+// import { loadingDataFormatter } from '@/utils';
+import { AutoBountyPopover } from '../Popovers';
 
 import './Preview.scss';
 
 const mockData = {
-  cake: '0.002',
-  cakeUsd: '0.10',
+  symbol: 'RP1',
 };
 
-const Preview: React.FC = () => {
-  const { cake, cakeUsd } = mockData;
+const ClaimBounty: React.FC = observer(() => {
+  const bUsd = 27;
+  const { user } = useMst();
+  const { connect } = useWalletConnectorContext();
+  const { callWithGasPrice } = useCallWithGasPrice();
+  const handleClaimBounty = async () => {
+    try {
+      const contract = getContract('REFINERY_VAULT');
+      const tx = await callWithGasPrice({
+        contract,
+        methodName: 'harvest',
+        options: {
+          gas: 300000,
+        },
+      });
+      console.log(tx);
+      if ((tx as IReceipt).status) {
+        console.log('OK');
+        // toastSuccess(t('Bounty collected!'), t('CAKE bounty has been sent to your wallet.'))
+        // setPendingTx(false)
+        // onDismiss()
+      }
+    } catch (error: any) {
+      console.log('ERROR', error);
+      // toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
+      // setPendingTx(false)
+    }
+  };
+
+  const { fees, estimatedRefineryBountyReward } = useSelectVaultData();
+
+  const displayBountyReward =
+    estimatedRefineryBountyReward === null
+      ? '###'
+      : getFullDisplayBalance({ balance: estimatedRefineryBountyReward, displayDecimals: 4 });
+
+  const displayBountyRewardUsd =
+    estimatedRefineryBountyReward === null
+      ? '###'
+      : getFullDisplayBalance({
+          balance: new BigNumber(estimatedRefineryBountyReward).multipliedBy(bUsd),
+          displayDecimals: 2,
+        });
+
+  return (
+    <div className="pools-preview__bounty box-white box-shadow">
+      <div className="pools-preview__bounty-title box-f-ai-c">
+        <span className="text-upper text-med text-ssm text-purple">
+          Auto {mockData.symbol} Bounty
+        </span>
+        <AutoBountyPopover symbol={mockData.symbol} fee={fees.callFee} />
+      </div>
+      <div className="pools-preview__bounty-box box-f-ai-c box-f-jc-sb">
+        <div>
+          <div className="text-lg">{displayBountyReward}</div>
+          <div className="pools-preview__bounty-usd text-med text-gray">
+            ~ {displayBountyRewardUsd} USD
+          </div>
+        </div>
+        {!user.address ? (
+          <Button className="pools-preview__bounty-btn" onClick={connect}>
+            <span className="text-white text-smd text-bold">Connect Wallet</span>
+          </Button>
+        ) : (
+          <Button
+            className="pools-preview__bounty-btn"
+            onClick={estimatedRefineryBountyReward?.toNumber() ? handleClaimBounty : undefined}
+            disabled={!estimatedRefineryBountyReward?.toNumber()}
+          >
+            <span className="text-white text-smd text-bold">Claim</span>
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+});
+
+const Preview: React.FC = observer(() => {
   return (
     <div className="pools-preview box-f-ai-c box-f-jc-sb">
       <img src={BgImg} alt="" className="pools-preview__bg" />
@@ -23,28 +109,9 @@ const Preview: React.FC = () => {
           High APR, low risk.
         </div>
       </div>
-      <div className="pools-preview__bounty box-white box-shadow">
-        <div className="pools-preview__bounty-title box-f-ai-c">
-          <span className="text-upper text-med text-ssm text-purple">Auto CAKE Bounty</span>
-          <Popover
-            content={<span className="text-med text text-purple">??????????</span>}
-            overlayInnerStyle={{ borderRadius: '20px' }}
-          >
-            <img src={InfoImg} alt="" />
-          </Popover>
-        </div>
-        <div className="pools-preview__bounty-box box-f-ai-c box-f-jc-sb">
-          <div>
-            <div className="text-lg">{cake}</div>
-            <div className="pools-preview__bounty-usd text-med text-gray">~ {cakeUsd} USD</div>
-          </div>
-          <Button className="pools-preview__bounty-btn">
-            <span className="text-white text-smd text-bold">Claim</span>
-          </Button>
-        </div>
-      </div>
+      <ClaimBounty />
     </div>
   );
-};
+});
 
 export default Preview;

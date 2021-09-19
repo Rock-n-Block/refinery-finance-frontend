@@ -178,7 +178,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
             colorScheme="outline-purple"
             link="/trade/swap"
           >
-            <span className="text-bold text-smd">Get CAKE</span>
+            <span className="text-bold text-smd">Get RP1</span>
           </Button>
         )}
       </div>

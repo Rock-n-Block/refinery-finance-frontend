@@ -12,6 +12,7 @@ interface IItemsController {
   prefixContainer?: React.ReactFragment;
   radioGroupOptions?: Array<{ text: string; value: string }>;
   radioGroupClassName?: string;
+  sortOptions?: string[];
   searchPlaceholder?: string;
   searchDelay?: number;
   onSearchChange?: (value: string | number) => void;
@@ -38,6 +39,7 @@ const ItemsController: React.FC<IItemsController> = React.memo(
       },
     ],
     radioGroupClassName,
+    sortOptions,
     searchPlaceholder,
     searchDelay,
     onSearchChange,
@@ -69,7 +71,12 @@ const ItemsController: React.FC<IItemsController> = React.memo(
           />
         </div>
         <div className="box-f-ai-c">
-          <SortSelect className="i-contr__sort" label="Sort by" onChange={onSortSelectChange} />
+          <SortSelect
+            className="i-contr__sort"
+            label="Sort by"
+            sortOptions={sortOptions}
+            onChange={onSortSelectChange}
+          />
           <Search
             className="i-contr__search"
             colorScheme="gray"

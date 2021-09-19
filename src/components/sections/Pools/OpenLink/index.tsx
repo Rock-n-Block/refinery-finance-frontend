@@ -5,7 +5,7 @@ import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 
 interface IOpenLinkProps {
   className?: string;
-  href: string;
+  href?: string;
   text: string;
 }
 

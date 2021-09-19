@@ -1,3 +1,6 @@
+import { Transaction } from 'web3-core';
+import BigNumber from 'bignumber.js/bignumber';
+
 export interface IToken {
   logoURI?: string;
   name: string;
@@ -83,3 +86,84 @@ export enum PoolFarmingMode {
 }
 
 export type IPoolFarmingMode = keyof typeof PoolFarmingMode;
+
+export interface IReceipt extends Transaction {
+  status: boolean;
+}
+
+export interface Address extends Record<string, string> {
+  // [key: string]: string;
+  '42': string;
+}
+export interface Token {
+  symbol: string;
+  address: Address;
+  decimals?: number;
+  projectLink?: string;
+  logoURI?: string;
+  busdPrice?: string;
+}
+
+export interface PoolConfig {
+  id: number;
+  earningToken: Token;
+  stakingToken: Token;
+  contractAddress: Address;
+  tokenPerBlock: string;
+  isFinished?: boolean;
+  enableEmergencyWithdraw?: boolean;
+}
+
+interface PoolUserData {
+  allowance: BigNumber;
+  stakingTokenBalance: BigNumber;
+  stakedBalance: BigNumber;
+  pendingReward: BigNumber;
+}
+
+export interface Pool extends PoolConfig {
+  totalStaked?: BigNumber;
+  stakingLimit?: BigNumber;
+  startBlock?: number;
+  endBlock?: number;
+  apr?: number;
+  stakingTokenPrice?: number;
+  earningTokenPrice?: number;
+  isAutoVault?: boolean;
+  userData?: PoolUserData;
+}
+
+export interface FarmConfig {
+  pid: number;
+  lpSymbol: string;
+  lpAddresses: Address;
+  token: Token;
+  quoteToken: Token;
+  multiplier?: string;
+  dual?: {
+    rewardPerBlock: number;
+    earnLabel: string;
+    endBlock: number;
+  };
+}
+
+export type SerializedBigNumber = string;
+
+interface FarmUserData {
+  allowance: string;
+  tokenBalance: string;
+  stakedBalance: string;
+  earnings: string;
+}
+
+export interface Farm extends FarmConfig {
+  tokenAmountMc?: SerializedBigNumber;
+  quoteTokenAmountMc?: SerializedBigNumber;
+  tokenAmountTotal?: SerializedBigNumber;
+  quoteTokenAmountTotal?: SerializedBigNumber;
+  lpTotalInQuoteToken?: SerializedBigNumber;
+  lpTotalSupply?: SerializedBigNumber;
+  tokenPriceVsQuote?: SerializedBigNumber;
+  poolWeight?: SerializedBigNumber;
+  userData?: FarmUserData;
+}

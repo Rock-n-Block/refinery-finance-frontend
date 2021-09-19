@@ -1,8 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IPoolCard } from '@/components/sections/Pools/PoolCard';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 
+// import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { PoolTableRow } from '..';
 
 import './Table.scss';
@@ -15,7 +16,7 @@ enum ColumnStyle {
 type IColumnStyle = keyof typeof ColumnStyle;
 
 interface ITableProps {
-  data: IPoolCard[];
+  data: Pool[];
 }
 
 interface IColumn {
@@ -56,13 +57,25 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
           </div>
         ))}
       </div>
-      {data.map((rowData) => (
-        <PoolTableRow
-          key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
-          data={rowData}
-          columns={columns}
-        />
-      ))}
+      {data.map((pool) => {
+        let farmMode: IPoolFarmingMode;
+        if (pool.isAutoVault) {
+          farmMode = PoolFarmingMode.auto;
+        } else if (pool.id === 0) {
+          farmMode = PoolFarmingMode.manual;
+        } else {
+          farmMode = PoolFarmingMode.earn;
+        }
+        return (
+          <PoolTableRow
+            // key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
+            key={pool.isAutoVault ? 'auto-pool' : pool.id}
+            farmMode={farmMode}
+            data={pool}
+            columns={columns}
+          />
+        );
+      })}
     </div>
   );
 });

@@ -12,13 +12,18 @@ import './SortSelect.scss';
 const { Option } = AntdSelect;
 
 interface ISortSelect extends SelectProps<SelectValue> {
+  sortOptions?: string[];
   label?: string;
 }
 
-const sortOptions = ['Hot', 'APR', 'Multiplier', 'Earned', 'Liquidity'];
-
 const SortSelect: React.FC<ISortSelect> = (props) => {
-  const { className, label, onChange, ...otherProps } = props;
+  const {
+    className,
+    label,
+    sortOptions = ['Hot', 'APR', 'Multiplier', 'Earned', 'Liquidity'],
+    onChange,
+    ...otherProps
+  } = props;
   const [activeValue, setActiveValue] = React.useState<any>(sortOptions[0]);
   return (
     <AntdSelect

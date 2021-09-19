@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js/bignumber';
 import { Observable } from 'rxjs';
 import Web3 from 'web3';
 
-import config from './config';
+import { contracts } from '@/config';
 
 declare global {
   interface Window {
@@ -193,10 +193,10 @@ export default class MetamaskService {
   }) {
     let decimals = NaN;
 
-    const contract = this.getContract(tokenAddress, config[contractName].ABI);
+    const contract = this.getContract(tokenAddress, contracts[contractName].ABI);
 
     if (!tokenDecimals) {
-      const tokenInfo = await this.getTokenInfo(tokenAddress, config[contractName].ABI);
+      const tokenInfo = await this.getTokenInfo(tokenAddress, contracts[contractName].ABI);
       decimals = tokenInfo.decimals;
     }
     const walletAdr = walletAddress || this.walletAddress;
@@ -236,11 +236,11 @@ export default class MetamaskService {
       let decimals = NaN;
 
       if (!tokenDecimals) {
-        const tokenInfo = await this.getTokenInfo(tokenAddress, config[contractName].ABI);
+        const tokenInfo = await this.getTokenInfo(tokenAddress, contracts[contractName].ABI);
         decimals = tokenInfo.decimals;
       }
 
-      const approveMethod = MetamaskService.getMethodInterface(config[contractName].ABI, 'approve');
+      const approveMethod = MetamaskService.getMethodInterface(contracts[contractName].ABI, 'approve');
 
       const approveSignature = this.encodeFunctionCall(approveMethod, [
         approvedAddress || walletAddress || this.walletAddress,
@@ -282,7 +282,9 @@ export default class MetamaskService {
     fromAddress?: string;
     value?: any;
   }) {
-    const transactionMethod = MetamaskService.getMethodInterface(config[contractName].ABI, method);
+    const contract = contracts[contractName];
+    const { ABI, ADDRESS } = contract;
+    const transactionMethod = MetamaskService.getMethodInterface(ABI, method);
 
     let signature;
     if (transactionMethod.inputs.length) {
@@ -297,7 +299,7 @@ export default class MetamaskService {
     }
     return this.sendTransaction({
       from: fromAddress || this.walletAddress,
-      to: toAddress || config[contractName].ADDRESS,
+      to: toAddress || ADDRESS,
       data: signature || '',
       value: value || '',
     });

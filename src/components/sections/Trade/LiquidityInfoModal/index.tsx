@@ -1,18 +1,17 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import BigNumber from 'bignumber.js/bignumber';
-
-import { Modal } from '../../../molecules';
-import { Button } from '../../../atoms';
-import { ILiquidityInfo } from '../../../../types';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import { useMst } from '../../../../store';
-import Web3Config from '../../../../services/web3/config';
-import MetamaskService from '../../../../services/web3';
-
-import './LiquidityInfoModal.scss';
+import { observer } from 'mobx-react-lite';
 
 import UnknownImg from '@/assets/img/currency/unknown.svg';
+import { Button } from '@/components/atoms';
+import { Modal } from '@/components/molecules';
+import { contracts } from '@/config';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import MetamaskService from '@/services/web3';
+import { useMst } from '@/store';
+import { ILiquidityInfo } from '@/types';
+
+import './LiquidityInfoModal.scss';
 
 interface ILiquidityInfoModal {
   handleCloseModal: () => void;
@@ -32,7 +31,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
       if (info?.address && user.address) {
         let lpBalance = await metamaskService.callContractMethodFromNewContract(
           info?.address,
-          Web3Config.PAIR.ABI,
+          contracts.PAIR.ABI,
           'balanceOf',
           [user.address],
         );
@@ -41,7 +40,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
 
         const supply = await metamaskService.callContractMethodFromNewContract(
           info?.address,
-          Web3Config.PAIR.ABI,
+          contracts.PAIR.ABI,
           'totalSupply',
         );
 

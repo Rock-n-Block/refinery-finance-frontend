@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import { feeFormatter } from '@/utils';
 
 import { useMst } from '../../../store';
 import { Modal } from '..';
@@ -9,11 +10,22 @@ import { Modal } from '..';
 import './RoiModal.scss';
 
 const RoiModal: React.FC = observer(() => {
-  const { modals } = useMst();
+  const {
+    modals,
+    pools: {
+      fees: { performanceFee },
+    },
+  } = useMst();
 
   const handleClose = () => {
     modals.roi.close();
   };
+
+  // TODO: /trade/swap page must apply for outputCurrency (or other) as a param
+  // const apyModalLink = stakingToken.address
+  //   ? `/trade/swap?outputCurrency=${getAddress(stakingToken.address)}`
+  //   : '/trade/swap';
+
   return (
     <Modal isVisible={modals.roi.isOpen} className="m-roi" handleCancel={handleClose} closeIcon>
       <div className="m-roi__content">
@@ -37,10 +49,13 @@ const RoiModal: React.FC = observer(() => {
             Calculated based on current rates. Compounding 288x daily. Rates are estimates provided
             for your convenience only, and by no means represent guaranteed returns.
           </p>
-          <p>All estimated rates take into account this pool’s 2% performance fee</p>
+          <p>
+            All estimated rates take into account this pool’s {feeFormatter(performanceFee)}%
+            performance fee
+          </p>
         </div>
-        <a href="/" className="m-roi__link box-f-ai-c">
-          <div className="text-purple text-smd">Get CAKE</div>
+        <a href="/trade/swap" className="m-roi__link box-f-ai-c">
+          <div className="text-purple text-smd">Get RP1</div>
           <img src={OpenLinkImg} alt="" />
         </a>
       </div>

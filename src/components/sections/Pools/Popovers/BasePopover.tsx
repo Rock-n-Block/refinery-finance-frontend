@@ -5,14 +5,14 @@ import { Popover } from '@/components/atoms';
 
 export interface IBasePopover {
   className?: string;
-  text: string;
+  text: JSX.Element | string;
 }
 
 const BasePopover: React.FC<IBasePopover> = ({ className, text, ...props }) => {
   return (
     <Popover
       className={className}
-      content={<span className="text-med text text-purple">{text}</span>}
+      content={<div className="text-med text text-purple">{text}</div>}
       overlayInnerStyle={{ borderRadius: '20px' }}
       {...props}
     >
@@ -23,7 +23,7 @@ const BasePopover: React.FC<IBasePopover> = ({ className, text, ...props }) => {
 
 export default BasePopover;
 
-export const withPopover = (text: string) => {
+export const withPopover = (text: JSX.Element | string) => {
   return (props: Omit<IBasePopover, 'text'>): JSX.Element => {
     return <BasePopover text={text} {...props} />;
   };

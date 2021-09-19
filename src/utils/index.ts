@@ -1,3 +1,7 @@
+import BigNumber from 'bignumber.js/bignumber';
+
+import { getFullDisplayBalance } from './formatBalance';
+
 export const numberWithCommas = (number: number): string => {
   const parts = number.toString().split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -57,3 +61,36 @@ export function debounce(
     if (callNow) func.apply(context, args);
   };
 }
+
+export const feeFormatter = (
+  fee: number | null | undefined,
+  maxValue = 100,
+  noDataDummy = '###',
+) => {
+  return fee === null || fee === undefined ? noDataDummy : fee / maxValue;
+};
+
+export const loadingDataFormatter = (
+  value?: number | string | null | undefined | BigNumber,
+  options: {
+    noDataDummy?: string;
+    decimals?: number;
+    displayDecimals?: number;
+  } = {},
+) => {
+  const { noDataDummy = '###', ...otherOptions } = options;
+  if (value === null || value === undefined) return noDataDummy;
+  return getFullDisplayBalance({
+    balance: BigNumber.isBigNumber(value) ? value : new BigNumber(value),
+    ...otherOptions,
+    // decimals: options?.decimals,
+    // displayDecimals: options?.
+  });
+  // return getBalanceAmount(BigNumber.isBigNumber(value) ? value : new BigNumber(value));
+};
+
+export const BIG_ZERO = new BigNumber(0);
+
+export const MAX_UINT_256: BigNumber = new BigNumber(
+  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+);

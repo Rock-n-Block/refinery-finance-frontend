@@ -1,12 +1,14 @@
 import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
-import { UserModel, ModalsModel, TokensModel } from './Models';
+import { UserModel, ModalsModel, TokensModel, PoolsModel, FarmsModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
   modals: ModalsModel,
   tokens: TokensModel,
+  pools: PoolsModel,
+  farms: FarmsModel,
 });
 export const Store = RootModel.create({
   user: {
@@ -29,6 +31,20 @@ export const Store = RootModel.create({
     top: [],
     extended: [],
     imported: [],
+  },
+  pools: {
+    userData: {
+      isLoading: true,
+    },
+    fees: {
+      performanceFee: null,
+      callFee: null,
+      withdrawalFee: null,
+      withdrawalFeePeriod: null,
+    },
+  },
+  farms: {
+    // data: [],
   },
 });
 
