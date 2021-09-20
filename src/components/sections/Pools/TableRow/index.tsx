@@ -42,21 +42,22 @@ const mockData = {
   currencyToConvert: 'USD',
 };
 
+const links = [
+  {
+    href: '/',
+    text: 'See Token Info',
+  },
+  {
+    href: '/',
+    text: 'View Project Site',
+  },
+  {
+    href: '/',
+    text: 'View Contract',
+  },
+];
+
 const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode }> = ({ farmMode }) => {
-  const links = [
-    {
-      href: '/',
-      text: 'See Token Info',
-    },
-    {
-      href: '/',
-      text: 'View Project Site',
-    },
-    {
-      href: '/',
-      text: 'View Contract',
-    },
-  ];
   return (
     <div className="pools-table-row__details-links">
       {links.map(({ href, text }) => (

@@ -23,23 +23,23 @@ interface IColumn {
   name: string;
 }
 
-const Table: React.FC<ITableProps> = React.memo(({ data }) => {
-  const columns: IColumn[] = [
-    {
-      style: 'disabled',
-      name: `Recent CAKE profit`,
-    },
-    {
-      name: 'APR',
-    },
-    {
-      name: 'Total staked',
-    },
-    {
-      name: 'Ends in',
-    },
-  ];
+const columns: IColumn[] = [
+  {
+    style: 'disabled',
+    name: `Recent CAKE profit`,
+  },
+  {
+    name: 'APR',
+  },
+  {
+    name: 'Total staked',
+  },
+  {
+    name: 'Ends in',
+  },
+];
 
+const Table: React.FC<ITableProps> = React.memo(({ data }) => {
   return (
     <div className="pools-table box-shadow box-white box-overflow-v">
       <div className="pools-table__head t-box-none">

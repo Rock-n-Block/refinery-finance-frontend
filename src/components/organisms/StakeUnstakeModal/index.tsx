@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import UnknownImg from '@/assets/img/currency/unknown.svg';
@@ -13,20 +13,38 @@ import './StakeUnstakeModal.scss';
 //   handleClose: () => void;
 // }
 
+const mockData = {
+  additionalCurrency: 'USD',
+};
+
+const MAX_PERCENTAGE = 100;
+const percentBoundariesButtons = [
+  {
+    value: 25,
+    name: '25%',
+  },
+  {
+    value: 50,
+    name: '50%',
+  },
+  {
+    value: 75,
+    name: '75%',
+  },
+  {
+    value: MAX_PERCENTAGE,
+    name: 'Max',
+  },
+];
+const USD_TOKEN_PRICE = 27;
+
 const StakeUnstakeModal: React.FC = observer(() => {
   const [balance, setBalance] = useState(0);
   const [isBalanceFetched, setIsBalanceFetched] = useState(false);
   const [percent, setPercent] = useState(25);
   const [valueToStake, setValueToStake] = useState(0);
-  const [convertedValueToStake, setConvertedValueToStake] = useState(0);
 
   const { modals } = useMst();
-
-  const mockData = {
-    additionalCurrency: 'USD',
-  };
-
-  const MAX_PERCENTAGE = 100;
 
   // TODO: refactor this
   const calculateValueByPercent = useCallback(
@@ -83,12 +101,15 @@ const StakeUnstakeModal: React.FC = observer(() => {
 
   useEffect(() => {
     updateValueByPercent(percent);
-  }, [balance, percent, updateValueByPercent]);
+  }, [percent, updateValueByPercent]);
 
-  useEffect(() => {
-    const USD_IN_CAKE = 27;
-    setConvertedValueToStake(valueToStake * USD_IN_CAKE);
-  }, [valueToStake]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setBalance(3);
+  //   }, 10000);
+  // }, []);
+
+  const usdValueToStake = useMemo(() => valueToStake * USD_TOKEN_PRICE, [valueToStake]);
 
   useEffect(() => {
     // for any 'location' changes with opened modal
@@ -96,25 +117,6 @@ const StakeUnstakeModal: React.FC = observer(() => {
       modals.stakeUnstake.close();
     };
   }, [modals.stakeUnstake]);
-
-  const percentBoundariesButtons = [
-    {
-      value: 25,
-      name: '25%',
-    },
-    {
-      value: 50,
-      name: '50%',
-    },
-    {
-      value: 75,
-      name: '75%',
-    },
-    {
-      value: MAX_PERCENTAGE,
-      name: 'Max',
-    },
-  ];
 
   return (
     <Modal
@@ -144,7 +146,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
           inputSize="md"
           inputPrefix={
             <span className="text-ssm text-gray">
-              ~{convertedValueToStake} {mockData.additionalCurrency}
+              ~{usdValueToStake} {mockData.additionalCurrency}
             </span>
           }
           prefixPosition="button"
