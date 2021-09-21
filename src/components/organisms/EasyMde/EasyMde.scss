@@ -20,7 +20,7 @@
 
     &:hover,
     &.active {
-      background-color: linear-gradient(98.94deg, #EFDFFF -22.87%, #F9F9F9 94.67%);
+      background-color: $bg-gradient;
       border: none;
     }
   }

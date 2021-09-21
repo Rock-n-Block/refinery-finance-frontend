@@ -75,3 +75,11 @@ export interface ILiquidityInfo {
     receive?: number | string;
   };
 }
+
+export enum PoolFarmingMode {
+  earn = 'earn',
+  manual = 'manual',
+  auto = 'auto',
+}
+
+export type IPoolFarmingMode = keyof typeof PoolFarmingMode;

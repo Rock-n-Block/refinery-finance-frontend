@@ -1,10 +1,10 @@
-@import '../../../../styles/mixins/media.scss';
+@import 'src/styles/mixins/media.scss';
 
 .pools-preview {
   padding: 30px 30px 30px 40px;
   background: #3f1e7e;
   border-radius: 40px;
-  background-image: url(../../../../assets/img/sections/pools/bg-1.svg);
+  background-image: url(~src/assets/img/sections/pools/bg-1.svg);
   background-repeat: no-repeat;
   background-size: auto 100%;
   background-position: 100% 0;

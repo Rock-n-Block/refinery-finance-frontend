@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import cn from 'classnames';
 
-import { PoolsPreview, PoolCard } from '../../components/sections/Pools';
-import { ItemsController, StakeUnstakeModal } from '../../components/organisms';
-import { IPoolCard } from '../../components/sections/Pools/PoolCard';
+import { ReactComponent as CardViewIcon } from '@/assets/img/icons/card-view.svg';
+import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg';
+import { Button } from '@/components/atoms';
+import { ItemsController, StakeUnstakeModal } from '@/components/organisms';
+import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
+import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 
 import './Pools.scss';
 
@@ -29,7 +33,7 @@ const Pools: React.FC = () => {
       },
       type: 'earn',
       apr: {
-        value: 150,
+        value: 143.3323,
         items: [
           {
             timeframe: '1D',
@@ -37,9 +41,9 @@ const Pools: React.FC = () => {
             rf: 0.12,
           },
           {
-            timeframe: '1D',
-            roi: 0.19,
-            rf: 0.12,
+            timeframe: '7D',
+            roi: 1.43,
+            rf: 0.88,
           },
         ],
       },
@@ -56,7 +60,7 @@ const Pools: React.FC = () => {
       },
       type: 'auto',
       apr: {
-        value: 150,
+        value: 90.6,
         items: [
           {
             timeframe: '1D',
@@ -64,12 +68,31 @@ const Pools: React.FC = () => {
             rf: 0.12,
           },
           {
-            timeframe: '1D',
-            roi: 0.19,
-            rf: 0.12,
+            timeframe: '7D',
+            roi: 1.43,
+            rf: 0.88,
           },
         ],
       },
+    },
+  ];
+
+  const [isListView, setIsListView] = useState(false);
+
+  const prefixContainer = [
+    {
+      key: 'list-view-mode',
+      icon: ListViewIcon,
+      handler: () => setIsListView(true),
+      activeClassCondition: isListView,
+      title: 'List View',
+    },
+    {
+      key: 'card-view-mode',
+      icon: CardViewIcon,
+      handler: () => setIsListView(false),
+      activeClassCondition: !isListView,
+      title: 'Card View',
     },
   ];
   return (
@@ -77,19 +100,64 @@ const Pools: React.FC = () => {
       <main className="pools">
         <div className="row">
           <PoolsPreview />
-          <ItemsController />
+          <ItemsController
+            prefixContainer={
+              <>
+                <div className="pools__i-contr-prefix box-f-ai-c">
+                  {prefixContainer.map((item) => {
+                    const { key, handler, activeClassCondition, title } = item;
+                    return (
+                      <Button
+                        key={key}
+                        className="pools__i-contr-button"
+                        title={title}
+                        colorScheme="white"
+                        size="ssm"
+                        onClick={handler}
+                      >
+                        <item.icon
+                          className={cn('pools__i-contr-icon', {
+                            'pools__i-contr-icon_active': activeClassCondition,
+                          })}
+                        />
+                      </Button>
+                    );
+                  })}
+                </div>
+              </>
+            }
+            radioGroupOptions={[
+              {
+                text: 'Live',
+                value: 'live',
+              },
+              {
+                text: 'Finished',
+                value: 'finished',
+              },
+            ]}
+            radioGroupClassName="pools__i-contr"
+          />
           <div className="pools__content">
-            {pools.map((pool) => (
-              <PoolCard
-                {...pool}
-                key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
-                type={pool.type}
-              />
-            ))}
+            <div className={`pools__content-${isListView ? 'list' : 'card'}-view`}>
+              {isListView ? (
+                <PoolTable data={pools} />
+              ) : (
+                pools.map((pool) => {
+                  return (
+                    <PoolCard
+                      {...pool}
+                      key={`${pool.tokenEarn?.address}${pool.tokenStake.address}`}
+                      type={pool.type}
+                    />
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </main>
-      <StakeUnstakeModal isVisible={false} handleClose={() => {}} />
+      <StakeUnstakeModal />
     </>
   );
 };

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Select as AntdSelect } from 'antd';
 import { SelectProps, SelectValue } from 'antd/lib/select';
+import classNames from 'classnames';
 
 import 'antd/lib/select/style/css';
-import './SortSelect.scss';
 
 import { ReactComponent as ArrowImg } from '../../../assets/img/icons/arrow-btn.svg';
+
+import './SortSelect.scss';
 
 const { Option } = AntdSelect;
 
@@ -15,7 +17,7 @@ interface ISortSelect extends SelectProps<SelectValue> {
 
 const SortSelect: React.FC<ISortSelect> = (props) => {
   const items = ['Hot', 'APR', 'Multiplier', 'Earned', 'Liquidity'];
-  const { label, ...otherProps } = props;
+  const { className, label, ...otherProps } = props;
   const [activeValue, setActiveValue] = React.useState<any>(items[0]);
   return (
     <AntdSelect
@@ -27,7 +29,7 @@ const SortSelect: React.FC<ISortSelect> = (props) => {
         label: `${label} ${activeValue}`,
       }}
       {...otherProps}
-      className="s-sort"
+      className={classNames(className, 's-sort')}
     >
       {items
         .filter((item) => item !== activeValue)
