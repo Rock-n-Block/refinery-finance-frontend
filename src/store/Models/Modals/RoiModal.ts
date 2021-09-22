@@ -1,21 +1,24 @@
 import { types, Instance } from 'mobx-state-tree';
-import RoiItem from './RoiItem';
+import RoiOptionsModel from './RoiOptions';
 
 const RoiModal = types
   .model({
-    items: types.optional(types.array(RoiItem), []),
+    options: types.maybeNull(RoiOptionsModel),
   })
   .views((self) => ({
     get isOpen() {
-      return Boolean(self.items.length);
+      return Boolean(self.options);
+      // return Boolean(self.options.length);
     },
   }))
   .actions((self) => ({
     close() {
-      self.items.clear();
+      self.options = null;
+      // self.options.clear();
     },
-    open(items: Instance<typeof RoiItem>[]) {
-      self.items.push(...items);
+    open(options: Instance<typeof RoiOptionsModel>) {
+      self.options = options;
+      // self.options.push(options);
     },
   }));
 

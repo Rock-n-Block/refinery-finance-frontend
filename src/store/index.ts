@@ -18,9 +18,7 @@ export const Store = RootModel.create({
     metamaskErr: {
       errMsg: '',
     },
-    roi: {
-      items: [],
-    },
+    roi: {},
     stakeUnstake: {
       isOpen: false,
       isStaking: true,

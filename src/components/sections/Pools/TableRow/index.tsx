@@ -131,18 +131,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, data, columns }
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
-    modals.roi.open([
-      {
-        timeframe: '1D',
-        roi: 0.19,
-        rf: 0.12,
-      },
-      {
-        timeframe: '7D',
-        roi: 1.43,
-        rf: 0.88,
-      },
-    ]);
+    // TODO: POOLS TABLE ROW MODAL
+    modals.roi.open({
+      isFarmPage: false,
+      apr: 5,
+      tokenPrice: 1,
+    });
   };
 
   const collectHandler = () => {
