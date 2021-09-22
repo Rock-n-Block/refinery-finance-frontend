@@ -8,7 +8,7 @@ import { observer } from 'mobx-react-lite';
 import { ReactComponent as CardViewIcon } from '@/assets/img/icons/card-view.svg';
 import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg';
 import { Button } from '@/components/atoms';
-import { ItemsController, StakeUnstakeModal } from '@/components/organisms';
+import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/organisms';
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
 // import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { useMst } from '@/store';
@@ -193,7 +193,6 @@ enum SortOptions {
 // type ISortOptions = keyof typeof SortOptions;
 
 const Pools: React.FC = observer(() => {
-  // const { metamaskService } = useWalletConnectorContext();
   const { user, pools: poolsStore } = useMst();
   const { pools: poolsWithoutAutoVault } = usePools();
   // const [filteredPools, setFilteredPools] = useState(poolsWithoutAutoVault);
@@ -397,6 +396,7 @@ const Pools: React.FC = observer(() => {
         </div>
       </main>
       <StakeUnstakeModal />
+      <CollectModal />
     </>
   );
 });

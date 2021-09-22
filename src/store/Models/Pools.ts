@@ -23,7 +23,7 @@ import AddressModel from './Address';
 import TokenModel from './Token';
 import { getBalanceAmount } from '@/utils/formatBalance';
 import { getPoolApr } from '@/utils/apr';
-import { BIG_ZERO } from '@/utils';
+import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils';
 
 const UserDataModel = types.model({
   allowance: types.string,
@@ -91,7 +91,7 @@ const PoolsModel = types
     // },
     setEstimated(value: number) {
       self.estimatedRefineryBountyReward = new BigNumber(value)
-        .multipliedBy(new BigNumber(10).pow(18))
+        .multipliedBy(DEFAULT_TOKEN_DECIMAL)
         .toJSON();
     },
 
@@ -340,8 +340,26 @@ const PoolsModel = types
 
     async updateUserAllowance(poolId: number, accountAddress: string) {
       const allowances = await fetchPoolsAllowance(accountAddress);
-
       this.updatePoolsUserData({ poolId, field: 'allowance', value: allowances[poolId] });
+    },
+
+    async updateUserBalance(poolId: number, accountAddress: string) {
+      const tokenBalances = await fetchUserBalances(accountAddress);
+      this.updatePoolsUserData({
+        poolId,
+        field: 'stakingTokenBalance',
+        value: tokenBalances[poolId],
+      });
+    },
+
+    async updateUserStakedBalance(poolId: number, accountAddress: string) {
+      const stakedBalances = await fetchUserStakeBalances(accountAddress);
+      this.updatePoolsUserData({ poolId, field: 'stakedBalance', value: stakedBalances[poolId] });
+    },
+
+    async updateUserPendingReward(poolId: number, accountAddress: string) {
+      const pendingRewards = await fetchUserPendingRewards(accountAddress);
+      this.updatePoolsUserData({ poolId, field: 'pendingReward', value: pendingRewards[poolId] });
     },
 
     updatePoolsUserData({

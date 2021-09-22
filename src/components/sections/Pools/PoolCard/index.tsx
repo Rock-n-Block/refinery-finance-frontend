@@ -1,37 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
 // import { getBalanceAmount } from '@/utils/formatBalance';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
-import { Button } from '@/components/atoms';
-import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
-import OpenLink from '@/components/sections/Pools/OpenLink';
-import { getAddress, getContractAddress } from '@/services/web3/contractHelpers';
-import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode, Token } from '@/types';
-import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { BIG_ZERO, feeFormatter } from '@/utils';
 
 import 'antd/lib/select/style/css';
 
 import CollectButton from '../CollectButton';
-import { AutoFarmingPopover, ManualFarmingPopover, TotalStakedPopover } from '../Popovers';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
-import { durationFormatter, getAprData, getPoolBlockInfo, secondsToHoursFormatter } from './utils';
+import CardFooter from './CardFooter';
+import CardSubtitle from './CardSubtitle';
+import CardTitle from './CardTitle';
+import TextUnstakingFee from './TextUnstakingFee';
+import { durationFormatter, getAprData } from './utils';
 
 import './PoolCard.scss';
-
-// interface IAPR {
-//   timeframe: string;
-//   roi: number | string;
-//   rf: number | string;
-// }
 
 export interface IPoolCard {
   className?: string;
@@ -39,171 +30,11 @@ export interface IPoolCard {
   // tokenStake: IToken;
   farmMode: IPoolFarmingMode;
   pool: Pool;
-  // apr: {
-  //   value: number | string;
-  //   items: IAPR[];
-  // };
 }
-
-interface ITitleProps {
-  className?: string;
-  farmMode: IPoolFarmingMode;
-  tokenEarn: Token;
-  tokenStake: Token;
-}
-
-type ISubtitleProps = ITitleProps;
 
 const mockData = {
   timeLeft: 2 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000 + 31 * 60 * 1000,
 };
-
-const Title: React.FC<ITitleProps> = React.memo(({ className, farmMode, tokenEarn }) => {
-  return (
-    <div className={classNames(className, 'text-slg text-purple text-bold')}>
-      <span className="text-capitalize">{farmMode}</span>{' '}
-      <span className="text-upper">{tokenEarn.symbol}</span>
-    </div>
-  );
-});
-
-const Subtitle: React.FC<ISubtitleProps> = React.memo(
-  ({ className, farmMode, tokenStake, tokenEarn }) => {
-    return (
-      <div className={classNames(className, 'text-smd text-purple text-med')}>
-        {farmMode === PoolFarmingMode.manual && tokenEarn && (
-          <>
-            <span className="capitalize">Earn</span> <span>{tokenEarn.symbol}</span>,{' '}
-            <span>stake</span> <span className="text-upper">{tokenStake.symbol}</span>
-          </>
-        )}
-        {farmMode === PoolFarmingMode.auto && 'Automatic restaking'}
-        {farmMode === PoolFarmingMode.earn && `Stake ${tokenStake.symbol}`}
-      </div>
-    );
-  },
-);
-
-const Details: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer(({ pool, type }) => {
-  const {
-    pools: {
-      fees: { performanceFee },
-    },
-  } = useMst();
-  const [currentBlock] = useBlock();
-  const {
-    shouldShowBlockCountdown,
-    // blocksUntilStart,
-    // blocksRemaining,
-    // hasPoolStarted,
-    blocksToDisplay,
-  } = getPoolBlockInfo(pool, currentBlock);
-  const { totalRefineryInVault } = useSelectVaultData();
-  const { earningToken, stakingToken, totalStaked } = pool;
-  // const mockDetailsData = { totalStaked: '78,790,501' };
-  // const { totalStaked } = mockDetailsData;
-  const totalStakedBalance = useMemo(() => {
-    switch (type) {
-      case PoolFarmingMode.auto:
-        return loadingDataFormatter(totalRefineryInVault, { decimals: stakingToken.decimals });
-      case PoolFarmingMode.manual: {
-        if (!totalStaked || !totalRefineryInVault) return loadingDataFormatter();
-        return loadingDataFormatter(new BigNumber(totalStaked).minus(totalRefineryInVault), {
-          decimals: stakingToken.decimals,
-        });
-      }
-      case PoolFarmingMode.earn:
-      default:
-        return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
-    }
-  }, [type, stakingToken.decimals, totalRefineryInVault, totalStaked]);
-  const performanceRow = useMemo(() => {
-    return type === PoolFarmingMode.auto
-      ? [
-          {
-            title: 'Performance Fee:',
-            value: <>{feeFormatter(performanceFee)}%</>,
-          },
-        ]
-      : [];
-  }, [performanceFee, type]);
-
-  const endsInRow = useMemo(() => {
-    return shouldShowBlockCountdown
-      ? [
-          {
-            title: 'Ends in:',
-            value: (
-              <>
-                <span>{numberWithCommas(blocksToDisplay)} blocks</span>
-                {/* TODO: copy/paste value like in table row */}
-              </>
-            ),
-          },
-        ]
-      : [];
-  }, [shouldShowBlockCountdown, blocksToDisplay]);
-  const items = [
-    {
-      title: 'Total staked:',
-      value: (
-        <>
-          <span>{totalStakedBalance}</span>
-          <TotalStakedPopover symbol={stakingToken.symbol} />
-        </>
-      ),
-    },
-    ...performanceRow,
-    ...endsInRow,
-  ];
-  const links = [
-    {
-      href: `/token/${earningToken.address ? getAddress(earningToken.address) : ''}`,
-      text: 'See Token Info',
-    },
-    {
-      href: earningToken.projectLink,
-      text: 'View Project Site',
-    },
-    {
-      href: `https://bscscan.com/address/${
-        type === PoolFarmingMode.auto
-          ? getContractAddress('REFINERY_VAULT')
-          : getAddress(pool.contractAddress)
-      }`,
-      text: 'View Contract',
-    },
-  ];
-  return (
-    <div className="p-card__details">
-      {items.map(({ title, value }) => {
-        return (
-          <div key={title} className="p-card__details-item box-f-ai-c box-f-jc-sb ">
-            <div className="p-card__details-item-name text-smd text-purple text-med">{title}</div>
-            <div className="p-card__details-item-value text-smd box-f-ai-c">{value}</div>
-          </div>
-        );
-      })}
-      {links.map(({ href, text }) => (
-        <OpenLink key={href + text} className="p-card__details-item" href={href} text={text} />
-      ))}
-    </div>
-  );
-});
-
-const TextUnstakingFee: React.FC<{ className?: string }> = observer(({ className }) => {
-  const {
-    pools: {
-      fees: { withdrawalFee, withdrawalFeePeriod },
-    },
-  } = useMst();
-  return (
-    <div className={classNames(className, 'text-smd text-blue-d')}>
-      {feeFormatter(withdrawalFee)}% unstaking fee if withdrawn within{' '}
-      {secondsToHoursFormatter(withdrawalFeePeriod)}
-    </div>
-  );
-});
 
 const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) => {
   const {
@@ -216,20 +47,17 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   const {
     userData: { userShares },
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData } = pool;
+  const { earningToken, stakingToken, userData, apr, earningTokenPrice } = pool;
 
   const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
   const [MOCK_timeLeft, MOCK_setTimeLeft] = useState(mockData.timeLeft);
 
-  const [isDetailsOpen, setDetailsOpen] = useState<boolean>(false);
-
   const handleOpenApr = (): void => {
-    // interface IAPR {
-    //   timeframe: string;
-    //   roi: number | string;
-    //   rf: number | string;
-    // }
-    modals.roi.open([]);
+    modals.roi.open({
+      isFarmPage: false,
+      apr: apr || 0,
+      tokenPrice: earningTokenPrice || 0,
+    });
   };
 
   // TODO: 'autoCompoundFrequency' from `getAprData` use to calculate APR/APY
@@ -238,10 +66,16 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
   );
 
-  const harvestHandler = () => {};
-
   const collectHandler = () => {
-    MOCK_setRecentProfit(0);
+    modals.poolsCollect.open({
+      poolId: pool.id,
+      farmMode,
+      earningTokenSymbol: pool.earningToken.symbol,
+      earnings: '0.14124',
+      earningTokenDecimals: Number(pool.earningToken.decimals),
+      fullBalance: '0.14',
+    });
+    // MOCK_setRecentProfit(0);
   };
 
   const hasConnectedWallet = Boolean(user.address);
@@ -291,13 +125,13 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     <div className={classNames('p-card box-shadow', className)}>
       <div className="p-card__head box-f-ai-c box-f-jc-sb">
         <div>
-          <Title
+          <CardTitle
             className="p-card__title"
             farmMode={farmMode}
             tokenStake={stakingToken}
             tokenEarn={earningToken}
           />
-          <Subtitle
+          <CardSubtitle
             className="p-card__subtitle"
             farmMode={farmMode}
             tokenStake={stakingToken}
@@ -364,9 +198,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <CollectButton
                   farmMode={farmMode}
                   value={MOCK_recentProfit}
-                  collectHandler={
-                    farmMode === PoolFarmingMode.earn ? harvestHandler : collectHandler
-                  }
+                  collectHandler={collectHandler}
                 />
               </div>
             </>
@@ -397,37 +229,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
           />
         )}
       </div>
-      <div className="p-card__box p-card__footer">
-        <div className="box-f-ai-c box-f-jc-sb">
-          <FarmingModeStatus type={farmMode} />
-          {farmMode === PoolFarmingMode.auto ? (
-            <AutoFarmingPopover className="p-card__footer-info-popover" />
-          ) : (
-            <ManualFarmingPopover className="p-card__footer-info-popover" />
-          )}
-          <Button
-            toggle
-            size="smd"
-            colorScheme="outline-purple"
-            arrow
-            isActive={isDetailsOpen}
-            onToggle={(value) => setDetailsOpen(value)}
-          >
-            <span className="text text-med text-purple">{isDetailsOpen ? 'Hide' : 'Details'}</span>
-          </Button>
-        </div>
-        <CSSTransition
-          unmountOnExit
-          mountOnEnter
-          in={isDetailsOpen}
-          addEndListener={(node, done) => {
-            node.addEventListener('transitionend', done, false);
-          }}
-          classNames="show"
-        >
-          <Details pool={pool} type={farmMode} />
-        </CSSTransition>
-      </div>
+      <CardFooter farmMode={farmMode} pool={pool} />
     </div>
   );
 });

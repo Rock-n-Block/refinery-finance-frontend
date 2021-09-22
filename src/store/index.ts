@@ -23,6 +23,9 @@ export const Store = RootModel.create({
       isOpen: false,
       isStaking: true,
     },
+    poolsCollect: {
+      isOpen: false,
+    }
   },
   tokens: {
     default: [],
