@@ -39,7 +39,6 @@ export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
 };
 
 const useStakePool = (poolId: number) => {
-  // if (!poolId) throw new Error('Must specify poolId to `useStakePool`');
   const { metamaskService } = useWalletConnectorContext();
   const { user, pools } = useMst();
 

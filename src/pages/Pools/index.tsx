@@ -10,9 +10,11 @@ import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg
 import { Button } from '@/components/atoms';
 import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/organisms';
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
+import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
 // import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { useMst } from '@/store';
-import { usePools } from '@/store/pools/hooks';
+import { getRefineryVaultEarnings } from '@/store/pools/helpers';
+import { usePools, useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO } from '@/utils';
 
@@ -103,72 +105,6 @@ const PoolsContent: React.FC<IPoolsContent> = ({ view, content }) => {
   );
 };
 
-// const pools: IPoolCard[] = [
-//   {
-//     tokenEarn: {
-//       name: 'WBNB Token',
-//       symbol: 'WBNB',
-//       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-//       chainId: 56,
-//       decimals: 18,
-//       logoURI:
-//         'https://tokens.pancakeswap.finance/images/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png',
-//     },
-//     tokenStake: {
-//       name: 'PancakeSwap Token',
-//       symbol: 'CAKE',
-//       address: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
-//       chainId: 56,
-//       decimals: 18,
-//       logoURI:
-//         'https://tokens.pancakeswap.finance/images/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png',
-//     },
-//     type: 'earn',
-//     apr: {
-//       value: 143.3323,
-//       items: [
-//         {
-//           timeframe: '1D',
-//           roi: 0.19,
-//           rf: 0.12,
-//         },
-//         {
-//           timeframe: '7D',
-//           roi: 1.43,
-//           rf: 0.88,
-//         },
-//       ],
-//     },
-//   },
-//   {
-//     tokenStake: {
-//       name: 'Cake',
-//       symbol: 'CAKE',
-//       address: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
-//       chainId: 56,
-//       decimals: 18,
-//       logoURI:
-//         'https://tokens.pancakeswap.finance/images/0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82.png',
-//     },
-//     type: 'auto',
-//     apr: {
-//       value: 90.6,
-//       items: [
-//         {
-//           timeframe: '1D',
-//           roi: 0.19,
-//           rf: 0.12,
-//         },
-//         {
-//           timeframe: '7D',
-//           roi: 1.43,
-//           rf: 0.88,
-//         },
-//       ],
-//     },
-//   },
-// ];
-
 enum FilterBy {
   name = 'name',
   stakedOnly = 'stakedOnly',
@@ -195,6 +131,12 @@ enum SortOptions {
 const Pools: React.FC = observer(() => {
   const { user, pools: poolsStore } = useMst();
   const { pools: poolsWithoutAutoVault } = usePools();
+  const {
+    totalRefineryInVault,
+    pricePerFullShare,
+    userData: { refineryAtLastUserAction, userShares },
+    fees: { performanceFee },
+  } = useSelectVaultData();
   // const [filteredPools, setFilteredPools] = useState(poolsWithoutAutoVault);
   const [appliedFilters, setAppliedFilters] = useState<Map<IFilterBy, IFilterFunc>>(new Map());
   const [isListView, setIsListView] = useState(false);
@@ -211,38 +153,60 @@ const Pools: React.FC = observer(() => {
     (array: typeof poolsWithoutAutoVault) => {
       let sortFunc: (pool1: typeof array[0], pool2: typeof array[0]) => number;
       switch (sortOption) {
+        case SortOptions.apr: {
+          const performanceFeeAsDecimal = Number(performanceFee) / 100;
+          const getAprValue = (pool: Pool) => {
+            return pool.apr ? getAprData(pool, performanceFeeAsDecimal).apr : 0;
+          };
+          sortFunc = (pool1, pool2) => getAprValue(pool2) - getAprValue(pool1);
+          break;
+        }
+        case SortOptions.earned: {
+          const getPoolEarnedValue = (pool: Pool) => {
+            if (!pool.userData || !pool.earningTokenPrice) {
+              return 0;
+            }
+            const tokenEarnings = pool.isAutoVault
+              ? new BigNumber(
+                  getRefineryVaultEarnings(
+                    user.address,
+                    refineryAtLastUserAction || BIG_ZERO,
+                    userShares || BIG_ZERO,
+                    pricePerFullShare || BIG_ZERO,
+                  ).autoRefineryToDisplay,
+                )
+              : pool.userData.pendingReward;
+            return tokenEarnings.times(pool.earningTokenPrice).toNumber();
+          };
+          sortFunc = (pool1, pool2) => getPoolEarnedValue(pool2) - getPoolEarnedValue(pool1);
+          break;
+        }
+        case SortOptions.totalStaked: {
+          const getPoolTotalStaked = (pool: Pool) => {
+            return pool.isAutoVault
+              ? totalRefineryInVault?.toNumber() || 0
+              : pool.totalStaked?.toNumber() || 0;
+          };
+          sortFunc = (pool1, pool2) => getPoolTotalStaked(pool2) - getPoolTotalStaked(pool1);
+          break;
+        }
+        case SortOptions.hot:
         default: {
           sortFunc = () => 0;
           break;
         }
-        // case SortOptions.apr: {
-        //   sortFunc = ({ apr: { value: a } }, { apr: { value: b } }) =>
-        //     String(b).localeCompare(String(a));
-        //   break;
-        // }
-        // case SortOptions.earned: {
-        //   // TODO:
-        //   sortFunc = ({ apr: { value: a } }, { apr: { value: b } }) =>
-        //     String(b).localeCompare(String(a));
-        //   break;
-        // }
-        // case SortOptions.totalStaked: {
-        //   // TODO:
-        //   sortFunc = ({ apr: { value: a } }, { apr: { value: b } }) =>
-        //     String(b).localeCompare(String(a));
-        //   break;
-        // }
-        // case SortOptions.hot:
-        // default: {
-        //   // TODO:
-        //   sortFunc = ({ tokenStake: { symbol: a } }, { tokenStake: { symbol: b } }) =>
-        //     a.localeCompare(b);
-        //   break;
-        // }
       }
       return [...array].sort(sortFunc);
     },
-    [sortOption],
+    [
+      sortOption,
+      totalRefineryInVault,
+      performanceFee,
+      pricePerFullShare,
+      refineryAtLastUserAction,
+      user.address,
+      userShares,
+    ],
   );
 
   const filteredPools = useMemo(() => {
@@ -324,6 +288,33 @@ const Pools: React.FC = observer(() => {
     setSortOption(value as SortOptions);
     console.log(value);
   };
+
+  useEffect(() => {
+    // Live Pools filter
+    const selectedTab: IPoolsType = PoolsType.live;
+    const isOpenedLiveTab = PoolsType.live === selectedTab;
+    // Is Staked Only filter
+    const isStaked = false;
+    setAppliedFilters(
+      new Map([
+        [
+          FilterBy.poolsType,
+          ({ isFinished = false }) => {
+            if (isOpenedLiveTab) return !isFinished;
+            return isFinished;
+          },
+        ],
+        [
+          FilterBy.stakedOnly,
+          ({ userData }) =>
+            filterByStakedOnly(
+              userData?.stakedBalance ? userData.stakedBalance : BIG_ZERO,
+              isStaked,
+            ),
+        ],
+      ]),
+    );
+  }, []);
 
   // console.log(setFilteredPools, filter, sort);
 

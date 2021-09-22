@@ -62,7 +62,7 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
   return { handleApprove, requestedApproval };
 };
 
-// Approve CAKE auto pool
+// Approve RP1 auto pool
 export const useVaultApprove = (setLastUpdated: () => void) => {
   const [requestedApproval, setRequestedApproval] = useState(false);
   const { callWithGasPrice } = useCallWithGasPrice();
@@ -108,10 +108,9 @@ export const useCheckVaultApprovalStatus = () => {
   useEffect(() => {
     const checkApprovalStatus = async () => {
       try {
-        const response = await rocketPropellantContract.methods.allowance(
-          user.address,
-          vaultAddress,
-        );
+        const response = await rocketPropellantContract.methods
+          .allowance(user.address, vaultAddress)
+          .call();
         const currentAllowance = new BigNumber(response.toString());
         setIsVaultApproved(currentAllowance.gt(0));
       } catch (error) {

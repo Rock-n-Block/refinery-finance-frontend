@@ -50,3 +50,26 @@ export const transformPool = (pool: Pool): Pool => {
     stakingLimit: new BigNumber(stakingLimit as BigNumber),
   } as Pool;
 };
+
+export const getRefineryVaultEarnings = (
+  accountAddress: string,
+  refineryAtLastUserAction: BigNumber,
+  userShares: BigNumber,
+  pricePerFullShare: BigNumber,
+) => {
+  const hasAutoEarnings =
+    accountAddress &&
+    refineryAtLastUserAction &&
+    refineryAtLastUserAction.gt(0) &&
+    userShares &&
+    userShares.gt(0);
+  const { refineryAsBigNumber } = convertSharesToRefinery(userShares, pricePerFullShare);
+  const autoRefineryProfit = refineryAsBigNumber.minus(refineryAtLastUserAction);
+  const autoRefineryToDisplay = autoRefineryProfit.gte(0)
+    ? getBalanceAmount(autoRefineryProfit, 18)
+    : 0;
+
+  // const autoUsdProfit = autoCakeProfit.times(earningTokenPrice);
+  // const autoUsdToDisplay = autoUsdProfit.gte(0) ? getBalanceNumber(autoUsdProfit, 18) : 0;
+  return { hasAutoEarnings, autoRefineryToDisplay };
+};

@@ -16,11 +16,11 @@ import CollectButton from '../CollectButton';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
+import AutoVaultRecentProfitSection from './AutoVaultRecentProfitSection';
 import CardFooter from './CardFooter';
 import CardSubtitle from './CardSubtitle';
 import CardTitle from './CardTitle';
-import TextUnstakingFee from './TextUnstakingFee';
-import { durationFormatter, getAprData } from './utils';
+import { getAprData } from './utils';
 
 import './PoolCard.scss';
 
@@ -31,10 +31,6 @@ export interface IPoolCard {
   farmMode: IPoolFarmingMode;
   pool: Pool;
 }
-
-const mockData = {
-  timeLeft: 2 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000 + 31 * 60 * 1000,
-};
 
 const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) => {
   const {
@@ -49,8 +45,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   } = useSelectVaultData();
   const { earningToken, stakingToken, userData, apr, earningTokenPrice } = pool;
 
-  const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
-  const [MOCK_timeLeft, MOCK_setTimeLeft] = useState(mockData.timeLeft);
+  // const refineryPriceUsd = new BigNumber(37); // TODO: retrieving this value not hardcoded
+
+  const [MOCK_nonAutoVaultEarnings, MOCK_setNonAutoVaultEarnings] = useState(0);
 
   const handleOpenApr = (): void => {
     modals.roi.open({
@@ -94,22 +91,22 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      MOCK_setRecentProfit(0.0003);
+      MOCK_setNonAutoVaultEarnings(0.0003);
     }, 2000);
     return () => {
       clearTimeout(timeoutId);
     };
   }, []);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (MOCK_timeLeft === 0) clearInterval(intervalId);
-      MOCK_setTimeLeft(MOCK_timeLeft - 60 * 1000);
-    }, 1000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [MOCK_timeLeft]);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     if (MOCK_timeLeft === 0) clearInterval(intervalId);
+  //     MOCK_setTimeLeft(MOCK_timeLeft - 60 * 1000);
+  //   }, 1000);
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [MOCK_timeLeft]);
 
   const USD_IN_TOKEN = 27;
 
@@ -117,9 +114,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     return modals.stakeUnstake.stakedValue * USD_IN_TOKEN;
   }, [modals.stakeUnstake.stakedValue]);
 
-  const MOCK_convertedRecentProfit = useMemo(() => {
-    return MOCK_recentProfit * USD_IN_TOKEN;
-  }, [MOCK_recentProfit]);
+  const MOCK_convertedNonAutoVaultEarnings = useMemo(() => {
+    return MOCK_nonAutoVaultEarnings * USD_IN_TOKEN;
+  }, [MOCK_nonAutoVaultEarnings]);
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -161,29 +158,11 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         </div>
       </div>
       <div className="p-card__box p-card__content">
-        {hasConnectedWallet && farmMode === PoolFarmingMode.auto && !hasStakedValue && (
-          <div className="p-card__auto">
-            <div className="p-card__auto-title text-purple text-smd text-med">
-              Recent {stakingToken.symbol} profit:
-            </div>
-            <TextUnstakingFee className="p-card__auto-profit" />
-          </div>
-        )}
-        {hasConnectedWallet && farmMode === PoolFarmingMode.auto && hasStakedValue && (
-          <div className="p-card__auto">
-            <div className="p-card__auto-title box-f box-f-jc-sb text-purple text-smd text-med">
-              <div className="">Recent {stakingToken.symbol} profit:</div>
-              <div>{MOCK_recentProfit}</div>
-            </div>
-
-            <div className="p-card__auto-profit box-f box-f-jc-sb">
-              <TextUnstakingFee className="p-card__auto-info" />
-              <div className="text-purple text-smd text-med">
-                {durationFormatter(MOCK_timeLeft)}
-              </div>
-            </div>
-          </div>
-        )}
+        <AutoVaultRecentProfitSection
+          autoFarmMode={farmMode === PoolFarmingMode.auto}
+          hasStakedValue={Boolean(hasStakedValue)}
+          stakingTokenSymbol={stakingToken.symbol}
+        />
         {hasConnectedWallet &&
           (farmMode === PoolFarmingMode.earn || farmMode === PoolFarmingMode.manual) && (
             <>
@@ -191,13 +170,15 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div>
                   <div className="text-smd text-purple text-med">{earningToken.symbol} Earned</div>
                   <div className="p-card__earned-profit-value text-blue-d text-smd">
-                    {MOCK_recentProfit}
+                    {MOCK_nonAutoVaultEarnings}
                   </div>
-                  <div className="text-gray text-smd">~{MOCK_convertedRecentProfit} USD</div>
+                  <div className="text-gray text-smd">
+                    ~{MOCK_convertedNonAutoVaultEarnings} USD
+                  </div>
                 </div>
                 <CollectButton
                   farmMode={farmMode}
-                  value={MOCK_recentProfit}
+                  value={MOCK_nonAutoVaultEarnings}
                   collectHandler={collectHandler}
                 />
               </div>
