@@ -33,10 +33,12 @@ export const convertSharesToRefinery = (
 
 export const transformUserData = (userData: UserData) => {
   return {
-    allowance: userData ? new BigNumber(userData.allowance) : BIG_ZERO,
-    stakingTokenBalance: userData ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO,
-    stakedBalance: userData ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
-    pendingReward: userData ? new BigNumber(userData.pendingReward) : BIG_ZERO,
+    allowance: userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO,
+    stakingTokenBalance: userData?.stakingTokenBalance
+      ? new BigNumber(userData.stakingTokenBalance)
+      : BIG_ZERO,
+    stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
+    pendingReward: userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO,
   };
 };
 

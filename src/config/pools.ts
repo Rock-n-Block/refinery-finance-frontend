@@ -19,6 +19,6 @@ export const pools: PoolConfig[] = [
       42: '0xd878d796a49ef940351a1569ae4af80142bc5959',
     },
     tokenPerBlock: '10',
-    isFinished: true,
+    // isFinished: true,
   },
 ];

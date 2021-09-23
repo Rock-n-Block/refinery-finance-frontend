@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 // import { getBalanceAmount } from '@/utils/formatBalance';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
@@ -6,9 +6,11 @@ import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
 import { useMst } from '@/store';
+import { convertSharesToRefinery } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO, feeFormatter } from '@/utils';
+import { getFullDisplayBalance } from '@/utils/formatBalance';
 
 import 'antd/lib/select/style/css';
 
@@ -41,13 +43,12 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     },
   } = useMst();
   const {
+    pricePerFullShare,
     userData: { userShares },
   } = useSelectVaultData();
   const { earningToken, stakingToken, userData, apr, earningTokenPrice } = pool;
 
   // const refineryPriceUsd = new BigNumber(37); // TODO: retrieving this value not hardcoded
-
-  const [MOCK_nonAutoVaultEarnings, MOCK_setNonAutoVaultEarnings] = useState(0);
 
   const handleOpenApr = (): void => {
     modals.roi.open({
@@ -63,14 +64,44 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
   );
 
+  const nonAutoVaultEarnings = useMemo(() => {
+    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
+  }, [userData?.pendingReward]);
+  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
+    nonAutoVaultEarnings,
+  ]);
+
+  const stakedValue = useMemo(() => {
+    if (farmMode === PoolFarmingMode.auto) {
+      const { refineryAsNumberBalance } = convertSharesToRefinery(
+        userShares || BIG_ZERO,
+        pricePerFullShare || BIG_ZERO,
+      );
+      return new BigNumber(refineryAsNumberBalance);
+    }
+    return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
+  }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
+  const stakedValueAsString = useMemo(
+    () =>
+      getFullDisplayBalance({
+        balance: stakedValue,
+        decimals: pool.stakingToken.decimals,
+        displayDecimals: 5,
+      }).toString(),
+    [stakedValue, pool.stakingToken.decimals],
+  );
+
   const collectHandler = () => {
     modals.poolsCollect.open({
       poolId: pool.id,
       farmMode,
       earningTokenSymbol: pool.earningToken.symbol,
-      earnings: '0.14124',
+      earnings: nonAutoVaultEarningsAsString,
       earningTokenDecimals: Number(pool.earningToken.decimals),
-      fullBalance: '0.14',
+      fullBalance: getFullDisplayBalance({
+        balance: nonAutoVaultEarnings,
+        decimals: pool.earningToken.decimals,
+      }).toString(),
     });
     // MOCK_setRecentProfit(0);
   };
@@ -89,14 +120,14 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
 
   // const hasStakedValue = Boolean(modals.stakeUnstake.stakedValue);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      MOCK_setNonAutoVaultEarnings(0.0003);
-    }, 2000);
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     MOCK_setNonAutoVaultEarnings(0.0003);
+  //   }, 2000);
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   const intervalId = setInterval(() => {
@@ -110,13 +141,21 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
 
   const USD_IN_TOKEN = 27;
 
-  const MOCK_convertedStakedValue = useMemo(() => {
-    return modals.stakeUnstake.stakedValue * USD_IN_TOKEN;
-  }, [modals.stakeUnstake.stakedValue]);
+  const convertedStakedValue = useMemo(() => {
+    return new BigNumber(stakedValueAsString).times(USD_IN_TOKEN);
+  }, [stakedValueAsString]);
+  const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
+    convertedStakedValue,
+  ]);
 
-  const MOCK_convertedNonAutoVaultEarnings = useMemo(() => {
-    return MOCK_nonAutoVaultEarnings * USD_IN_TOKEN;
-  }, [MOCK_nonAutoVaultEarnings]);
+  const convertedNonAutoVaultEarnings = useMemo(() => {
+    return nonAutoVaultEarnings.times(USD_IN_TOKEN);
+  }, [nonAutoVaultEarnings]);
+
+  const convertedNonAutoVaultEarningsAsString = useMemo(
+    () => convertedNonAutoVaultEarnings.toString(),
+    [convertedNonAutoVaultEarnings],
+  );
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -170,15 +209,15 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div>
                   <div className="text-smd text-purple text-med">{earningToken.symbol} Earned</div>
                   <div className="p-card__earned-profit-value text-blue-d text-smd">
-                    {MOCK_nonAutoVaultEarnings}
+                    {nonAutoVaultEarningsAsString}
                   </div>
                   <div className="text-gray text-smd">
-                    ~{MOCK_convertedNonAutoVaultEarnings} USD
+                    ~{convertedNonAutoVaultEarningsAsString} USD
                   </div>
                 </div>
                 <CollectButton
                   farmMode={farmMode}
-                  value={MOCK_nonAutoVaultEarnings}
+                  value={nonAutoVaultEarnings.toNumber()}
                   collectHandler={collectHandler}
                 />
               </div>
@@ -192,9 +231,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
             <div className="box-f box-f-jc-sb box-f-ai-e">
               <div>
                 <div className="p-card__staked-value text-blue-d text-smd">
-                  {modals.stakeUnstake.stakedValue}
+                  {stakedValueAsString}
                 </div>
-                <div className="text-gray text-smd">~{MOCK_convertedStakedValue} USD</div>
+                <div className="text-gray text-smd">~{convertedStakedValueAsString} USD</div>
               </div>
               <StakeUnstakeButtons />
             </div>
