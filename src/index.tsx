@@ -5,11 +5,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 // import { Helmet } from 'react-helmet';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
+import { RefreshContextProvider } from './hooks/useRefresh';
+import Connector from './services/MetamaskConnect';
 import App from './App';
 import rootStore, { Provider } from './store';
-import Connector from './services/MetamaskConnect';
 
 /* <Helmet
       base={{ href: '/' }}
@@ -44,7 +45,9 @@ ReactDOM.render(
     <Router>
       <Connector>
         <ApolloProvider client={client}>
-          <App />
+          <RefreshContextProvider>
+            <App />
+          </RefreshContextProvider>
         </ApolloProvider>
       </Connector>
     </Router>

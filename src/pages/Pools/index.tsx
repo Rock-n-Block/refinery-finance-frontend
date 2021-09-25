@@ -11,6 +11,7 @@ import { Button } from '@/components/atoms';
 import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/organisms';
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
 import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
+import useRefresh from '@/hooks/useRefresh';
 // import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { useMst } from '@/store';
 import { getRefineryVaultEarnings } from '@/store/pools/helpers';
@@ -316,36 +317,27 @@ const Pools: React.FC = observer(() => {
     );
   }, []);
 
-  // console.log(setFilteredPools, filter, sort);
-
-  // useEffect(() => {
-  //   setFilteredPools(sort(filter()));
-  // }, [filter, sort]);
-
-  // useEffect(() => {
-  //   // poolsStore.fetchFees();
-  //   // poolsStore.fetchPublicVaultData();
-  //   poolsStore.useFetchVaultData();
-  // }, [poolsStore]);
-
-  // const { fetchFees, fetchPublicVaultData, fetchVaultUserData } = poolsStore.useFetchVaultData();
+  const { slowRefresh, fastRefresh } = useRefresh();
 
   // <-- Fetch Vault Data -->
   useEffect(() => {
     poolsStore.fetchVaultPublicData();
-    poolsStore.fetchVaultFees();
-  }, [poolsStore]);
+  }, [poolsStore, fastRefresh]);
 
   useEffect(() => {
     if (user.address) {
       poolsStore.fetchVaultUserData(user.address);
     }
-  }, [poolsStore, user.address]);
+  }, [poolsStore, user.address, fastRefresh]);
+
+  useEffect(() => {
+    poolsStore.fetchVaultFees();
+  }, [poolsStore]);
 
   // <-- Fetch Pools Data -->
   useEffect(() => {
     poolsStore.fetchPoolsPublicData();
-  }, [poolsStore]);
+  }, [poolsStore, slowRefresh]);
 
   // console.log(pools);
 

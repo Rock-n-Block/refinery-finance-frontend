@@ -4,19 +4,21 @@ import BigNumber from 'bignumber.js/bignumber';
 
 import { transformPool } from './helpers';
 import { Pool } from '@/types';
+import useRefresh from '@/hooks/useRefresh';
 
 const convertToBigNumber = (val: string | null) => {
   return val === null ? val : new BigNumber(val);
 };
 
 export const usePools = (): { pools: Pool[] } => {
+  const { fastRefresh } = useRefresh();
   const { pools: poolStore, user } = useMst();
 
   useEffect(() => {
     if (user.address) {
       poolStore.fetchPoolsUserDataAsync(user.address);
     }
-  }, [user.address, poolStore]);
+  }, [user.address, poolStore, fastRefresh]);
 
   return { pools: poolStore.data.slice().map(transformPool as any) };
 };
@@ -75,6 +77,6 @@ export const useSelectVaultData = () => {
       refineryAtLastUserAction,
       lastDepositedTime,
       lastUserActionTime,
-    }
+    },
   };
 };
