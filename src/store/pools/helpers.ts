@@ -31,6 +31,24 @@ export const convertSharesToRefinery = (
   return { refineryAsNumberBalance, refineryAsBigNumber, refineryAsDisplayBalance };
 };
 
+export const convertRefineryToShares = (
+  refinery: BigNumber,
+  refineryPerFullShare: BigNumber,
+  decimals = 18,
+  decimalsToRound = 3,
+) => {
+  const sharePriceNumber = getBalanceAmount(refineryPerFullShare, decimals);
+  const amountInShares = new BigNumber(refinery.dividedBy(sharePriceNumber));
+  const sharesAsNumberBalance = getBalanceAmount(amountInShares, decimals);
+  const sharesAsBigNumber = getDecimalAmount(new BigNumber(sharesAsNumberBalance), decimals);
+  const sharesAsDisplayBalance = getFullDisplayBalance({
+    balance: amountInShares,
+    decimals,
+    displayDecimals: decimalsToRound,
+  });
+  return { sharesAsNumberBalance, sharesAsBigNumber, sharesAsDisplayBalance };
+};
+
 export const transformUserData = (userData: UserData) => {
   return {
     allowance: userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO,

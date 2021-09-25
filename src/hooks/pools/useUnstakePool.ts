@@ -1,24 +1,23 @@
-import { useCallback } from 'react';
-import BigNumber from 'bignumber.js/bignumber';
-import { Contract } from 'web3-eth-contract';
-
-import { useMst } from '@/store';
-import { getAddress, getContract } from '@/services/web3/contractHelpers';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { getAddress, getContract } from '@/services/web3/contractHelpers';
+import { useMst } from '@/store';
+import { useCallback } from 'react';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
-import { useStakeFarm } from '@/hooks/farms/useStakeFarm';
+import BigNumber from 'bignumber.js/bignumber';
 import { BIG_TEN } from '@/utils';
+import { Contract } from 'web3-eth-contract';
+import { useUnstakeFarm } from '@/hooks/farms/useUnstakeFarm';
 
-export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
+export const useSmartRefinerUnstake = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();
 
-  const smartRefinerStake = useCallback(
+  const smartRefinerUnstake = useCallback(
     async (amount: string, decimals = 18) => {
       const tx = await callWithGasPrice({
         contract: smartRefinerInitContract,
-        methodName: 'deposit',
+        methodName: 'withdraw',
         methodArgs: [new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString()],
         options: {
           gas: 300000,
@@ -29,10 +28,10 @@ export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
     [callWithGasPrice, smartRefinerInitContract],
   );
 
-  return { smartRefinerStake };
+  return { smartRefinerUnstake };
 };
 
-const useStakePool = (poolId: number) => {
+const useUnstakePool = (poolId: number) => {
   const { metamaskService } = useWalletConnectorContext();
   const { user, pools } = useMst();
 
@@ -41,27 +40,26 @@ const useStakePool = (poolId: number) => {
     getAddress(foundPool.contractAddress),
     SmartRefinerInitializableAbi,
   );
-  const { smartRefinerStake } = useSmartRefinerStake(smartRefinerInitContract);
-  // const { harvestPool } = useHarvestPoolDeposit(smartRefinerInitContract);
+  const { smartRefinerUnstake } = useSmartRefinerUnstake(smartRefinerInitContract);
 
   const masterRefinerContract = getContract('MASTER_REFINER');
-  const { stakeFarm } = useStakeFarm(masterRefinerContract);
-  // const { harvestFarm } = useHarvestFarm(masterRefinerContract, 0);
+  const { unstakeFarm } = useUnstakeFarm(masterRefinerContract);
 
-  const handleStake = useCallback(
+  const handleUnstake = useCallback(
     async (amount: string, decimals: number) => {
       if (poolId === 0) {
-        await stakeFarm(0, amount);
+        await unstakeFarm(0, amount);
       } else {
-        await smartRefinerStake(amount, decimals);
+        await smartRefinerUnstake(amount, decimals);
       }
       pools.updateUserStakedBalance(poolId, user.address);
       pools.updateUserBalance(poolId, user.address);
+      pools.updateUserPendingReward(poolId, user.address);
     },
-    [poolId, pools, user.address, smartRefinerStake, stakeFarm],
+    [poolId, pools, user.address, smartRefinerUnstake, unstakeFarm],
   );
 
-  return { onStake: handleStake };
+  return { onUnstake: handleUnstake };
 };
 
-export default useStakePool;
+export default useUnstakePool;

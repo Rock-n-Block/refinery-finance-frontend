@@ -2,13 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import BigNumber from 'bignumber.js/bignumber';
 
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
-import { Button, InputNumber } from '@/components/atoms';
-import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
-import OpenLink from '@/components/sections/Pools/OpenLink';
-// import { IPoolCard } from '@/components/sections/Pools/PoolCard';
-import { AutoFarmingPopover, ManualFarmingPopover } from '@/components/sections/Pools/Popovers';
+import { Button } from '@/components/atoms';
 import {
   AprColumn,
   EndsInColumn,
@@ -16,25 +13,25 @@ import {
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
 import { useMst } from '@/store';
-import { IPoolFarmingMode, Pool, PoolFarmingMode, Token } from '@/types';
+import { useSelectVaultData } from '@/store/pools/hooks';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 
-import CollectButton from '../CollectButton';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
+import DetailsLinks from './DetailsLinks';
+import RecentProfit from './RecentProfit';
+
 import './TableRow.scss';
+import { BIG_ZERO } from '@/utils';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
+import { getFullDisplayBalance } from '@/utils/formatBalance';
+import { convertSharesToRefinery } from '@/store/pools/helpers';
 
 interface ITableRowProps {
   farmMode: IPoolFarmingMode;
-  data: Pool;
+  pool: Pool;
   columns: any[];
-}
-
-interface IRecentProfitProps {
-  farmMode: IPoolFarmingMode;
-  tokenStake: Token;
-  value: number;
-  onCollect: () => void;
 }
 
 const mockData = {
@@ -43,83 +40,17 @@ const mockData = {
   currencyToConvert: 'USD',
 };
 
-const links = [
-  {
-    href: '/',
-    text: 'See Token Info',
-  },
-  {
-    href: '/',
-    text: 'View Project Site',
-  },
-  {
-    href: '/',
-    text: 'View Contract',
-  },
-];
-// const links = [
-//   {
-//     href: `/token/${earningToken.address ? getAddress(earningToken.address) : ''}`,
-//     text: 'See Token Info',
-//   },
-//   {
-//     href: earningToken.projectLink,
-//     text: 'View Project Site',
-//   },
-//   {
-//     href: `https://bscscan.com/address/${
-//       type === PoolFarmingMode.auto
-//         ? getContractAddress('REFINERY_VAULT')
-//         : getAddress(pool.contractAddress)
-//     }`,
-//     text: 'View Contract',
-//   },
-// ];
-
-const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode }> = ({ farmMode }) => {
-  return (
-    <div className="pools-table-row__details-links">
-      {links.map(({ href, text }) => (
-        <OpenLink
-          key={href + text}
-          className="pools-table-row__details-links-item"
-          href={href}
-          text={text}
-        />
-      ))}
-      <div className="box-f-c">
-        <FarmingModeStatus type={farmMode} />
-        {farmMode === PoolFarmingMode.auto ? (
-          <AutoFarmingPopover className="pools-table-row__details-info-popover" />
-        ) : (
-          <ManualFarmingPopover className="pools-table-row__details-info-popover" />
-        )}
-      </div>
-    </div>
-  );
-};
-
-const RecentProfit: React.FC<IRecentProfitProps> = ({ farmMode, tokenStake, value, onCollect }) => {
-  return (
-    <div className="pools-table-row__details-box">
-      <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
-        recent {tokenStake.symbol} profit
-      </div>
-      <InputNumber
-        colorScheme="white"
-        value={value}
-        inputPrefix={<CollectButton farmMode={farmMode} value={value} collectHandler={onCollect} />}
-        readOnly
-      />
-    </div>
-  );
-};
-
-const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, data, columns }) => {
+const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }) => {
   const { user, modals } = useMst();
+  const {
+    pricePerFullShare,
+    userData: { userShares },
+  } = useSelectVaultData();
+  const { earningToken, stakingToken, userData, apr } = pool;
+  const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
+
   const [isOpenDetails, setOpenDetails] = useState(false);
   const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
-  const { earningToken } = data;
 
   const handleChangeDetails = (value: boolean): void => {
     setOpenDetails(value);
@@ -139,13 +70,59 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, data, columns }
     });
   };
 
+  const stakedValue = useMemo(() => {
+    if (farmMode === PoolFarmingMode.auto) {
+      const { refineryAsNumberBalance } = convertSharesToRefinery(
+        userShares || BIG_ZERO,
+        pricePerFullShare || BIG_ZERO,
+      );
+      return new BigNumber(refineryAsNumberBalance);
+    }
+    return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
+  }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
+
+  const stakedValueAsString = useMemo(
+    () =>
+      getFullDisplayBalance({
+        balance: stakedValue,
+        decimals: pool.stakingToken.decimals,
+        displayDecimals: 5,
+      }).toString(),
+    [stakedValue, pool.stakingToken.decimals],
+  );
+
+  const nonAutoVaultEarnings = useMemo(() => {
+    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
+  }, [userData?.pendingReward]);
+  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
+    nonAutoVaultEarnings,
+  ]);
+
   const collectHandler = () => {
-    MOCK_setRecentProfit(0);
+    modals.poolsCollect.open({
+      poolId: pool.id,
+      farmMode,
+      earningTokenSymbol: pool.earningToken.symbol,
+      earnings: nonAutoVaultEarningsAsString,
+      earningTokenDecimals: Number(pool.earningToken.decimals),
+      fullBalance: getFullDisplayBalance({
+        balance: nonAutoVaultEarnings,
+        decimals: pool.earningToken.decimals,
+      }).toString(),
+    });
   };
 
-  const { stakingToken, apr } = data;
   const hasConnectedWallet = Boolean(user.address);
-  const hasStakedValue = Boolean(modals.stakeUnstake.stakedValue);
+
+  const hasStakedValue = useMemo(() => {
+    if (farmMode === PoolFarmingMode.auto) {
+      return userShares && userShares.gt(0);
+    }
+    const stakedBalance = userData?.stakedBalance
+      ? new BigNumber(userData.stakedBalance)
+      : BIG_ZERO;
+    return stakedBalance.gt(0);
+  }, [farmMode, userData?.stakedBalance, userShares]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -165,9 +142,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, data, columns }
     return MOCK_recentProfit * USD_IN_TOKEN;
   }, [MOCK_recentProfit]);
 
-  const MOCK_convertedStakedValue = useMemo(() => {
-    return modals.stakeUnstake.stakedValue * USD_IN_TOKEN;
-  }, [modals.stakeUnstake.stakedValue]);
+  const convertedStakedValue = useMemo(() => {
+    return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
+  }, [stakedValueAsString, refineryUsdPrice]);
+  const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
+    convertedStakedValue,
+  ]);
 
   return (
     <div className="pools-table-row">
@@ -249,30 +229,30 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, data, columns }
               {hasConnectedWallet && hasStakedValue ? (
                 <>
                   <div className="pools-table-row__details-title text-ssm text-upper text-purple text-med">
-                    {stakingToken.symbol} Staked{' '}
-                    {farmMode === PoolFarmingMode.auto && '(compounding)'}
+                    {stakingToken.symbol} Staked {farmMode === PoolFarmingMode.auto && '(compounding)'}
                   </div>
                   <div className="box-f box-f-jc-sb box-f-ai-e">
                     <div className="pools-table-row__details-staked-values-group">
                       <div className="pools-table-row__details-staked-value text-blue-d text-smd">
-                        {modals.stakeUnstake.stakedValue}
+                        {stakedValueAsString}
                       </div>
                       <div className="text-gray text-smd">
-                        ~{MOCK_convertedStakedValue} {mockData.currencyToConvert}
+                        ~{convertedStakedValueAsString} {mockData.currencyToConvert}
                       </div>
                     </div>
-                    <StakeUnstakeButtons />
+                    <StakeUnstakeButtons pool={pool} />
                   </div>
                 </>
               ) : (
                 <StakingSection
-                  pool={data}
+                  pool={pool}
                   titleClassName="pools-table-row__details-title text-ssm text-upper"
                   buttonProps={{
                     className: 'pools-table-row__details-box-start-staking-button',
                     size: 'lg',
                   }}
                   tokenSymbol={stakingToken.symbol}
+                  stakedValue={stakedValue}
                 />
               )}
             </div>

@@ -1,30 +1,47 @@
+import { Token } from '@/types';
 import { types } from 'mobx-state-tree';
+import TokenModel from '../Token';
+
+export interface ITokenMobx extends Token {
+  decimals: number;
+  projectLink: string;
+  logoURI: string;
+  busdPrice: string;
+}
 
 const StakeUnstakeModal = types
   .model({
     isOpen: types.optional(types.boolean, false),
     isStaking: types.optional(types.boolean, true),
-    stakedValue: types.optional(types.number, 0), // TODO: move value of each Pool into an Array<IPool> -> IPool: { stakedValue: 0.34 } etc.
+    maxStakingValue: types.optional(types.number, 0),
+    stakingToken: types.maybeNull(TokenModel),
+    isAutoVault: types.boolean,
+    poolId: types.number,
   })
-  .views((self) => ({
-    get result() {
-      return self.stakedValue;
-    },
-  }))
   .actions((self) => ({
-    stake(value: number) {
-      self.stakedValue += value;
-    },
-    unstake(value: number) {
-      self.stakedValue -= value;
-    },
     close() {
       self.isOpen = false;
     },
-    open({ isStaking, stakedValue }: { isStaking: boolean; stakedValue: number }) {
+    open({
+      isStaking,
+      maxStakingValue,
+      stakingToken,
+      isAutoVault,
+      poolId,
+    }: {
+      isStaking: boolean;
+      maxStakingValue: number;
+      stakingToken: ITokenMobx;
+      isAutoVault: boolean;
+      poolId: number;
+    }) {
       self.isOpen = true;
+
       self.isStaking = isStaking;
-      self.stakedValue = stakedValue;
+      self.maxStakingValue = maxStakingValue;
+      self.stakingToken = stakingToken;
+      self.isAutoVault = isAutoVault;
+      self.poolId = poolId;
     },
   }));
 

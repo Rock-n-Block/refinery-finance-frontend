@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-// import { getBalanceAmount } from '@/utils/formatBalance';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { convertSharesToRefinery } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
@@ -28,11 +28,13 @@ import './PoolCard.scss';
 
 export interface IPoolCard {
   className?: string;
-  // tokenEarn?: IToken;
-  // tokenStake: IToken;
   farmMode: IPoolFarmingMode;
   pool: Pool;
 }
+
+const mockData = {
+  currencyToConvert: 'USD',
+};
 
 const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) => {
   const {
@@ -47,8 +49,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     userData: { userShares },
   } = useSelectVaultData();
   const { earningToken, stakingToken, userData, apr, earningTokenPrice } = pool;
-
-  // const refineryPriceUsd = new BigNumber(37); // TODO: retrieving this value not hardcoded
+  const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const handleOpenApr = (): void => {
     modals.roi.open({
@@ -63,13 +64,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     pool,
     farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
   );
-
-  const nonAutoVaultEarnings = useMemo(() => {
-    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
-  }, [userData?.pendingReward]);
-  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
-    nonAutoVaultEarnings,
-  ]);
 
   const stakedValue = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
@@ -91,6 +85,13 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     [stakedValue, pool.stakingToken.decimals],
   );
 
+  const nonAutoVaultEarnings = useMemo(() => {
+    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
+  }, [userData?.pendingReward]);
+  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
+    nonAutoVaultEarnings,
+  ]);
+
   const collectHandler = () => {
     modals.poolsCollect.open({
       poolId: pool.id,
@@ -103,7 +104,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         decimals: pool.earningToken.decimals,
       }).toString(),
     });
-    // MOCK_setRecentProfit(0);
   };
 
   const hasConnectedWallet = Boolean(user.address);
@@ -118,39 +118,16 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     return stakedBalance.gt(0);
   }, [farmMode, userData?.stakedBalance, userShares]);
 
-  // const hasStakedValue = Boolean(modals.stakeUnstake.stakedValue);
-
-  // useEffect(() => {
-  //   const timeoutId = setTimeout(() => {
-  //     MOCK_setNonAutoVaultEarnings(0.0003);
-  //   }, 2000);
-  //   return () => {
-  //     clearTimeout(timeoutId);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     if (MOCK_timeLeft === 0) clearInterval(intervalId);
-  //     MOCK_setTimeLeft(MOCK_timeLeft - 60 * 1000);
-  //   }, 1000);
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, [MOCK_timeLeft]);
-
-  const USD_IN_TOKEN = 27;
-
   const convertedStakedValue = useMemo(() => {
-    return new BigNumber(stakedValueAsString).times(USD_IN_TOKEN);
-  }, [stakedValueAsString]);
+    return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
+  }, [stakedValueAsString, refineryUsdPrice]);
   const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
     convertedStakedValue,
   ]);
 
   const convertedNonAutoVaultEarnings = useMemo(() => {
-    return nonAutoVaultEarnings.times(USD_IN_TOKEN);
-  }, [nonAutoVaultEarnings]);
+    return nonAutoVaultEarnings.times(refineryUsdPrice);
+  }, [nonAutoVaultEarnings, refineryUsdPrice]);
 
   const convertedNonAutoVaultEarningsAsString = useMemo(
     () => convertedNonAutoVaultEarnings.toString(),
@@ -233,9 +210,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div className="p-card__staked-value text-blue-d text-smd">
                   {stakedValueAsString}
                 </div>
-                <div className="text-gray text-smd">~{convertedStakedValueAsString} USD</div>
+                <div className="text-gray text-smd">~{convertedStakedValueAsString} {mockData.currencyToConvert}</div>
               </div>
-              <StakeUnstakeButtons />
+              <StakeUnstakeButtons pool={pool} />
             </div>
           </div>
         ) : (
@@ -246,6 +223,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
               className: 'p-card__unlock-btn',
             }}
             tokenSymbol={stakingToken.symbol}
+            stakedValue={stakedValue}
           />
         )}
       </div>

@@ -22,6 +22,8 @@ export const Store = RootModel.create({
     stakeUnstake: {
       isOpen: false,
       isStaking: true,
+      isAutoVault: false,
+      poolId: 0,
     },
     poolsCollect: {
       isOpen: false,

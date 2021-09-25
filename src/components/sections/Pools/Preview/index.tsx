@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import BgImg from '@/assets/img/sections/pools/bg-2.svg';
 import { Button } from '@/components/atoms';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
@@ -16,17 +17,21 @@ import { getFullDisplayBalance } from '@/utils/formatBalance';
 import { AutoBountyPopover } from '../Popovers';
 
 import './Preview.scss';
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 
 const mockData = {
   symbol: 'RP1',
 };
 
 const ClaimBounty: React.FC = observer(() => {
-  const bUsd = 27;
+  const [pendingTx, setPendingTx] = useState(false);
+  const { tokenUsdPrice } = useRefineryUsdPrice();
   const { user } = useMst();
   const { connect } = useWalletConnectorContext();
   const { callWithGasPrice } = useCallWithGasPrice();
+
   const handleClaimBounty = async () => {
+    setPendingTx(true);
     try {
       const contract = getContract('REFINERY_VAULT');
       const tx = await callWithGasPrice({
@@ -36,17 +41,14 @@ const ClaimBounty: React.FC = observer(() => {
           gas: 300000,
         },
       });
-      console.log(tx);
       if ((tx as IReceipt).status) {
-        console.log('OK');
-        // toastSuccess(t('Bounty collected!'), t('CAKE bounty has been sent to your wallet.'))
-        // setPendingTx(false)
-        // onDismiss()
+        successNotification('Bounty collected!', `${mockData.symbol} bounty has been sent to your wallet.`);
       }
     } catch (error: any) {
-      console.log('ERROR', error);
-      // toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
-      // setPendingTx(false)
+      console.error(error);
+      errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
+    } finally {
+      setPendingTx(false);
     }
   };
 
@@ -61,7 +63,7 @@ const ClaimBounty: React.FC = observer(() => {
     estimatedRefineryBountyReward === null
       ? '###'
       : getFullDisplayBalance({
-          balance: new BigNumber(estimatedRefineryBountyReward).multipliedBy(bUsd),
+          balance: new BigNumber(estimatedRefineryBountyReward).multipliedBy(tokenUsdPrice),
           displayDecimals: 2,
         });
 
@@ -87,8 +89,9 @@ const ClaimBounty: React.FC = observer(() => {
         ) : (
           <Button
             className="pools-preview__bounty-btn"
-            onClick={estimatedRefineryBountyReward?.toNumber() ? handleClaimBounty : undefined}
+            loading={pendingTx}
             disabled={!estimatedRefineryBountyReward?.toNumber()}
+            onClick={estimatedRefineryBountyReward?.toNumber() ? handleClaimBounty : undefined}
           >
             <span className="text-white text-smd text-bold">Claim</span>
           </Button>

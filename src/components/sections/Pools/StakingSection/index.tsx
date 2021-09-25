@@ -13,15 +13,18 @@ import {
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
+import { ITokenMobx } from '@/store/Models/Modals/StakeUnstakeModal';
 import { Pool } from '@/types';
 import { BIG_ZERO } from '@/utils';
+import { clone } from 'mobx-state-tree';
 
 const StakingSection: React.FC<{
   pool: Pool;
+  stakedValue: BigNumber;
   titleClassName?: string;
   tokenSymbol: string;
   buttonProps: Omit<ButtonProps, 'onClick'>;
-}> = observer(({ pool, titleClassName, tokenSymbol, buttonProps }) => {
+}> = observer(({ pool, stakedValue, titleClassName, tokenSymbol, buttonProps }) => {
   const { connect, metamaskService } = useWalletConnectorContext();
   const { user, modals } = useMst();
   const { isAutoVault = false, userData, id, stakingToken } = pool;
@@ -79,15 +82,16 @@ const StakingSection: React.FC<{
     {
       // TODO: change condition to correct use needsApproval
       condition:
-        hasConnectedWallet &&
-        (!needsApproval || isVaultApproved) &&
-        !modals.stakeUnstake.stakedValue,
+        hasConnectedWallet && (!needsApproval || isVaultApproved) && !stakedValue.toNumber(),
       title: `Stake ${tokenSymbol}`,
       handler: () => {
-        modals.stakeUnstake.open({ isStaking: true, stakedValue: modals.stakeUnstake.stakedValue });
-        // TODO: remove this MOCK functionality
-        const myResult = modals.stakeUnstake.result;
-        console.log('Staking Section', myResult);
+        modals.stakeUnstake.open({
+          isStaking: true,
+          stakingToken: clone(stakingToken) as ITokenMobx,
+          isAutoVault: Boolean(isAutoVault),
+          maxStakingValue: (userData?.stakingTokenBalance || BIG_ZERO).toNumber(),
+          poolId: id,
+        });
       },
       text: 'Stake',
     },

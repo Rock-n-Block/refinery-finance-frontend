@@ -10,6 +10,7 @@ import useHarvestPool from '@/hooks/pools/useHarvestPool';
 import useStakePool from '@/hooks/pools/useStakePool';
 import { useMst } from '@/store';
 import { PoolFarmingMode } from '@/types';
+import { successNotification, errorNotification } from '@/components/atoms/Notification';
 
 import './CollectModal.scss';
 
@@ -63,19 +64,11 @@ const CollectModal: React.FC = observer(() => {
       try {
         setPendingTx(true);
         await onStake(poolsCollect.options.fullBalance, poolsCollect.options.earningTokenDecimals);
-        // toastSuccess(
-        //   `${t('Compounded')}!`,
-        //   t('Your %symbol% earnings have been re-invested into the pool!', {
-        //     symbol: earningToken.symbol,
-        //   }),
-        // );
+        successNotification('Compounded!', `Your ${poolsCollect.options.earningTokenSymbol} earnings have been re-invested into the pool!`);
         poolsCollect.close();
       } catch (e) {
-        // toastError(
-        //   t('Error'),
-        //   t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-        // );
         console.error(e);
+        errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
       } finally {
         setPendingTx(false);
       }
@@ -84,19 +77,11 @@ const CollectModal: React.FC = observer(() => {
       try {
         setPendingTx(true);
         await onReward();
-        // toastSuccess(
-        //   `${t('Harvested')}!`,
-        //   t('Your %symbol% earnings have been sent to your wallet!', {
-        //     symbol: earningToken.symbol,
-        //   }),
-        // );
+        successNotification('Harvested!', `Your ${poolsCollect.options.earningTokenSymbol} earnings have been sent to your wallet!`);
         poolsCollect.close();
       } catch (e) {
-        // toastError(
-        //   t('Error'),
-        //   t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-        // );
         console.error(e);
+        errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
       } finally {
         setPendingTx(false);
       }

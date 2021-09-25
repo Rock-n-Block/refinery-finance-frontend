@@ -10,6 +10,7 @@ import { metamaskService } from '@/services/MetamaskConnect';
 import { IReceipt } from '@/types';
 import { MAX_UINT_256 } from '@/utils';
 import { Contract } from 'web3-eth-contract';
+import { successNotification, errorNotification } from '@/components/atoms/Notification';
 
 export const useApprovePool = (lpContract: Contract, poolId: number) => {
   const [requestedApproval, setRequestedApproval] = useState(false);
@@ -33,37 +34,44 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
           gas: 300000,
         },
       });
-      console.log(tx);
+      // console.log(tx);
 
       poolsStore.updateUserAllowance(poolId, user.address);
       if ((tx as IReceipt).status) {
-        // toastSuccess(
-        //   t('Contract Enabled'),
-        //   t('You can now stake in the %symbol% pool!', { symbol: earningTokenSymbol }),
-        // );
-        setRequestedApproval(false);
+        successNotification(
+          'Contract Enabled!',
+          `You can now stake in the ${foundPool.earningToken.symbol} pool!`,
+        );
       } else {
-        // user rejected tx or didn't go thru
-        // toastError(
-        //   t('Error'),
-        //   t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-        // );
-        setRequestedApproval(false);
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
       }
+      setRequestedApproval(false);
     } catch (e) {
       console.error(e);
-      // toastError(
-      //   t('Error'),
-      //   t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-      // );
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
     }
-  }, [callWithGasPrice, lpContract, poolId, poolsStore, smartRefinerInitContract, user.address]);
+  }, [
+    callWithGasPrice,
+    lpContract,
+    poolId,
+    poolsStore,
+    smartRefinerInitContract,
+    user.address,
+    foundPool.earningToken.symbol,
+  ]);
 
   return { handleApprove, requestedApproval };
 };
 
 // Approve RP1 auto pool
 export const useVaultApprove = (setLastUpdated: () => void) => {
+  const MOCK_RP1_SYMBOL = 'RP1';
   const [requestedApproval, setRequestedApproval] = useState(false);
   const { callWithGasPrice } = useCallWithGasPrice();
 
@@ -81,19 +89,18 @@ export const useVaultApprove = (setLastUpdated: () => void) => {
     });
     setRequestedApproval(true);
     if ((tx as IReceipt).status) {
-      // toastSuccess(
-      //   t('Contract Enabled'),
-      //   t('You can now stake in the %symbol% vault!', { symbol: 'CAKE' }),
-      // );
+      successNotification(
+        'Contract Enabled!',
+        `You can now stake in the ${MOCK_RP1_SYMBOL} vault!`,
+      );
       setLastUpdated();
-      setRequestedApproval(false);
     } else {
-      // toastError(
-      //   t('Error'),
-      //   t('Please try again. Confirm the transaction and make sure you are paying enough gas!'),
-      // );
-      setRequestedApproval(false);
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
     }
+    setRequestedApproval(false);
   };
 
   return { handleApprove, requestedApproval };

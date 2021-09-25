@@ -71,7 +71,7 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
             // key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
             key={pool.isAutoVault ? 'auto-pool' : pool.id}
             farmMode={farmMode}
-            data={pool}
+            pool={pool}
             columns={columns}
           />
         );
