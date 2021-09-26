@@ -1,6 +1,9 @@
 import { Pool } from '@/types';
+import { BIG_ZERO } from '@/utils';
 import { getApy } from '@/utils/compoundApy';
+import BigNumber from 'bignumber.js/bignumber';
 import moment from 'moment';
+import { useMemo } from 'react';
 
 export const durationFormatter = (timeLeft: number, separator = ' : ') => {
   const duration = moment.duration(timeLeft);
@@ -53,4 +56,17 @@ export const getPoolBlockInfo = (pool: Pool, currentBlock: number) => {
     hasPoolStarted,
     blocksToDisplay,
   };
+};
+
+export const useNonAutoVaultEarnings = (pool: Pool) => {
+  const { userData } = pool;
+
+  const nonAutoVaultEarnings = useMemo(() => {
+    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
+  }, [userData?.pendingReward]);
+  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
+    nonAutoVaultEarnings,
+  ]);
+
+  return { nonAutoVaultEarnings, nonAutoVaultEarningsAsString };
 };

@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
+import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import BigNumber from 'bignumber.js/bignumber';
 
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
 import { Button } from '@/components/atoms';
@@ -12,21 +12,25 @@ import {
   RecentProfitColumn,
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
+import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
+import { convertSharesToRefinery, getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
+import { getFullDisplayBalance } from '@/utils/formatBalance';
 
+import { getAprData, getPoolBlockInfo, useNonAutoVaultEarnings } from '../PoolCard/utils';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
 import DetailsLinks from './DetailsLinks';
 import RecentProfit from './RecentProfit';
+import TableRowSubtitle from './TableRowSubtitle';
+import TableRowTitle from './TableRowTitle';
 
 import './TableRow.scss';
-import { BIG_ZERO } from '@/utils';
-import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
-import { getFullDisplayBalance } from '@/utils/formatBalance';
-import { convertSharesToRefinery } from '@/store/pools/helpers';
 
 interface ITableRowProps {
   farmMode: IPoolFarmingMode;
@@ -35,40 +39,72 @@ interface ITableRowProps {
 }
 
 const mockData = {
-  totalStaked: '1,662,947,888',
-  totalBlocks: '1,663,423',
   currencyToConvert: 'USD',
 };
 
 const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }) => {
-  const { user, modals } = useMst();
+  const {
+    user,
+    modals,
+    pools: {
+      fees: { performanceFee },
+    },
+  } = useMst();
+  const [currentBlock] = useBlock();
+  const {
+    shouldShowBlockCountdown,
+    // blocksUntilStart,
+    // blocksRemaining,
+    // hasPoolStarted,
+    blocksToDisplay,
+  } = getPoolBlockInfo(pool, currentBlock);
   const {
     pricePerFullShare,
-    userData: { userShares },
+    userData: { userShares, refineryAtLastUserAction },
+    totalRefineryInVault,
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData, apr } = pool;
+  const { earningToken, stakingToken, userData, apr, earningTokenPrice, totalStaked } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const [isOpenDetails, setOpenDetails] = useState(false);
-  const [MOCK_recentProfit, MOCK_setRecentProfit] = useState(0);
 
   const handleChangeDetails = (value: boolean): void => {
     setOpenDetails(value);
   };
-
   const handleToggleDetails = (): void => {
     setOpenDetails((isOpen) => !isOpen);
   };
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
-    // TODO: POOLS TABLE ROW MODAL
     modals.roi.open({
       isFarmPage: false,
-      apr: 5,
-      tokenPrice: 1,
+      apr: apr || 0,
+      tokenPrice: earningTokenPrice || 0,
     });
   };
+
+  // TODO: 'autoCompoundFrequency' from `getAprData` use to calculate APR/APY
+  const { apr: earningsPercentageToDisplay } = getAprData(
+    pool,
+    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
+  );
+
+  const totalStakedBalance = useMemo(() => {
+    switch (farmMode) {
+      case PoolFarmingMode.auto:
+        return loadingDataFormatter(totalRefineryInVault, { decimals: stakingToken.decimals });
+      case PoolFarmingMode.manual: {
+        if (!totalStaked || !totalRefineryInVault) return loadingDataFormatter();
+        return loadingDataFormatter(new BigNumber(totalStaked).minus(totalRefineryInVault), {
+          decimals: stakingToken.decimals,
+        });
+      }
+      case PoolFarmingMode.earn:
+      default:
+        return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
+    }
+  }, [farmMode, stakingToken.decimals, totalRefineryInVault, totalStaked]);
 
   const stakedValue = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
@@ -80,7 +116,6 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     }
     return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
   }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
-
   const stakedValueAsString = useMemo(
     () =>
       getFullDisplayBalance({
@@ -91,12 +126,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     [stakedValue, pool.stakingToken.decimals],
   );
 
-  const nonAutoVaultEarnings = useMemo(() => {
-    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
-  }, [userData?.pendingReward]);
-  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
-    nonAutoVaultEarnings,
-  ]);
+  const { nonAutoVaultEarnings, nonAutoVaultEarningsAsString } = useNonAutoVaultEarnings(pool);
 
   const collectHandler = () => {
     modals.poolsCollect.open({
@@ -124,30 +154,39 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     return stakedBalance.gt(0);
   }, [farmMode, userData?.stakedBalance, userShares]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      MOCK_setRecentProfit(0.0003);
-    }, 2000);
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
-  const USD_IN_TOKEN = 27;
-  // useEffect(() => {
-  //   const
-  //   MOCK_setConvertedRecentProfit(MOCK_recentProfit * USD_IN_TOKEN);
-  // }, [MOCK_recentProfit]);
-
-  const MOCK_convertedRecentProfit = useMemo(() => {
-    return MOCK_recentProfit * USD_IN_TOKEN;
-  }, [MOCK_recentProfit]);
-
   const convertedStakedValue = useMemo(() => {
     return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
   }, [stakedValueAsString, refineryUsdPrice]);
   const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
     convertedStakedValue,
   ]);
+
+  const recentProfit = useMemo(() => {
+    if (farmMode === PoolFarmingMode.auto) {
+      const {
+        // hasAutoEarnings,
+        autoRefineryToDisplay: autoRefineryVaultRecentProfit,
+      } = getRefineryVaultEarnings(
+        user.address,
+        refineryAtLastUserAction || BIG_ZERO,
+        userShares || BIG_ZERO,
+        pricePerFullShare || BIG_ZERO,
+      );
+      return autoRefineryVaultRecentProfit;
+    }
+    return nonAutoVaultEarnings.toNumber();
+  }, [
+    farmMode,
+    pricePerFullShare,
+    refineryAtLastUserAction,
+    user.address,
+    userShares,
+    nonAutoVaultEarnings,
+  ]);
+
+  const convertedRecentProfit = useMemo(() => {
+    return recentProfit * refineryUsdPrice;
+  }, [recentProfit, refineryUsdPrice]);
 
   return (
     <div className="pools-table-row">
@@ -167,24 +206,33 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
             />
           </div>
           <div className="box">
-            <div className="text-smd">
-              <span className="text-capitalize">{farmMode}</span>{' '}
-              <span className="text-upper">{stakingToken.symbol}</span>
-            </div>
-            <div className="text-ssm text-gray-l-2">
-              <span className="text-capitalize">stake</span>{' '}
-              <span className="text-upper">{stakingToken.symbol}</span>
-            </div>
+            <TableRowTitle farmMode={farmMode} tokenEarn={earningToken} />
+            <TableRowSubtitle
+              farmMode={farmMode}
+              tokenEarn={earningToken}
+              tokenStake={stakingToken}
+            />
           </div>
         </div>
         <RecentProfitColumn
           name={columns[0].name}
-          value={MOCK_recentProfit}
-          usdValue={MOCK_convertedRecentProfit}
+          value={recentProfit}
+          usdValue={convertedRecentProfit}
         />
-        <AprColumn name={columns[1].name} value={Number(apr)} modalHandler={handleOpenRoiModal} />
-        <TotalStakedColumn value={mockData.totalStaked} onlyDesktop />
-        <EndsInColumn value={mockData.totalBlocks} onlyDesktop />
+        <AprColumn
+          name={columns[1].name}
+          value={earningsPercentageToDisplay}
+          modalHandler={handleOpenRoiModal}
+        />
+        <TotalStakedColumn
+          value={Number(totalStakedBalance).toFixed(7)}
+          currencySymbol={stakingToken.symbol}
+          onlyDesktop
+        />
+        <EndsInColumn
+          value={shouldShowBlockCountdown ? numberWithCommas(blocksToDisplay) : ''}
+          onlyDesktop
+        />
         <div className="pools-table-row__item box-f-jc-e box-f">
           <div
             className={classNames('pools-table-row__item--mob t-box-b', {
@@ -217,19 +265,20 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
         classNames="show"
       >
         <div className="pools-table-row__details box-purple-l">
-          <DetailsLinks farmMode={farmMode} />
+          <DetailsLinks farmMode={farmMode} pool={pool} />
           <div className="pools-table-row__buttons box-f-ai-c t-box-b">
             <RecentProfit
               farmMode={farmMode}
               tokenStake={stakingToken}
-              value={MOCK_recentProfit}
+              value={recentProfit}
               onCollect={collectHandler}
             />
             <div className="pools-table-row__details-box">
               {hasConnectedWallet && hasStakedValue ? (
                 <>
                   <div className="pools-table-row__details-title text-ssm text-upper text-purple text-med">
-                    {stakingToken.symbol} Staked {farmMode === PoolFarmingMode.auto && '(compounding)'}
+                    {stakingToken.symbol} Staked{' '}
+                    {farmMode === PoolFarmingMode.auto && '(compounding)'}
                   </div>
                   <div className="box-f box-f-jc-sb box-f-ai-e">
                     <div className="pools-table-row__details-staked-values-group">

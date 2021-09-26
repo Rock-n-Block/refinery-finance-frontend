@@ -5,9 +5,14 @@ import { IColumn } from '../types';
 
 interface ITotalStakedColumnProps extends IColumn {
   value: string;
+  currencySymbol: string;
 }
 
-const TotalStaked: React.FC<ITotalStakedColumnProps> = ({ value, onlyDesktop = false }) => {
+const TotalStaked: React.FC<ITotalStakedColumnProps> = ({
+  value,
+  currencySymbol,
+  onlyDesktop = false,
+}) => {
   return (
     <div
       className={classNames(
@@ -20,7 +25,9 @@ const TotalStaked: React.FC<ITotalStakedColumnProps> = ({ value, onlyDesktop = f
         },
       )}
     >
-      <span className="text-med text-purple">${value}</span>
+      <span className="text-med text-purple">
+        {value} {currencySymbol}
+      </span>
     </div>
   );
 };

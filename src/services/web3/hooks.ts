@@ -5,6 +5,7 @@ import { useWalletConnectorContext } from '../MetamaskConnect';
 
 import { GAS_PRICE_GWEI } from './configHelpers';
 import { IReceipt } from '@/types';
+import useRefresh from '@/hooks/useRefresh';
 
 interface ICallWithGasPrice {
   (params: {
@@ -60,6 +61,8 @@ export function useCallWithGasPrice() {
 export const useBlock = () => {
   const { metamaskService } = useWalletConnectorContext();
   const [block, setBlock] = useState(0);
+  const { fastRefresh } = useRefresh();
+
   useEffect(() => {
     const getBlock = async () => {
       const currentBlock = await metamaskService.web3Provider.eth.getBlockNumber();
@@ -67,7 +70,7 @@ export const useBlock = () => {
     };
 
     getBlock();
-  }, [metamaskService.web3Provider.eth]);
+  }, [metamaskService.web3Provider.eth, fastRefresh]);
 
   return [block];
 };

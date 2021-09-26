@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { clone } from 'mobx-state-tree';
 
 import { Button } from '@/components/atoms';
 import { ButtonProps } from '@/components/atoms/Button';
@@ -16,7 +17,6 @@ import { useMst } from '@/store';
 import { ITokenMobx } from '@/store/Models/Modals/StakeUnstakeModal';
 import { Pool } from '@/types';
 import { BIG_ZERO } from '@/utils';
-import { clone } from 'mobx-state-tree';
 
 const StakingSection: React.FC<{
   pool: Pool;
@@ -53,10 +53,7 @@ const StakingSection: React.FC<{
     requestedApproval = poolApprove.requestedApproval;
   }
 
-  // TODO: specify the 'staked' property to indicate isStaked some coins
-  // const [MOCK_isStakingEnabled, MOCK_setStakingEnabled] = useState(false);
   const hasConnectedWallet = Boolean(user.address);
-  // const isStakingEnabled = MOCK_isStakingEnabled;
   const types = [
     {
       condition: !hasConnectedWallet,
@@ -80,7 +77,6 @@ const StakingSection: React.FC<{
       text: 'Enable',
     },
     {
-      // TODO: change condition to correct use needsApproval
       condition:
         hasConnectedWallet && (!needsApproval || isVaultApproved) && !stakedValue.toNumber(),
       title: `Stake ${tokenSymbol}`,

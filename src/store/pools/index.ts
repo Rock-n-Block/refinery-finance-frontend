@@ -55,8 +55,6 @@ export const fetchPoolsTotalStaking = async () => {
   const [, rocketPropellantABI] = getContractData('RP1');
   const poolsTotalStaked = await multicall(rocketPropellantABI, calls);
 
-  console.log(poolsTotalStaked);
-
   return [
     ...poolsConfig.map((pool, index) => ({
       id: pool.id,

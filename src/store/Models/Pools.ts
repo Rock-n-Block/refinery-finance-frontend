@@ -75,20 +75,6 @@ const PoolsModel = types
     }),
   })
   .actions((self) => ({
-    // fetchCallFeeSuccess(callFee: string) {
-    //   self.fees.callFee = Number(callFee);
-    // },
-    // fetchCallFeeError(error: any) {
-    //   console.error(error);
-    // },
-    // fetchCallFee() {
-    //   const callFee = getRefineryVaultContractMethodCallFee();
-    //   console.log(callFee);
-    //   callFee.call().then(this.fetchCallFeeSuccess, this.fetchCallFeeError);
-    //   // useEffect(() => {
-    //   //   callFee.call().then(this.fetchCallFeeSuccess, this.fetchCallFeeError);
-    //   // }, [callFee]);
-    // },
     setEstimated(value: number) {
       self.estimatedRefineryBountyReward = new BigNumber(value)
         .multipliedBy(DEFAULT_TOKEN_DECIMAL)
@@ -156,23 +142,6 @@ const PoolsModel = types
       self.estimatedRefineryBountyReward = new BigNumber(
         estimatedRefineryBountyReward.toString(),
       ).toJSON();
-      // setTimeout(() => {
-      //   // self.estimatedRefineryBountyReward = new BigNumber(41421100000).toJSON();
-      //   this.setEstimated(1.0);
-
-      //   setTimeout(() => {
-      //     this.setEstimated(1.2123);
-
-      //     setTimeout(() => {
-      //       this.setEstimated(0.002);
-
-      //       setTimeout(() => {
-      //         this.setEstimated(0);
-      //       }, 1000);
-      //     }, 1000);
-      //   }, 1000);
-      // }, 1000);
-      // totalPendingRefineryHarvest: new BigNumber(totalPendingRefineryHarvest.toString()).toJSON(),
     },
     fetchVaultPublicDataError(error: any) {
       console.error(error);
@@ -372,21 +341,8 @@ const PoolsModel = types
       value: string;
     }) {
       const foundPool = self.data.find((p) => p.id === poolId);
-      // console.log('FIELD VALUE POOLID', field, value, poolId);
-      // console.log('FOUND POOL TO CHANGE', foundPool);
       if (!foundPool) return;
       (foundPool.userData as any)[field] = value;
-      // foundPool.userData[field] = value;
-
-      // console.log('CHANGED SELF', JSON.stringify(self));
-
-      // if (index >= 0) {
-
-      //   self.data[index] = {
-      //     ...self.data[index],
-      //     userData: { ...self.data[index].userData, [field]: value },
-      //   };
-      // }
     },
 
     // FETCH ALLOWANCES ETC. FOR POOLS

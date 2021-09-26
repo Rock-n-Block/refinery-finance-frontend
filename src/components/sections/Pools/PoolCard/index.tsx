@@ -22,7 +22,7 @@ import AutoVaultRecentProfitSection from './AutoVaultRecentProfitSection';
 import CardFooter from './CardFooter';
 import CardSubtitle from './CardSubtitle';
 import CardTitle from './CardTitle';
-import { getAprData } from './utils';
+import { getAprData, useNonAutoVaultEarnings } from './utils';
 
 import './PoolCard.scss';
 
@@ -85,12 +85,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     [stakedValue, pool.stakingToken.decimals],
   );
 
-  const nonAutoVaultEarnings = useMemo(() => {
-    return userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO;
-  }, [userData?.pendingReward]);
-  const nonAutoVaultEarningsAsString = useMemo(() => nonAutoVaultEarnings.toString(), [
-    nonAutoVaultEarnings,
-  ]);
+  const { nonAutoVaultEarnings, nonAutoVaultEarningsAsString } = useNonAutoVaultEarnings(pool);
 
   const collectHandler = () => {
     modals.poolsCollect.open({
@@ -210,7 +205,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div className="p-card__staked-value text-blue-d text-smd">
                   {stakedValueAsString}
                 </div>
-                <div className="text-gray text-smd">~{convertedStakedValueAsString} {mockData.currencyToConvert}</div>
+                <div className="text-gray text-smd">
+                  ~{convertedStakedValueAsString} {mockData.currencyToConvert}
+                </div>
               </div>
               <StakeUnstakeButtons pool={pool} />
             </div>

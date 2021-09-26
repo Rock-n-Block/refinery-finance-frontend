@@ -28,8 +28,6 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
   } = getPoolBlockInfo(pool, currentBlock);
   const { totalRefineryInVault } = useSelectVaultData();
   const { earningToken, stakingToken, totalStaked } = pool;
-  // const mockDetailsData = { totalStaked: '78,790,501' };
-  // const { totalStaked } = mockDetailsData;
   const totalStakedBalance = useMemo(() => {
     switch (type) {
       case PoolFarmingMode.auto:

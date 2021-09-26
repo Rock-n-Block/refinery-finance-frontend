@@ -24,10 +24,14 @@ interface IColumn {
   name: string;
 }
 
+const mockData = {
+  profitTokenSymbol: 'RP1',
+}
+
 const columns: IColumn[] = [
   {
     style: 'disabled',
-    name: `Recent CAKE profit`,
+    name: `Recent ${mockData.profitTokenSymbol} profit`,
   },
   {
     name: 'APR',

@@ -34,7 +34,6 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
           gas: 300000,
         },
       });
-      // console.log(tx);
 
       poolsStore.updateUserAllowance(poolId, user.address);
       if ((tx as IReceipt).status) {

@@ -15,7 +15,6 @@ import { useMst } from '@/store';
 import { convertRefineryToShares } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { BIG_ZERO } from '@/utils';
-// import { BIG_ZERO } from '@/utils';
 import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatBalance';
 
 import './StakeUnstakeModal.scss';
@@ -50,7 +49,6 @@ const percentBoundariesButtons = [
 ];
 
 const StakeUnstakeModal: React.FC = observer(() => {
-  // const [balance, setBalance] = useState(0);
   // const [isBalanceFetched, setIsBalanceFetched] = useState(false);
   const [pendingTx, setPendingTx] = useState(false);
   const [percent, setPercent] = useState(MAX_PERCENTAGE / 4);
@@ -253,44 +251,19 @@ const StakeUnstakeModal: React.FC = observer(() => {
     valueToStake,
   ]);
 
-  console.log(valueToStake);
-
   const handleConfirm = async () => {
-    console.log(modal, valueToStake);
+    console.log(valueToStake);
     if (modal.isStaking) {
-      // const isGreaterThanUserBalance = valueToStake.gt(balance);
-      // modal.stake(isGreaterThanUserBalance ? balance : valueToStake);
       await handleStake();
     } else {
-      // const isGreaterThanUserStaked = valueToStake.gt(modal.stakedValue);
-      // modal.unstake(
-      //   isGreaterThanUserStaked ? modal.stakedValue : valueToStake,
-      // );
       await handleUnstake();
     }
     modal.close();
   };
 
-  // useEffect(() => {
-  //   const timerId = setTimeout(() => {
-  //     setBalance(5);
-  //     setIsBalanceFetched(true);
-  //   }, 5000);
-
-  //   return () => {
-  //     clearTimeout(timerId);
-  //   };
-  // }, []);
-
   useEffect(() => {
     updateValueByPercent(percent);
   }, [percent, updateValueByPercent]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setBalance(3);
-  //   }, 10000);
-  // }, []);
 
   const usdValueToStake = useMemo(() => valueToStakeAsBigNumber.times(tokenUsdPrice).toFixed(2), [
     valueToStakeAsBigNumber,
