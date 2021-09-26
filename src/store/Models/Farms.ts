@@ -19,13 +19,14 @@ const FarmModel = types.model({
   token: TokenModel,
   quoteToken: TokenModel,
   multiplier: types.maybe(types.string),
-  dual: types.maybe(
-    types.model({
-      rewardPerBlock: types.number,
-      earnLabel: types.string,
-      endBlock: types.number,
-    }),
-  ),
+  categoryType: types.string,
+  // dual: types.maybe(
+  //   types.model({
+  //     rewardPerBlock: types.number,
+  //     earnLabel: types.string,
+  //     endBlock: types.number,
+  //   }),
+  // ),
 
   tokenAmountMc: types.maybe(types.string),
   quoteTokenAmountMc: types.maybe(types.string),

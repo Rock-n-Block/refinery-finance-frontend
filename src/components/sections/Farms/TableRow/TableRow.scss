@@ -3,7 +3,8 @@
 
 .farms-table-row {
   position: relative;
-  & + & {
+
+  &+& {
     &::after {
       content: '';
       position: absolute;
@@ -14,11 +15,13 @@
       top: 0;
       background: #eaeaea;
       transform: translateX(-50%);
+
       @include b(tablet) {
         width: 100%;
       }
     }
   }
+
   &__content {
     display: grid;
     grid-template-columns: 2fr 0.5fr 1fr 2fr 1fr 1fr;
@@ -26,8 +29,9 @@
     grid-column-gap: 20px;
     padding: 35px 30px;
     cursor: pointer;
+
     @include b(tablet) {
-      grid-template-columns: 3fr 1fr 1fr .1fr;
+      grid-template-columns: 2fr 1fr 1fr .1fr;
       padding: 20px 20px 20px 10px;
     }
   }
@@ -35,16 +39,18 @@
   &__extra-text {
     display: none;
   }
+
   &__currencies {
-    &-item {
+    &-pair {
+      margin-right: 12px;
+    }
+
+    &-pair-item {
       width: 24px;
       height: 24px;
-      & + & {
-        margin-left: -5px;
-        margin-right: 12px;
-      }
     }
   }
+
   &__earned {
     @include b(tablet) {
       span {
@@ -52,11 +58,10 @@
       }
     }
   }
-  &__apr {
+
+  &__apr-button {
     @include b(tablet) {
-      &_button {
-        display: none;
-      }
+      display: none;
     }
   }
 
@@ -64,6 +69,7 @@
     &--mob {
       display: none;
       transition: 0.4s ease;
+
       &_active {
         transform: rotate(-180deg);
       }
@@ -72,29 +78,35 @@
     &:last-of-type {
       text-align: right;
     }
+
     &-img {
       &-info {
         margin-top: -2px;
       }
     }
   }
+
   &__text {
     margin-right: 16px;
+
     &-md {
       margin-right: 9px;
     }
   }
+
   &__buttons {
     @include b(tablet) {
       grid-row: 1;
     }
   }
+
   &__details {
     padding: 10px 30px;
     overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 3fr;
     align-items: center;
+
     @include b(tablet) {
       grid-template-columns: 1fr;
       grid-auto-flow: row dense;
@@ -105,53 +117,65 @@
       &-item {
         width: fit-content;
         margin-bottom: 15px;
+
         span {
           margin-right: 7px;
         }
       }
     }
+
     &-check {
       padding: 1px 6px;
       border: 1px solid $purple;
       border-radius: 40px;
       width: fit-content;
     }
+
     &-box {
       padding: 20px 30px 40px;
       border-radius: 12px;
       background: #f8f5fe;
-      & + & {
+
+      &+& {
         margin-left: 10px;
       }
+
       @include b(tablet) {
         text-align: center;
         padding: 20px 10px;
+
         .btn-yellow {
           width: 100% !important;
           padding: 17px 0 !important;
         }
-        & + & {
+
+        &+& {
           margin: 10px 0;
         }
       }
     }
+
     &-title {
       margin-bottom: 13px;
     }
   }
+
   .show-enter {
     padding: 0px 30px;
     max-height: 0;
   }
+
   .show-enter-active {
     padding: 10px 30px;
     max-height: 192px;
     transition: padding 300ms, max-height 300ms;
   }
+
   .show-exit {
     padding: 10px 30px;
     max-height: 192px;
   }
+
   .show-exit-active {
     padding: 0px 30px;
     max-height: 0;

@@ -133,6 +133,11 @@ export interface Pool extends PoolConfig {
   userData?: PoolUserData;
 }
 
+export enum DetailsBadgeType {
+  core = 'core',
+}
+export type IDetailsBadgeType = keyof typeof DetailsBadgeType;
+
 export interface FarmConfig {
   pid: number;
   lpSymbol: string;
@@ -140,11 +145,12 @@ export interface FarmConfig {
   token: Token;
   quoteToken: Token;
   multiplier?: string;
-  dual?: {
-    rewardPerBlock: number;
-    earnLabel: string;
-    endBlock: number;
-  };
+  categoryType: IDetailsBadgeType;
+  // dual?: {
+  //   rewardPerBlock: number;
+  //   earnLabel: string;
+  //   endBlock: number;
+  // };
 }
 
 export type SerializedBigNumber = string;

@@ -1,4 +1,4 @@
-import { IBasePopover } from './BasePopover';
+import { IBasePopover } from '@/HOC/BasePopover';
 
 export interface ITotalStakedPopoverProps extends Omit<IBasePopover, 'text'> {
   symbol: string;

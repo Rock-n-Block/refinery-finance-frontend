@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { withPopover } from './BasePopover';
+import { withPopover } from '@/HOC/BasePopover';
+
 import {
   IAutoBountyPopoverProps,
   IPoolsCollectPopoverProps,

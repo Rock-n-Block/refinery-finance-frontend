@@ -1,4 +1,5 @@
 import { FarmConfig } from '@/types';
+
 import { tokens } from './tokens';
 
 import { contracts } from './contracts';
@@ -12,6 +13,7 @@ export const farms: FarmConfig[] = [
     },
     token: tokens.fuel,
     quoteToken: tokens.wbnb, // ??
+    categoryType: 'core',
   },
   {
     pid: 1,
@@ -21,6 +23,7 @@ export const farms: FarmConfig[] = [
     },
     token: tokens.tmpt,
     quoteToken: tokens.bbshk,
+    categoryType: 'core',
   },
   {
     pid: 2,
