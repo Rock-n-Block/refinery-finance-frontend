@@ -49,7 +49,9 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const { modals } = useMst();
   const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
 
-  console.log(JSON.parse(JSON.stringify(farm)));
+  // console.log(JSON.parse(JSON.stringify(farm)));
+
+  const MOCK_APR = 73.77;
 
   const handleChangeDetails = (value: boolean): void => {
     setOpenDetails(value);
@@ -91,7 +93,9 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
         </div>
         <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">APR</div>
-          <span className="farms-table-row__text-md">73.77%</span>
+          <span className="farms-table-row__text-md">
+            {Number(MOCK_APR).toFixed(2).replace('.', ',')}%
+          </span>
           <div
             className="farms-table-row__apr-button"
             onClick={handleOpenRoiModal}

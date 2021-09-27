@@ -173,3 +173,9 @@ export interface Farm extends FarmConfig {
   poolWeight?: SerializedBigNumber;
   userData?: FarmUserData;
 }
+
+export interface FarmWithStakedValue extends Farm {
+  apr?: number;
+  lpRewardsApr?: number;
+  liquidity?: BigNumber;
+}

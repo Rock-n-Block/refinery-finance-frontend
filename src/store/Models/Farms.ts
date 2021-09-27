@@ -1,9 +1,19 @@
 import { types } from 'mobx-state-tree';
 
 import { farms as farmsConfig } from '@/config';
+import priceHelperLpsConfig from '@/config/priceHelperLps';
 
 import AddressModel from './Address';
 import TokenModel from './Token';
+import { Farm } from '@/types';
+import {
+  fetchFarms,
+  fetchFarmsPrices,
+  fetchFarmUserAllowances,
+  fetchFarmUserEarnings,
+  fetchFarmUserStakedBalances,
+  fetchFarmUserTokenBalances,
+} from '../farms';
 
 const UserDataModel = types.model({
   allowance: types.string,
@@ -44,31 +54,77 @@ const FarmsModel = types
     data: types.optional(types.array(FarmModel), farmsConfig),
   })
   .actions((self) => ({
-    lol() {
-      return self;
+    async fetchFarmsPublicDataAsync(pids: number[]) {
+      const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid));
+
+      // Add price helper farms
+      const farmsWithPriceHelpers = farmsToFetch.concat(priceHelperLpsConfig);
+
+      const farms = await fetchFarms(farmsWithPriceHelpers);
+      const farmsWithPrices = await fetchFarmsPrices(farms);
+
+      // Filter out price helper LP config farms (there can be farms with "pid: -1" which must be excluded)
+      const farmsWithoutHelperLps = farmsWithPrices.filter((farm: Farm) => {
+        return farm.pid >= 0;
+      });
+
+      this.fetchFarmsPublicDataAsyncSuccess(farmsWithoutHelperLps);
     },
-    // setEstimated(value: number) {
-    //   self.estimatedRefineryBountyReward = new BigNumber(value)
-    //     .multipliedBy(new BigNumber(10).pow(18))
-    //     .toJSON();
-    // },
-    // fetchVaultFeesSuccess(aggregatedCallsResponse: any) {
-    //   // if (!aggregatedCallsResponse) throw new Error('MultiCallResponse is null');
-    //   const callsResult = aggregatedCallsResponse?.flat();
-    //   const [
-    //     performanceFee,
-    //     callFee,
-    //     withdrawalFee,
-    //     withdrawalFeePeriod,
-    //   ] = callsResult?.map((result: any) => Number(result));
-    //   // console.log(performanceFee, callFee, withdrawalFee, withdrawalFeePeriod);
-    //   self.fees = {
-    //     performanceFee,
-    //     callFee,
-    //     withdrawalFee,
-    //     withdrawalFeePeriod,
-    //   };
-    // },
+    fetchFarmsPublicDataAsyncSuccess(newData: Farm[]) {
+      self.data.forEach((farm) => {
+        const liveFarmData = newData.find(({ pid }: { pid: number }) => pid === farm.pid);
+
+        if (!liveFarmData) return;
+        farm.categoryType = liveFarmData.categoryType;
+        farm.lpAddresses = liveFarmData.lpAddresses;
+        farm.lpSymbol = liveFarmData.lpSymbol;
+        farm.lpTotalInQuoteToken = liveFarmData.lpTotalInQuoteToken;
+        farm.lpTotalSupply = liveFarmData.lpTotalSupply;
+        farm.multiplier = liveFarmData.multiplier;
+        farm.pid = liveFarmData.pid;
+        farm.poolWeight = liveFarmData.poolWeight;
+
+        farm.quoteToken.busdPrice = liveFarmData.quoteToken.busdPrice || '';
+
+        farm.quoteTokenAmountMc = liveFarmData.quoteTokenAmountMc;
+        farm.quoteTokenAmountTotal = liveFarmData.quoteTokenAmountTotal;
+
+        farm.token.busdPrice = liveFarmData.token.busdPrice || '';
+
+        farm.tokenAmountMc = liveFarmData.tokenAmountMc;
+        farm.tokenAmountTotal = liveFarmData.tokenAmountTotal;
+        farm.tokenPriceVsQuote = liveFarmData.tokenPriceVsQuote;
+        farm.userData = liveFarmData.userData;
+      });
+    },
+    async fetchFarmUserDataAsync(account: string, pids: number[]) {
+      const farmsToFetch = farmsConfig.filter((farmConfig) => pids.includes(farmConfig.pid));
+      const userFarmAllowances = await fetchFarmUserAllowances(account, farmsToFetch);
+      const userFarmTokenBalances = await fetchFarmUserTokenBalances(account, farmsToFetch);
+      const userStakedBalances = await fetchFarmUserStakedBalances(account, farmsToFetch);
+      const userFarmEarnings = await fetchFarmUserEarnings(account, farmsToFetch);
+
+      this.fetchFarmUserDataAsyncSuccess(
+        userFarmAllowances.map((farmAllowance: any, index: number) => {
+          return {
+            pid: farmsToFetch[index].pid,
+            allowance: userFarmAllowances[index],
+            tokenBalance: userFarmTokenBalances[index],
+            stakedBalance: userStakedBalances[index],
+            earnings: userFarmEarnings[index],
+          };
+        }),
+      );
+    },
+    fetchFarmUserDataAsyncSuccess(
+      newData: { pid: any; allowance: any; tokenBalance: any; stakedBalance: any; earnings: any }[],
+    ) {
+      newData.forEach((userData) => {
+        const { pid } = userData;
+        const index = self.data.findIndex((farm) => farm.pid === pid);
+        self.data[index].userData = userData;
+      });
+    },
   }));
 
 export default FarmsModel;
