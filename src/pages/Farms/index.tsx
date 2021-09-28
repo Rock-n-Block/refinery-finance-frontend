@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import { ItemsController } from '@/components/organisms';
+import FarmsStakeUnstakeModal from '@/components/organisms/FarmsStakeUnstakeModal';
 import { FarmsPreview, FarmsTable } from '@/components/sections/Farms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useFarms, usePollFarmsData } from '@/store/farms/hooks';
@@ -226,6 +227,7 @@ const Farms: React.FC = observer(() => {
         />
         <FarmsContent content={filteredFarms} />
       </div>
+      <FarmsStakeUnstakeModal />
     </main>
   );
 });

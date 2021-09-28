@@ -31,6 +31,15 @@ export const Store = RootModel.create({
     poolsCollect: {
       isOpen: false,
     },
+    farmsStakeUnstake: {
+      isOpen: false,
+      farmId: 0,
+      isStaking: false,
+      maxValue: '',
+      lpPrice: '',
+      tokenSymbol: '',
+      addLiquidityUrl: '',
+    },
   },
   tokens: {
     default: [],

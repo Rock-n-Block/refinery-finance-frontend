@@ -2,6 +2,7 @@ import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import BigNumber from 'bignumber.js/bignumber';
 
 // import BnbImg from '@/assets/img/currency/bnb.svg';
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
@@ -10,7 +11,7 @@ import { Button } from '@/components/atoms';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Token } from '@/types';
 import { numberWithCommas } from '@/utils';
-
+import { tokens } from '@/config/tokens';
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
 import DetailsActionsSection from './DetailsActionsSection';
@@ -19,6 +20,9 @@ import DetailsLinks from './DetailsLinks';
 import { EARNING_TOKEN_SYMBOL } from './utils';
 
 import './TableRow.scss';
+import { getBalanceAmount } from '@/utils/formatBalance';
+
+
 
 interface ITableRowProps {
   farm: FarmWithStakedValue;
@@ -72,7 +76,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
     // });
   };
 
-  const [lpSymbolWithoutLPString] = farm.lpSymbol.split(' ');
+  const { lpSymbol } = farm;
+
+  const [lpSymbolWithoutLPString] = lpSymbol.split(' ');
+  const { userData, token, quoteToken, multiplier, liquidity } = farm;
+  const { earnings = '0'} = userData || {};
+  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(5);
 
   return (
     <div className="farms-table-row">
@@ -85,12 +94,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
       >
         <TokensPair
           lpSymbol={lpSymbolWithoutLPString}
-          token={farm.token}
-          quoteToken={farm.quoteToken}
+          token={token}
+          quoteToken={quoteToken}
         />
         <div className="farms-table-row__earned text-gray-l-2 text-smd ">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">Earned</div>
-          <span>{farm.userData?.earnings || 0}</span>
+          <span>{earningsToDisplay}</span>
         </div>
         <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">APR</div>
@@ -109,12 +118,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
         </div>
         <div className="farms-table-row__liquidity farms-table-row__item box-f-ai-c text-smd t-box-none">
           <span className="farms-table-row__text text-med text-purple">
-            ${numberWithCommas(farm.liquidity?.toNumber() || 0)}
+            ${numberWithCommas(liquidity?.toNumber() || 0)}
           </span>
           <LiquidityPopover />
         </div>
         <div className="farms-table-row__multiplier farms-table-row__item box-f-ai-c text-smd t-box-none">
-          <span className="farms-table-row__text-md text-med text-purple">{farm.multiplier}</span>
+          <span className="farms-table-row__text-md text-med text-purple">{multiplier}</span>
           <MultiplierPopover symbol={EARNING_TOKEN_SYMBOL} />
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
@@ -152,7 +161,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
           <DetailsLinks farm={farm} />
           <div className="farms-table-row__buttons box-f-ai-c t-box-b">
             <DetailsEarnedSection farm={farm} />
-            <DetailsActionsSection />
+            <DetailsActionsSection farm={farm} />
           </div>
         </div>
       </CSSTransition>

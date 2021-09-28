@@ -7,9 +7,12 @@ import { errorNotification, successNotification } from '@/components/atoms/Notif
 import { useHarvestFarm } from '@/hooks/farms/useHarvestFarm';
 import { useMst } from '@/store';
 import { FarmWithStakedValue } from '@/types';
+import { tokens } from '@/config/tokens';
 
 import DetailsSectionTitle from '../DetailsSectionTitle';
 import { EARNING_TOKEN_SYMBOL } from '../utils';
+import { getBalanceAmount } from '@/utils/formatBalance';
+import BigNumber from 'bignumber.js/bignumber';
 
 interface IDetailsEarnedSectionProps {
   className?: string;
@@ -55,7 +58,7 @@ const DetailsEarnedSection: React.FC<IDetailsEarnedSectionProps> = observer(
         <DetailsSectionTitle title={`${EARNING_TOKEN_SYMBOL} Earned`} />
         <InputNumber
           colorScheme="white"
-          value={earnings}
+          value={getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals)}
           inputPrefix={
             <Button
               colorScheme="purple"

@@ -1,4 +1,6 @@
 import { SCANNERS } from '@/config';
+import { getAddress } from '@/services/web3/contractHelpers';
+import { Token } from '@/types';
 import BigNumber from 'bignumber.js/bignumber';
 
 import { getFullDisplayBalance } from './formatBalance';
@@ -106,4 +108,8 @@ export const convertToBigNumber = (val: string | null): BigNumber | null => {
 
 export const getBaseScannerUrl = (chainId: number | string): string => {
   return SCANNERS[Number(chainId)];
+};
+
+export const getAddLiquidityUrl = (quoteToken: Token, token: Token): string => {
+  return `/trade/liquidity/add/${getAddress(quoteToken.address)}/${getAddress(token.address)}`;
 };
