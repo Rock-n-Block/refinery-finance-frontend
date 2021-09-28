@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useMst } from '@/store';
-import { getAddress, getContract } from '@/services/web3/contractHelpers';
+import { getAddress } from '@/services/web3/contractHelpers';
 // import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
@@ -35,9 +35,7 @@ const useHarvestPool = (poolId: number) => {
     SmartRefinerInitializableAbi,
   );
   const { harvestPool } = useHarvestPoolDeposit(smartRefinerInitContract);
-
-  const masterRefinerContract = getContract('MASTER_REFINER');
-  const { harvestFarm } = useHarvestFarm(masterRefinerContract, 0);
+  const { harvestFarm } = useHarvestFarm(0);
 
   const handleHarvest = useCallback(async () => {
     if (poolId === 0) {

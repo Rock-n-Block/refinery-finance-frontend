@@ -8,7 +8,8 @@ import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
 import CalcImg from '@/assets/img/icons/calc.svg';
 import { Button } from '@/components/atoms';
 import { useMst } from '@/store';
-import { Farm, Token } from '@/types';
+import { FarmWithStakedValue, Token } from '@/types';
+import { numberWithCommas } from '@/utils';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
@@ -20,7 +21,7 @@ import { EARNING_TOKEN_SYMBOL } from './utils';
 import './TableRow.scss';
 
 interface ITableRowProps {
-  farm: Farm;
+  farm: FarmWithStakedValue;
 }
 
 interface ITokensPairProps {
@@ -89,7 +90,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
         />
         <div className="farms-table-row__earned text-gray-l-2 text-smd ">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">Earned</div>
-          <span>0</span>
+          <span>{farm.userData?.earnings || 0}</span>
         </div>
         <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">APR</div>
@@ -106,12 +107,14 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
             <img src={CalcImg} alt="calc" />
           </div>
         </div>
-        <div className="farms-table-row__liquidity box-f-ai-c text-smd farms-table-row__item t-box-none">
-          <span className="farms-table-row__text text-med text-purple">$1,662,947,888</span>
+        <div className="farms-table-row__liquidity farms-table-row__item box-f-ai-c text-smd t-box-none">
+          <span className="farms-table-row__text text-med text-purple">
+            ${numberWithCommas(farm.liquidity?.toNumber() || 0)}
+          </span>
           <LiquidityPopover />
         </div>
-        <div className="farms-table-row__multiplier box-f-ai-c text-smd farms-table-row__item t-box-none">
-          <span className="farms-table-row__text-md text-med text-purple">1x</span>
+        <div className="farms-table-row__multiplier farms-table-row__item box-f-ai-c text-smd t-box-none">
+          <span className="farms-table-row__text-md text-med text-purple">{farm.multiplier}</span>
           <MultiplierPopover symbol={EARNING_TOKEN_SYMBOL} />
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
@@ -148,7 +151,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
         <div className="farms-table-row__details box-purple-l">
           <DetailsLinks farm={farm} />
           <div className="farms-table-row__buttons box-f-ai-c t-box-b">
-            <DetailsEarnedSection />
+            <DetailsEarnedSection farm={farm} />
             <DetailsActionsSection />
           </div>
         </div>
