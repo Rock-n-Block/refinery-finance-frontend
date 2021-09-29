@@ -11,13 +11,12 @@ import TextUnstakingFee from '../TextUnstakingFee';
 import UnstakingFeeTimer from './UnstakingFeeTimer';
 
 interface IAutoVaultRecentProfitSectionProps {
-  autoFarmMode: boolean;
   hasStakedValue: boolean;
   stakingTokenSymbol: string;
 }
 
 const AutoVaultRecentProfitSection: React.FC<IAutoVaultRecentProfitSectionProps> = observer(
-  ({ autoFarmMode, hasStakedValue, stakingTokenSymbol }) => {
+  ({ hasStakedValue, stakingTokenSymbol }) => {
     const { user } = useMst();
 
     const {
@@ -35,7 +34,7 @@ const AutoVaultRecentProfitSection: React.FC<IAutoVaultRecentProfitSectionProps>
       pricePerFullShare || BIG_ZERO,
     );
 
-    if (user.address && autoFarmMode && !hasStakedValue) {
+    if (user.address && !hasStakedValue) {
       return (
         <div className="p-card__auto">
           <div className="p-card__auto-title text-purple text-smd text-med">
@@ -46,7 +45,7 @@ const AutoVaultRecentProfitSection: React.FC<IAutoVaultRecentProfitSectionProps>
       );
     }
 
-    if (user.address && autoFarmMode && hasStakedValue) {
+    if (user.address && hasStakedValue) {
       return (
         <div className="p-card__auto">
           <div className="p-card__auto-title box-f box-f-jc-sb text-purple text-smd text-med">

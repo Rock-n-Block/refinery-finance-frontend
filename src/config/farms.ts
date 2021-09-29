@@ -1,12 +1,14 @@
 import { FarmConfig } from '@/types';
 import { tokens } from './tokens';
 
+import { contracts } from './contracts';
+
 export const farms: FarmConfig[] = [
   {
     pid: 0,
     lpSymbol: 'RP1',
     lpAddresses: {
-      42: '0x6e32b62576b6344226edd2a8c347f54bfe5deb74',
+      42: contracts.RP1.ADDRESS,
     },
     token: tokens.fuel,
     quoteToken: tokens.wbnb, // ??

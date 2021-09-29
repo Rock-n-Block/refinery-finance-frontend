@@ -1,24 +1,26 @@
 import { PoolConfig } from '@/types';
 import { tokens } from '@/config/tokens';
 
+import { contracts } from './contracts';
+
 export const pools: PoolConfig[] = [
   {
     id: 0,
     stakingToken: tokens.rp1,
     earningToken: tokens.rp1,
     contractAddress: {
-      42: '0x318D824BB3DD82c4b062adbC6Fe561cE4d95a3B4',
+      42: contracts.MASTER_REFINER.ADDRESS,
     },
     tokenPerBlock: '1',
   },
   {
     id: 1,
     stakingToken: tokens.rp1,
-    earningToken: tokens.tst,
+    earningToken: tokens.bbshk,
     contractAddress: {
-      42: '0xd878d796a49ef940351a1569ae4af80142bc5959',
+      42: '0xbf183592ce79efe53b654e9229301b910b075dfb',
     },
-    tokenPerBlock: '10',
+    tokenPerBlock: '0.0868',
     // isFinished: true,
   },
 ];

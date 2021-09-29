@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 // import UnknownImg from '@/assets/img/currency/unknown.svg';
 import { Button, RadioGroup } from '@/components/atoms';
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { Modal } from '@/components/molecules';
 import { PoolsCollectPopover } from '@/components/sections/Pools/Popovers';
 import useHarvestPool from '@/hooks/pools/useHarvestPool';
 import useStakePool from '@/hooks/pools/useStakePool';
 import { useMst } from '@/store';
 import { PoolFarmingMode } from '@/types';
-import { successNotification, errorNotification } from '@/components/atoms/Notification';
+import { getFullDisplayBalance } from '@/utils/formatBalance';
 
 import './CollectModal.scss';
 
@@ -39,7 +41,9 @@ const CollectModal: React.FC = observer(() => {
     modals: { poolsCollect },
   } = useMst();
 
-  const hasCompoundHarvestChoice = poolsCollect.options?.farmMode === PoolFarmingMode.manual;
+  const { options } = poolsCollect;
+
+  const hasCompoundHarvestChoice = options?.farmMode === PoolFarmingMode.manual;
   const [isCompounding, setCompounding] = useState(Number(hasCompoundHarvestChoice));
   const [pendingTx, setPendingTx] = useState(false);
 
@@ -50,43 +54,57 @@ const CollectModal: React.FC = observer(() => {
     };
   }, [poolsCollect]);
 
-  const { onReward } = useHarvestPool(poolsCollect.options?.poolId || 0);
-  const { onStake } = useStakePool(poolsCollect.options?.poolId || 0);
+  const poolId = options?.poolId || 0;
 
-  if (!poolsCollect.options) return null;
+  const { onReward } = useHarvestPool(poolId);
+  const { onStake } = useStakePool(poolId);
+
+  if (!options) return null;
+
+  const { earnings, earningTokenDecimals, earningTokenSymbol, fullBalance } = options;
 
   const shouldCompound = hasCompoundHarvestChoice && isCompounding;
 
   const handleConfirm = async () => {
-    if (!poolsCollect.options) return null;
+    // if (!options) return;
     // compounding
     if (shouldCompound) {
+      setPendingTx(true);
       try {
-        setPendingTx(true);
-        await onStake(poolsCollect.options.fullBalance, poolsCollect.options.earningTokenDecimals);
-        successNotification('Compounded!', `Your ${poolsCollect.options.earningTokenSymbol} earnings have been re-invested into the pool!`);
+        await onStake(fullBalance, earningTokenDecimals);
+        successNotification(
+          'Compounded!',
+          `Your ${earningTokenSymbol} earnings have been re-invested into the pool!`,
+        );
         poolsCollect.close();
       } catch (e) {
         console.error(e);
-        errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
       } finally {
         setPendingTx(false);
       }
     } else {
       // harvesting
       try {
-        setPendingTx(true);
         await onReward();
-        successNotification('Harvested!', `Your ${poolsCollect.options.earningTokenSymbol} earnings have been sent to your wallet!`);
+        successNotification(
+          'Harvested!',
+          `Your ${earningTokenSymbol} earnings have been sent to your wallet!`,
+        );
         poolsCollect.close();
       } catch (e) {
         console.error(e);
-        errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
       } finally {
         setPendingTx(false);
       }
     }
-    return null;
   };
 
   const handleCompoundHarvestChoiceChange = (e: any) => {
@@ -107,9 +125,7 @@ const CollectModal: React.FC = observer(() => {
       <div className="pools-collect-modal__content">
         <ModalTitle
           className="pools-collect-modal__title"
-          title={`${poolsCollect.options.earningTokenSymbol} ${
-            hasCompoundHarvestChoice ? 'Collect' : 'Harvest'
-          }`}
+          title={`${earningTokenSymbol} ${hasCompoundHarvestChoice ? 'Collect' : 'Harvest'}`}
         />
         {hasCompoundHarvestChoice && (
           <div className="box-f-c">
@@ -122,7 +138,7 @@ const CollectModal: React.FC = observer(() => {
             />
             <PoolsCollectPopover
               className="pools-collect-modal__info"
-              symbol={poolsCollect.options.earningTokenSymbol}
+              symbol={earningTokenSymbol}
             />
           </div>
         )}
@@ -132,7 +148,12 @@ const CollectModal: React.FC = observer(() => {
             {shouldCompound ? 'Compounding' : 'Harvesting'}:
           </div>
           <div className="pools-collect-modal__profit text-smd text-purple text-bold">
-            {poolsCollect.options.earnings} {poolsCollect.options.earningTokenSymbol}
+            {getFullDisplayBalance({
+              balance: new BigNumber(earnings),
+              decimals: earningTokenDecimals,
+              displayDecimals: 8,
+            })}{' '}
+            {earningTokenSymbol}
           </div>
         </div>
         <Button className="pools-collect-modal__btn" loading={pendingTx} onClick={handleConfirm}>

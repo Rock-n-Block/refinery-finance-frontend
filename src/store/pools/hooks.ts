@@ -6,7 +6,7 @@ import { transformPool } from './helpers';
 import { Pool } from '@/types';
 import useRefresh from '@/hooks/useRefresh';
 
-const convertToBigNumber = (val: string | null) => {
+export const convertToBigNumber = (val: string | null) => {
   return val === null ? val : new BigNumber(val);
 };
 

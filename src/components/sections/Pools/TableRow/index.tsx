@@ -19,7 +19,7 @@ import { convertSharesToRefinery, getRefineryVaultEarnings } from '@/store/pools
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
-import { getFullDisplayBalance } from '@/utils/formatBalance';
+import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
 
 import { getAprData, getPoolBlockInfo, useNonAutoVaultEarnings } from '../PoolCard/utils';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
@@ -108,11 +108,11 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
 
   const stakedValue = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
-      const { refineryAsNumberBalance } = convertSharesToRefinery(
+      const { refineryAsBigNumber } = convertSharesToRefinery(
         userShares || BIG_ZERO,
         pricePerFullShare || BIG_ZERO,
       );
-      return new BigNumber(refineryAsNumberBalance);
+      return refineryAsBigNumber;
     }
     return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
   }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
@@ -174,7 +174,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
       );
       return autoRefineryVaultRecentProfit;
     }
-    return nonAutoVaultEarnings.toNumber();
+    return getBalanceAmount(nonAutoVaultEarnings, pool.earningToken.decimals);
   }, [
     farmMode,
     pricePerFullShare,
@@ -182,6 +182,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     user.address,
     userShares,
     nonAutoVaultEarnings,
+    pool.earningToken.decimals,
   ]);
 
   const convertedRecentProfit = useMemo(() => {
@@ -216,8 +217,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
         </div>
         <RecentProfitColumn
           name={columns[0].name}
-          value={recentProfit}
-          usdValue={convertedRecentProfit}
+          value={Number(recentProfit.toFixed(7))}
+          usdValue={Number(convertedRecentProfit.toFixed(7))}
         />
         <AprColumn
           name={columns[1].name}

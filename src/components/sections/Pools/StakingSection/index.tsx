@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -28,6 +28,7 @@ const StakingSection: React.FC<{
   const { connect, metamaskService } = useWalletConnectorContext();
   const { user, modals } = useMst();
   const { isAutoVault = false, userData, id, stakingToken } = pool;
+  const [pendingTx, setPendingTx] = useState(false);
 
   // Data for regular approval buttons
   const allowance = userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO;
@@ -36,22 +37,23 @@ const StakingSection: React.FC<{
   // Data for AUTO_VAULT approval buttons
   const { isVaultApproved, setLastUpdated } = useCheckVaultApprovalStatus();
 
-  let handleApprove;
-  let requestedApproval;
+  let handleApprove: () => Promise<void>;
   if (isAutoVault) {
-    const autoVaultApprove = useVaultApprove(setLastUpdated);
-    handleApprove = autoVaultApprove.handleApprove;
-    requestedApproval = autoVaultApprove.requestedApproval;
+    handleApprove = useVaultApprove(setLastUpdated).handleApprove;
   } else {
     const [, erc20Abi] = getContractData('ERC20');
     const stakingTokenContract = metamaskService.getContract(
       getAddress(stakingToken.address),
       erc20Abi,
     );
-    const poolApprove = useApprovePool(stakingTokenContract, id);
-    handleApprove = poolApprove.handleApprove;
-    requestedApproval = poolApprove.requestedApproval;
+    handleApprove = useApprovePool(stakingTokenContract, id).handleApprove;
   }
+
+  const approveHandler = async () => {
+    setPendingTx(true);
+    await handleApprove();
+    setPendingTx(false);
+  };
 
   const hasConnectedWallet = Boolean(user.address);
   const types = [
@@ -64,17 +66,20 @@ const StakingSection: React.FC<{
     {
       condition: hasConnectedWallet && isAutoVault && !isVaultApproved,
       title: 'Start Staking',
-      handler: handleApprove,
+      handler: approveHandler,
       text: 'Enable',
       extraButtonProps: {
-        disabled: requestedApproval,
+        disabled: pendingTx,
       },
     },
     {
       condition: hasConnectedWallet && !isAutoVault && needsApproval,
       title: 'Start Staking',
-      handler: handleApprove,
+      handler: approveHandler,
       text: 'Enable',
+      extraButtonProps: {
+        disabled: pendingTx,
+      },
     },
     {
       condition:

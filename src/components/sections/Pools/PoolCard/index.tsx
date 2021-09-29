@@ -67,11 +67,11 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
 
   const stakedValue = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
-      const { refineryAsNumberBalance } = convertSharesToRefinery(
+      const { refineryAsBigNumber } = convertSharesToRefinery(
         userShares || BIG_ZERO,
         pricePerFullShare || BIG_ZERO,
       );
-      return new BigNumber(refineryAsNumberBalance);
+      return refineryAsBigNumber;
     }
     return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
   }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
@@ -124,10 +124,10 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     return nonAutoVaultEarnings.times(refineryUsdPrice);
   }, [nonAutoVaultEarnings, refineryUsdPrice]);
 
-  const convertedNonAutoVaultEarningsAsString = useMemo(
-    () => convertedNonAutoVaultEarnings.toString(),
-    [convertedNonAutoVaultEarnings],
-  );
+  // const convertedNonAutoVaultEarningsAsString = useMemo(
+  //   () => convertedNonAutoVaultEarnings.toString(),
+  //   [convertedNonAutoVaultEarnings],
+  // );
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -169,11 +169,12 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         </div>
       </div>
       <div className="p-card__box p-card__content">
-        <AutoVaultRecentProfitSection
-          autoFarmMode={farmMode === PoolFarmingMode.auto}
-          hasStakedValue={Boolean(hasStakedValue)}
-          stakingTokenSymbol={stakingToken.symbol}
-        />
+        {farmMode === PoolFarmingMode.auto && (
+          <AutoVaultRecentProfitSection
+            hasStakedValue={Boolean(hasStakedValue)}
+            stakingTokenSymbol={stakingToken.symbol}
+          />
+        )}
         {hasConnectedWallet &&
           (farmMode === PoolFarmingMode.earn || farmMode === PoolFarmingMode.manual) && (
             <>
@@ -181,10 +182,20 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div>
                   <div className="text-smd text-purple text-med">{earningToken.symbol} Earned</div>
                   <div className="p-card__earned-profit-value text-blue-d text-smd">
-                    {nonAutoVaultEarningsAsString}
+                    {getFullDisplayBalance({
+                      balance: nonAutoVaultEarnings,
+                      decimals: pool.earningToken.decimals,
+                      // displayDecimals: 8,
+                    })}
                   </div>
                   <div className="text-gray text-smd">
-                    ~{convertedNonAutoVaultEarningsAsString} USD
+                    ~
+                    {getFullDisplayBalance({
+                      balance: convertedNonAutoVaultEarnings,
+                      decimals: pool.earningToken.decimals,
+                      displayDecimals: 5,
+                    })}{' '}
+                    USD
                   </div>
                 </div>
                 <CollectButton

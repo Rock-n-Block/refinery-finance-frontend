@@ -34,9 +34,9 @@ const StakeUnstakeButtons: React.FC<{
   }, [isAutoVault, userData?.stakingTokenBalance]);
 
   const maxUnstakingValue = useMemo(() => {
+    if (!userShares || !pricePerFullShare) return BIG_ZERO;
     if (isAutoVault) {
-      return convertSharesToRefinery(userShares || BIG_ZERO, pricePerFullShare || BIG_ZERO)
-        .refineryAsBigNumber;
+      return convertSharesToRefinery(userShares, pricePerFullShare).refineryAsBigNumber;
     }
     return userData?.stakedBalance || BIG_ZERO;
   }, [isAutoVault, pricePerFullShare, userData?.stakedBalance, userShares]);

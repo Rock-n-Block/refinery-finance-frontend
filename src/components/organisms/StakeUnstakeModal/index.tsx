@@ -14,7 +14,7 @@ import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { convertRefineryToShares } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { BIG_ZERO } from '@/utils';
+// import { BIG_ZERO } from '@/utils';
 import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatBalance';
 
 import './StakeUnstakeModal.scss';
@@ -165,13 +165,19 @@ const StakeUnstakeModal: React.FC = observer(() => {
         modal.stakingToken?.decimals,
       );
 
-      const shareStakeToWithdraw = convertRefineryToShares(
-        valueToStakeDecimal,
-        pricePerFullShare || BIG_ZERO,
+      console.log(
+        'UNSTAKING VALUE',
+        valueToStake,
+        valueToStakeDecimal.toString(),
+        pricePerFullShare?.toString(),
       );
+
+      if (!pricePerFullShare || !userShares) return;
+
+      const shareStakeToWithdraw = convertRefineryToShares(valueToStakeDecimal, pricePerFullShare);
       // trigger withdrawAll function if the withdrawal will leave 0.000001 CAKE or less
       const triggerWithdrawAllThreshold = new BigNumber(1000000000000);
-      const sharesRemaining = userShares?.minus(shareStakeToWithdraw.sharesAsBigNumber) || BIG_ZERO;
+      const sharesRemaining = userShares.minus(shareStakeToWithdraw.sharesAsBigNumber);
       const isWithdrawingAll = sharesRemaining.lte(triggerWithdrawAllThreshold);
 
       if (isWithdrawingAll) {

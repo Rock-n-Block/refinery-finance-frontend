@@ -1,8 +1,13 @@
 import { Token } from '@/types';
 
+import { contracts } from './contracts';
+
 const NO_LOGO = 'https://kovan.etherscan.io/images/main/empty-token.png';
 
-export const tokens: Record<'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' | 'busd', Token> = {
+export const tokens: Record<
+  'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' | 'busd' | 'mana',
+  Token
+> = {
   tst: {
     symbol: 'TST',
     address: {
@@ -16,8 +21,7 @@ export const tokens: Record<'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' |
   rp1: {
     symbol: 'RP1',
     address: {
-      42: '0x6e32b62576b6344226edd2a8c347f54bfe5deb74',
-      // 56: '0x07663837218a003e66310a01596af4bf4e44623d',
+      42: contracts.RP1.ADDRESS,
     },
     decimals: 18,
     projectLink: 'https://www.example.com/',
@@ -26,7 +30,7 @@ export const tokens: Record<'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' |
   fuel: {
     symbol: 'FUEL',
     address: {
-      42: '0x251a340069189d5507c81325df5520ba2afb1089',
+      42: '0xe192A4cc48aC919d63EF2C13B546B5c6e13314f2',
     },
     decimals: 18,
     projectLink: 'https://www.example.com/',
@@ -67,5 +71,14 @@ export const tokens: Record<'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' |
     decimals: 18,
     projectLink: 'https://www.example.com/',
     logoURI: NO_LOGO,
-  }
+  },
+  mana: {
+    symbol: 'MANA',
+    address: {
+      42: '0x738dc6380157429e957d223e6333dc385c85fec7',
+    },
+    decimals: 18,
+    projectLink: 'https://www.example.com/',
+    logoURI: NO_LOGO,
+  },
 };

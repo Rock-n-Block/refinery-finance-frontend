@@ -91,5 +91,5 @@ export const getRefineryVaultEarnings = (
 
   // const autoUsdProfit = autoCakeProfit.times(earningTokenPrice);
   // const autoUsdToDisplay = autoUsdProfit.gte(0) ? getBalanceNumber(autoUsdProfit, 18) : 0;
-  return { hasAutoEarnings, autoRefineryToDisplay };
+  return { hasAutoEarnings, autoRefineryToDisplay, autoRefineryProfit };
 };

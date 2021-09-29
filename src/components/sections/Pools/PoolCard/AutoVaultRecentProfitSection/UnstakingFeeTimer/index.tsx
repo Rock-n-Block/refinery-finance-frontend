@@ -21,19 +21,6 @@ const UnstakingFeeTimer: React.FC = () => {
     userShares || BIG_ZERO,
     withdrawalFeePeriod || undefined,
   );
-  // const [MOCK_timeLeft, MOCK_setTimeLeft] = useState(mockData.timeLeft);
-  // useEffect(() => {
-  //   const intervalId = setTimeout(() => {
-  //     if (MOCK_timeLeft === 0) {
-  //       clearTimeout(intervalId);
-  //     } else {
-  //       MOCK_setTimeLeft(MOCK_timeLeft - 60 * 1000);
-  //     }
-  //   }, 1000);
-  //   return () => {
-  //     clearTimeout(intervalId);
-  //   };
-  // }, [MOCK_timeLeft]);
 
   return (
     <div className="text-purple text-smd text-med">
