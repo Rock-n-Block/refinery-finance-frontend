@@ -1,17 +1,21 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
+import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import BigNumber from 'bignumber.js/bignumber';
 
 // import BnbImg from '@/assets/img/currency/bnb.svg';
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
 import CalcImg from '@/assets/img/icons/calc.svg';
 import { Button } from '@/components/atoms';
+import { tokens } from '@/config/tokens';
+import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Token } from '@/types';
 import { numberWithCommas } from '@/utils';
-import { tokens } from '@/config/tokens';
+import { getBalanceAmount } from '@/utils/formatBalance';
+
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
 import DetailsActionsSection from './DetailsActionsSection';
@@ -20,9 +24,6 @@ import DetailsLinks from './DetailsLinks';
 import { EARNING_TOKEN_SYMBOL } from './utils';
 
 import './TableRow.scss';
-import { getBalanceAmount } from '@/utils/formatBalance';
-
-
 
 interface ITableRowProps {
   farm: FarmWithStakedValue;
@@ -54,49 +55,62 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const { modals } = useMst();
   const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
 
-  // console.log(JSON.parse(JSON.stringify(farm)));
-
-  const MOCK_APR = 73.77;
-
-  const handleChangeDetails = (value: boolean): void => {
-    setOpenDetails(value);
-  };
-  const handleToggleDetails = (): void => {
+  const toggleDetails = () => {
     setOpenDetails((isOpen) => !isOpen);
   };
-
-  const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
+  const handleToggleDetailsClick = () => {
+    toggleDetails();
+  };
+  const handleToggleDetailsKeyDown = (e: React.KeyboardEvent): void => {
     e.stopPropagation();
-    // TODO: FARMING ROI MODAL
-    console.log(modals.roi);
-    // modals.roi.open({
-    //   isFarmPage: true,
-    //   apr: 5,
-    //   tokenPrice: 1,
-    // });
+    e.preventDefault();
+    if (e.repeat) return;
+    if (e.key === 'Enter') {
+      toggleDetails();
+    }
   };
 
   const { lpSymbol } = farm;
-
   const [lpSymbolWithoutLPString] = lpSymbol.split(' ');
-  const { userData, token, quoteToken, multiplier, liquidity } = farm;
-  const { earnings = '0'} = userData || {};
-  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(5);
+
+  const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
+  const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
+  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(
+    5,
+  );
+
+  const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
+  const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
+  console.log(earningTokenPrice, stakingTokenPriceAsBN.toString());
+  const stakingTokenBalance = new BigNumber(stakedBalance)
+    .plus(new BigNumber(tokenBalance))
+    .toString();
+
+  const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
+    e.stopPropagation();
+    modals.roi.open({
+      isFarmPage: true,
+      autoCompoundFrequency: 0, // is not used for farms
+      performanceFee: 0, // is not used for farms
+      apr,
+      earningTokenSymbol: tokens.rp1.symbol,
+      earningTokenPrice,
+      stakingTokenSymbol: lpSymbol,
+      stakingTokenPrice: stakingTokenPriceAsBN.toNumber(),
+      stakingTokenBalance,
+    });
+  };
 
   return (
     <div className="farms-table-row">
       <div
         className="farms-table-row__content"
-        onClick={handleToggleDetails}
-        onKeyDown={handleToggleDetails}
+        onClick={handleToggleDetailsClick}
+        onKeyDown={handleToggleDetailsKeyDown}
         role="button"
         tabIndex={0}
       >
-        <TokensPair
-          lpSymbol={lpSymbolWithoutLPString}
-          token={token}
-          quoteToken={quoteToken}
-        />
+        <TokensPair lpSymbol={lpSymbolWithoutLPString} token={token} quoteToken={quoteToken} />
         <div className="farms-table-row__earned text-gray-l-2 text-smd ">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">Earned</div>
           <span>{earningsToDisplay}</span>
@@ -104,7 +118,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
         <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
           <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">APR</div>
           <span className="farms-table-row__text-md">
-            {Number(MOCK_APR).toFixed(2).replace('.', ',')}%
+            {Number(apr).toFixed(2).replace('.', ',')}%
           </span>
           <div
             className="farms-table-row__apr-button"
@@ -141,7 +155,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
               arrow
               toggle
               isActive={isOpenDetails}
-              onToggle={handleChangeDetails}
+              onToggle={handleToggleDetailsClick}
             >
               <span>Details</span>
             </Button>

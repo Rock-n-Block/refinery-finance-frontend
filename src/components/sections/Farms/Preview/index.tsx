@@ -10,8 +10,19 @@ import AucImg from '../../../../assets/img/sections/farms/auc.svg';
 const Preview: React.FC = React.memo(() => {
   const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);
 
-  const handleToggleDetails = (value: boolean) => {
-    setDetailsOpen(value);
+  const toggleDetails = () => {
+    setDetailsOpen((isOpen) => !isOpen);
+  };
+  const handleToggleDetailsClick = () => {
+    toggleDetails();
+  };
+  const handleToggleDetailsKeyDown = (e: React.KeyboardEvent): void => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (e.repeat) return;
+    if (e.key === 'Enter') {
+      toggleDetails();
+    }
   };
   return (
     <div className="farms-preview box-purple-l">
@@ -35,7 +46,8 @@ const Preview: React.FC = React.memo(() => {
             arrow
             toggle
             isActive={isDetailsOpen}
-            onToggle={handleToggleDetails}
+            onClick={handleToggleDetailsClick}
+            onKeyDown={handleToggleDetailsKeyDown}
           >
             <span className="text-purple text-med">Details</span>
           </Button>
