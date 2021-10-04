@@ -21,7 +21,13 @@ export const secondsToHoursFormatter = (seconds: number | null | undefined) => {
 const AUTO_VAULT_COMPOUND_FREQUENCY = 5000;
 const MANUAL_POOL_AUTO_COMPOUND_FREQUENCY = 0;
 
-export const getAprData = (pool: Pool, performanceFee: number) => {
+/**
+ *
+ * @param pool
+ * @param performanceFee as decimal (200 / 100 = 2 or 45 / 100 = 0.45)
+ * @returns
+ */
+export const getAprData = (pool: Pool, performanceFee = 0) => {
   const { isAutoVault, apr = 0 } = pool;
 
   //   Estimate & manual for now. 288 = once every 5 mins. We can change once we have a better sense of this

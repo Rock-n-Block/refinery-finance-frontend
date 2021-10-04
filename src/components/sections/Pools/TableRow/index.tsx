@@ -15,8 +15,8 @@ import {
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
-import { convertSharesToRefinery, getRefineryVaultEarnings } from '@/store/pools/helpers';
-import { useSelectVaultData } from '@/store/pools/hooks';
+import { getRefineryVaultEarnings, getStakingBalance } from '@/store/pools/helpers';
+import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
 import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
@@ -47,7 +47,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     user,
     modals,
     pools: {
-      fees: { performanceFee },
+      fees: { performanceFee: globalPerformanceFee },
     },
   } = useMst();
   const [currentBlock] = useBlock();
@@ -63,32 +63,56 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     userData: { userShares, refineryAtLastUserAction },
     totalRefineryInVault,
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData, apr, earningTokenPrice, totalStaked } = pool;
+  const {
+    earningToken,
+    stakingToken,
+    userData,
+    apr,
+    earningTokenPrice,
+    totalStaked,
+    stakingTokenPrice,
+  } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const [isOpenDetails, setOpenDetails] = useState(false);
 
-  const handleChangeDetails = (value: boolean): void => {
-    setOpenDetails(value);
-  };
-  const handleToggleDetails = (): void => {
+  const toggleDetails = () => {
     setOpenDetails((isOpen) => !isOpen);
   };
+  const handleToggleDetailsClick = () => {
+    toggleDetails();
+  };
+  const handleToggleDetailsKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.repeat) return;
+    if (e.key === 'Enter') {
+      toggleDetails();
+    }
+  };
+
+  const performanceFee =
+    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(globalPerformanceFee)) : 0;
+  const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(
+    pool,
+    performanceFee,
+  );
+
+  const stakedValue = useStakedValue(farmMode, pool);
+  const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
     modals.roi.open({
       isFarmPage: false,
+      autoCompoundFrequency,
+      performanceFee,
       apr: apr || 0,
-      tokenPrice: earningTokenPrice || 0,
+      earningTokenSymbol: earningToken.symbol,
+      earningTokenPrice: earningTokenPrice || 0,
+      stakingTokenSymbol: stakingToken.symbol,
+      stakingTokenPrice: Number(stakingTokenPrice),
+      stakingTokenBalance: stakingTokenBalance.toString(),
     });
   };
-
-  // TODO: 'autoCompoundFrequency' from `getAprData` use to calculate APR/APY
-  const { apr: earningsPercentageToDisplay } = getAprData(
-    pool,
-    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
-  );
 
   const totalStakedBalance = useMemo(() => {
     switch (farmMode) {
@@ -106,16 +130,6 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     }
   }, [farmMode, stakingToken.decimals, totalRefineryInVault, totalStaked]);
 
-  const stakedValue = useMemo(() => {
-    if (farmMode === PoolFarmingMode.auto) {
-      const { refineryAsBigNumber } = convertSharesToRefinery(
-        userShares || BIG_ZERO,
-        pricePerFullShare || BIG_ZERO,
-      );
-      return refineryAsBigNumber;
-    }
-    return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
-  }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
   const stakedValueAsString = useMemo(
     () =>
       getFullDisplayBalance({
@@ -193,8 +207,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     <div className="pools-table-row">
       <div
         className="pools-table-row__content"
-        onClick={handleToggleDetails}
-        onKeyDown={handleToggleDetails}
+        onClick={handleToggleDetailsClick}
+        onKeyDown={handleToggleDetailsKeyDown}
         role="button"
         tabIndex={0}
       >
@@ -249,7 +263,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
               arrow
               toggle
               isActive={isOpenDetails}
-              onToggle={handleChangeDetails}
+              onToggle={handleToggleDetailsClick}
             >
               <span>Details</span>
             </Button>

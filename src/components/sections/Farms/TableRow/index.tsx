@@ -29,11 +29,12 @@ const TableRow: React.FC = observer(() => {
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
     // TODO: FARMING ROI MODAL
-    modals.roi.open({
-      isFarmPage: true,
-      apr: 5,
-      tokenPrice: 1,
-    });
+    console.log(modals.roi);
+    // modals.roi.open({
+    //   isFarmPage: true,
+    //   apr: 5,
+    //   tokenPrice: 1,
+    // });
   };
 
   const renderPopover = () => (

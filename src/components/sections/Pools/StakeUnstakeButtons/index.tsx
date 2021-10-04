@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { clone } from 'mobx-state-tree';
@@ -7,7 +6,7 @@ import { clone } from 'mobx-state-tree';
 import { Button } from '@/components/atoms';
 import { useMst } from '@/store';
 import { ITokenMobx } from '@/store/Models/Modals/StakeUnstakeModal';
-import { convertSharesToRefinery } from '@/store/pools/helpers';
+import { convertSharesToRefinery, getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { Pool } from '@/types';
 import { BIG_ZERO } from '@/utils';
@@ -27,11 +26,8 @@ const StakeUnstakeButtons: React.FC<{
   const { modals } = useMst();
 
   const maxStakingValue = useMemo(() => {
-    if (isAutoVault) {
-      return userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO;
-    }
-    return userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO;
-  }, [isAutoVault, userData?.stakingTokenBalance]);
+    return getStakingBalance(pool);
+  }, [pool]);
 
   const maxUnstakingValue = useMemo(() => {
     if (!userShares || !pricePerFullShare) return BIG_ZERO;

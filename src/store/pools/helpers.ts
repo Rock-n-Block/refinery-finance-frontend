@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js/bignumber';
 import { getDecimalAmount, getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
-import { Pool } from '@/types';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 
 import { BIG_ZERO } from '@/utils';
 
@@ -92,4 +92,26 @@ export const getRefineryVaultEarnings = (
   // const autoUsdProfit = autoCakeProfit.times(earningTokenPrice);
   // const autoUsdToDisplay = autoUsdProfit.gte(0) ? getBalanceNumber(autoUsdProfit, 18) : 0;
   return { hasAutoEarnings, autoRefineryToDisplay, autoRefineryProfit };
+};
+
+export const getStakingBalance = (pool: Pool): BigNumber => {
+  const { userData } = pool;
+  return userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO;
+};
+
+export const getStakedValue = (
+  farmMode: IPoolFarmingMode,
+  pool: Pool,
+  userShares: BigNumber | null,
+  pricePerFullShare: BigNumber | null,
+): BigNumber => {
+  if (farmMode === PoolFarmingMode.auto) {
+    const { refineryAsBigNumber } = convertSharesToRefinery(
+      userShares || BIG_ZERO,
+      pricePerFullShare || BIG_ZERO,
+    );
+    return refineryAsBigNumber;
+  }
+  const { userData } = pool;
+  return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
 };

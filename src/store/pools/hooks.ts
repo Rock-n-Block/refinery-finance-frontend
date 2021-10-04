@@ -1,14 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import { useMst } from '..';
-import BigNumber from 'bignumber.js/bignumber';
 
-import { transformPool } from './helpers';
-import { Pool } from '@/types';
+import { getStakedValue, transformPool } from './helpers';
+import { IPoolFarmingMode, Pool } from '@/types';
 import useRefresh from '@/hooks/useRefresh';
-
-export const convertToBigNumber = (val: string | null) => {
-  return val === null ? val : new BigNumber(val);
-};
+import { convertToBigNumber } from '@/utils';
 
 export const usePools = (): { pools: Pool[] } => {
   const { fastRefresh } = useRefresh();
@@ -79,4 +75,13 @@ export const useSelectVaultData = () => {
       lastUserActionTime,
     },
   };
+};
+
+export const useStakedValue = (farmMode: IPoolFarmingMode, pool: Pool) => {
+  const {
+    pricePerFullShare,
+    userData: { userShares },
+  } = useSelectVaultData();
+
+  return getStakedValue(farmMode, pool, userShares, pricePerFullShare);
 };

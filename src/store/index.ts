@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
 import { UserModel, ModalsModel, TokensModel, PoolsModel, FarmsModel } from './Models';
+import { initialState as roiInitialState } from './Models/Modals/RoiModal';
 
 const RootModel = types.model({
   user: UserModel,
@@ -18,7 +19,9 @@ export const Store = RootModel.create({
     metamaskErr: {
       errMsg: '',
     },
-    roi: {},
+    roi: {
+      state: roiInitialState,
+    },
     stakeUnstake: {
       isOpen: false,
       isStaking: true,
@@ -27,7 +30,7 @@ export const Store = RootModel.create({
     },
     poolsCollect: {
       isOpen: false,
-    }
+    },
   },
   tokens: {
     default: [],

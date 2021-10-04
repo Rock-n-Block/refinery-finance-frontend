@@ -97,3 +97,7 @@ export const MAX_UINT_256: BigNumber = new BigNumber(
 );
 
 export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
+
+export const convertToBigNumber = (val: string | null): BigNumber | null => {
+  return val === null ? val : new BigNumber(val);
+};

@@ -157,6 +157,7 @@ const Pools: React.FC = observer(() => {
         case SortOptions.apr: {
           const performanceFeeAsDecimal = Number(performanceFee) / 100;
           const getAprValue = (pool: Pool) => {
+            // Ternary is needed to prevent pools without APR getting top spot
             return pool.apr ? getAprData(pool, performanceFeeAsDecimal).apr : 0;
           };
           sortFunc = (pool1, pool2) => getAprValue(pool2) - getAprValue(pool1);

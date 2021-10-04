@@ -6,8 +6,8 @@ import { observer } from 'mobx-react-lite';
 import CalcImg from '@/assets/img/icons/calc.svg';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
-import { convertSharesToRefinery } from '@/store/pools/helpers';
-import { useSelectVaultData } from '@/store/pools/hooks';
+import { getStakingBalance } from '@/store/pools/helpers';
+import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO, feeFormatter } from '@/utils';
 import { getFullDisplayBalance } from '@/utils/formatBalance';
@@ -41,40 +41,40 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     modals,
     user,
     pools: {
-      fees: { performanceFee },
+      fees: { performanceFee: globalPerformanceFee },
     },
   } = useMst();
   const {
-    pricePerFullShare,
     userData: { userShares },
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData, apr, earningTokenPrice } = pool;
+  const { earningToken, stakingToken, userData, apr, earningTokenPrice, stakingTokenPrice } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
-  const handleOpenApr = (): void => {
+  const performanceFee =
+    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(globalPerformanceFee)) : 0;
+  const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(
+    pool,
+    performanceFee,
+  );
+
+  const stakedValue = useStakedValue(farmMode, pool);
+  const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
+
+  const handleOpenApr = (e: any): void => {
+    e.stopPropagation();
     modals.roi.open({
       isFarmPage: false,
+      autoCompoundFrequency,
+      performanceFee,
       apr: apr || 0,
-      tokenPrice: earningTokenPrice || 0,
+      earningTokenSymbol: earningToken.symbol,
+      earningTokenPrice: earningTokenPrice || 0,
+      stakingTokenSymbol: stakingToken.symbol,
+      stakingTokenPrice: Number(stakingTokenPrice),
+      stakingTokenBalance: stakingTokenBalance.toString(),
     });
   };
 
-  // TODO: 'autoCompoundFrequency' from `getAprData` use to calculate APR/APY
-  const { apr: earningsPercentageToDisplay } = getAprData(
-    pool,
-    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(performanceFee)) : 0,
-  );
-
-  const stakedValue = useMemo(() => {
-    if (farmMode === PoolFarmingMode.auto) {
-      const { refineryAsBigNumber } = convertSharesToRefinery(
-        userShares || BIG_ZERO,
-        pricePerFullShare || BIG_ZERO,
-      );
-      return refineryAsBigNumber;
-    }
-    return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
-  }, [farmMode, pricePerFullShare, userShares, userData?.stakedBalance]);
   const stakedValueAsString = useMemo(
     () =>
       getFullDisplayBalance({
