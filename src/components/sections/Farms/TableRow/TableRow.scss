@@ -36,6 +36,18 @@
     }
   }
 
+  &__currencies {
+  }
+
+  &__currencies-pair {
+  }
+
+  &__currencies-pair-item {
+    &:last-child {
+      margin-left: -5px;
+    }
+  }
+
   &__extra-text {
     display: none;
   }

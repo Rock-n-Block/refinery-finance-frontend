@@ -2,6 +2,7 @@ import { SCANNERS } from '@/config';
 import { getAddress } from '@/services/web3/contractHelpers';
 import { Token } from '@/types';
 import BigNumber from 'bignumber.js/bignumber';
+import Web3 from 'web3';
 
 import { getFullDisplayBalance } from './formatBalance';
 
@@ -96,7 +97,7 @@ export const BIG_ZERO = new BigNumber(0);
 export const BIG_ONE = new BigNumber(1);
 export const BIG_TEN = new BigNumber(10);
 
-export const MAX_UINT_256: BigNumber = new BigNumber(
+export const MAX_UINT_256 = Web3.utils.hexToNumberString(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
 

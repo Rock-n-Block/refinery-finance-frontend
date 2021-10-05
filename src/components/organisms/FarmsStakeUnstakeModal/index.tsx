@@ -91,6 +91,7 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',
       );
+      console.error(e);
     } finally {
       setPendingTx(false);
     }
@@ -138,6 +139,10 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
       modal.close();
     };
   }, [modal]);
+
+  const isNotEnoughBalanceToStake = modal.maxValue === '0';
+
+  const { addLiquidityUrl } = modal;
 
   return (
     <Modal
@@ -196,7 +201,8 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
         <Button
           className="farms-stake-unstake-modal__btn"
           loading={pendingTx}
-          onClick={handleConfirm}
+          disabled={isNotEnoughBalanceToStake}
+          onClick={isNotEnoughBalanceToStake ? undefined : handleConfirm}
         >
           <span className="text-white text-bold text-smd">Confirm</span>
         </Button>
@@ -204,7 +210,7 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
           <Button
             className="farms-stake-unstake-modal__btn farms-stake-unstake-modal__btn-get-currency"
             colorScheme="outline-purple"
-            link="/trade/swap"
+            link={addLiquidityUrl}
           >
             <span className="text-bold text-smd">Get {modal.tokenSymbol}</span>
           </Button>

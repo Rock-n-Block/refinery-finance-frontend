@@ -55,6 +55,7 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
       if (txStatus) {
         successNotification('Contract Enabled!', `You can now stake in the ${lpSymbol} farm!`);
       } else {
+        console.info(txStatus);
         errorNotification(
           'Error',
           'Please try again. Confirm the transaction and make sure you are paying enough gas!',

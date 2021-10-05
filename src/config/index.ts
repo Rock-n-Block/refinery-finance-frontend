@@ -5,6 +5,8 @@ export { tokens } from './tokens';
 export { pools } from './pools';
 export { farms } from './farms';
 
+export const SHOW_LOGS = true;
+
 export enum GAS_PRICE_ETHERS {
   default = '5',
   fast = '6',

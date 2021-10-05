@@ -38,6 +38,8 @@ export const useLpTokenPrice = (symbol: string) => {
     // Divide total value of all tokens, by the number of LP tokens
     const totalLpTokens = getBalanceAmount(new BigNumber(farm.lpTotalSupply));
     lpTokenPrice = overallValueOfAllTokensInFarm.div(totalLpTokens);
+
+    console.log('TEST1', farmTokenPriceInUsd, farm.tokenAmountTotal, overallValueOfAllTokensInFarm);
   }
 
   return lpTokenPrice;

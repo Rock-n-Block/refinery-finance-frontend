@@ -22,6 +22,7 @@ const useApproveFarm = (lpContract: Contract) => {
 
       return tx.status;
     } catch (e) {
+      console.error('Approve error', e);
       return false;
     }
   }, [lpContract, callWithGasPrice]);
