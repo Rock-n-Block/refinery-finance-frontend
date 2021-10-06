@@ -106,13 +106,13 @@ const StakeUnstakeModal: React.FC = observer(() => {
         modal.stakingToken?.decimals,
       );
 
-      console.log('STAKING AUTO ', valueToStakeDecimal.toString());
+      console.log('STAKING AUTO ', valueToStakeDecimal.toFixed());
       try {
         const refineryVaultContract = getContract('REFINERY_VAULT');
         const tx = await callWithGasPrice({
           contract: refineryVaultContract,
           methodName: 'deposit',
-          methodArgs: [valueToStakeDecimal.toString()],
+          methodArgs: [valueToStakeDecimal.toFixed()],
           options: { gas: 380000 },
         });
         if (tx.status) {
@@ -168,8 +168,8 @@ const StakeUnstakeModal: React.FC = observer(() => {
       console.log(
         'UNSTAKING VALUE',
         valueToStake,
-        valueToStakeDecimal.toString(),
-        pricePerFullShare?.toString(),
+        valueToStakeDecimal.toFixed(),
+        pricePerFullShare?.toFixed(),
       );
 
       if (!pricePerFullShare || !userShares) return;
@@ -208,7 +208,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
           const tx = await callWithGasPrice({
             contract: refineryVaultContract,
             methodName: 'withdraw',
-            methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toString()],
+            methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toFixed()],
             options: { gas: 380000 },
           });
           if (tx.status) {
@@ -283,6 +283,8 @@ const StakeUnstakeModal: React.FC = observer(() => {
     };
   }, [modal]);
 
+  const isNotEnoughBalanceToStake = modal.maxStakingValue === 0;
+
   return (
     <Modal
       isVisible={modal.isOpen}
@@ -343,7 +345,12 @@ const StakeUnstakeModal: React.FC = observer(() => {
             </Button>
           ))}
         </div>
-        <Button className="stake-unstake-modal__btn" loading={pendingTx} onClick={handleConfirm}>
+        <Button
+          className="stake-unstake-modal__btn"
+          loading={pendingTx}
+          disabled={isNotEnoughBalanceToStake}
+          onClick={isNotEnoughBalanceToStake ? undefined : handleConfirm}
+        >
           <span className="text-white text-bold text-smd">Confirm</span>
         </Button>
         {modal.isStaking && (

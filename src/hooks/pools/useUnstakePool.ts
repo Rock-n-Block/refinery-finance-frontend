@@ -15,10 +15,11 @@ export const useSmartRefinerUnstake = (smartRefinerInitContract: Contract) => {
 
   const smartRefinerUnstake = useCallback(
     async (amount: string, decimals = 18) => {
+      const value = new BigNumber(amount).times(BIG_TEN.pow(decimals)).toFixed();
       const tx = await callWithGasPrice({
         contract: smartRefinerInitContract,
         methodName: 'withdraw',
-        methodArgs: [new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString()],
+        methodArgs: [value],
         options: {
           gas: 300000,
         },

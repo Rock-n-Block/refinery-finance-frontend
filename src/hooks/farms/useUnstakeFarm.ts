@@ -9,7 +9,7 @@ export const useUnstakeFarm = (masterRefinerContract: Contract) => {
 
   const unstakeFarm = useCallback(
     async (pid: number, amount: any) => {
-      const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toString();
+      const value = new BigNumber(amount).times(DEFAULT_TOKEN_DECIMAL).toFixed();
       if (pid === 0) {
         const tx = await callWithGasPrice({
           contract: masterRefinerContract,
