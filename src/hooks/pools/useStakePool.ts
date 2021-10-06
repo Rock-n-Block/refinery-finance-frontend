@@ -16,10 +16,11 @@ export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
 
   const smartRefinerStake = useCallback(
     async (amount: string, decimals = 18) => {
+      const value = new BigNumber(amount).times(BIG_TEN.pow(decimals)).toFixed();
       const tx = await callWithGasPrice({
         contract: smartRefinerInitContract,
         methodName: 'deposit',
-        methodArgs: [new BigNumber(amount).times(BIG_TEN.pow(decimals)).toString()],
+        methodArgs: [value],
         options: {
           gas: 300000,
         },
