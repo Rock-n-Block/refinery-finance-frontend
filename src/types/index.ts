@@ -162,7 +162,7 @@ interface FarmUserData {
   earnings: string;
 }
 
-export interface Farm extends FarmConfig {
+export interface FarmWithoutUserData extends FarmConfig {
   tokenAmountMc?: SerializedBigNumber;
   quoteTokenAmountMc?: SerializedBigNumber;
   tokenAmountTotal?: SerializedBigNumber;
@@ -171,6 +171,9 @@ export interface Farm extends FarmConfig {
   lpTotalSupply?: SerializedBigNumber;
   tokenPriceVsQuote?: SerializedBigNumber;
   poolWeight?: SerializedBigNumber;
+}
+
+export interface Farm extends FarmWithoutUserData {
   userData?: FarmUserData;
 }
 

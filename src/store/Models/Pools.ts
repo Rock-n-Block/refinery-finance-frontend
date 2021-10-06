@@ -271,7 +271,10 @@ const PoolsModel = types
           pool.stakingTokenPrice = livePoolData.stakingTokenPrice;
           pool.earningTokenPrice = livePoolData.earningTokenPrice;
           pool.apr = livePoolData.apr;
-          pool.isFinished = livePoolData.isFinished;
+
+          if (livePoolData.isFinished !== undefined) {
+            pool.isFinished = livePoolData.isFinished;
+          }
 
           if (livePoolData.totalStaked !== undefined) {
             pool.totalStaked = livePoolData.totalStaked;

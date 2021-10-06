@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 
-import { Button } from '@/components/atoms';
+import { Button, Skeleton } from '@/components/atoms';
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import useApproveFarm from '@/hooks/farms/useApprove';
 import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
@@ -32,15 +32,15 @@ const useErc20 = (address: string) => {
 const CURRENCY_CONVERT_TO = 'USD';
 
 const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ className, farm }) => {
-  const { user } = useMst();
+  const { user, farms: farmsStore } = useMst();
   const hasConnectedWallet = Boolean(user.address);
   const { connect } = useWalletConnectorContext();
 
   const { allowance, tokenBalance, stakedBalance } = useFarmUserData(farm);
   const needsApproval = !allowance.gt(0);
+  const { userDataLoaded } = farmsStore;
   const [requestedApproval, setRequestedApproval] = useState(false);
 
-  const { farms: farmsStore } = useMst();
   const { pid, lpAddresses, lpSymbol, quoteToken, token } = farm;
   const lpAddress = getAddress(lpAddresses);
   const lpContract = useErc20(lpAddress);
@@ -115,20 +115,29 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
       );
     }
 
-    // Has Connected Wallet
-    if (needsApproval) {
-      return (
-        <>
-          <DetailsSectionTitle title="Enable Farm" />
-          <Button size="lg" disabled={requestedApproval} onClick={handleApprove}>
-            <span className="text-smd text-white text-bold">Enable</span>
-          </Button>
-        </>
-      );
-    }
-
     // Has Connected Wallet & Approved in Farm
-    if (stakedBalance.eq(0)) {
+    if (!needsApproval) {
+      // Staked in Farm
+      if (stakedBalance.gt(0)) {
+        return (
+          <>
+            <DetailsSectionTitle title={`${lpSymbol} Staked`} />
+            <div className="box-f box-f-jc-sb box-f-ai-e">
+              <div className="farms-table-row__details-staked-values-group">
+                <div className="farms-table-row__details-staked-value text-blue-d text-smd">
+                  {displayBalance()}
+                </div>
+                <div className="text-gray text-smd">
+                  ~{displayBalanceAsUsd()} {CURRENCY_CONVERT_TO}
+                </div>
+              </div>
+              <FarmsStakeUnstakeButtons farm={farm} />
+            </div>
+          </>
+        );
+      }
+
+      // Not Staked in Farm
       return (
         <>
           <DetailsSectionTitle title={`Stake ${lpSymbol}`} />
@@ -139,22 +148,17 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
       );
     }
 
-    // Has Connected Wallet & Approved in Farm & Staked in Farm
+    if (!userDataLoaded) {
+      return <Skeleton.Input style={{ width: 100 }} size="large" active />;
+    }
 
+    // Just Connected Wallet
     return (
       <>
-        <DetailsSectionTitle title={`${lpSymbol} Staked`} />
-        <div className="box-f box-f-jc-sb box-f-ai-e">
-          <div className="farms-table-row__details-staked-values-group">
-            <div className="farms-table-row__details-staked-value text-blue-d text-smd">
-              {displayBalance()}
-            </div>
-            <div className="text-gray text-smd">
-              ~{displayBalanceAsUsd()} {CURRENCY_CONVERT_TO}
-            </div>
-          </div>
-          <FarmsStakeUnstakeButtons farm={farm} />
-        </div>
+        <DetailsSectionTitle title="Enable Farm" />
+        <Button size="lg" disabled={requestedApproval} onClick={handleApprove}>
+          <span className="text-smd text-white text-bold">Enable</span>
+        </Button>
       </>
     );
   }, [
@@ -169,6 +173,7 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
     displayBalanceAsUsd,
     handleStake,
     farm,
+    userDataLoaded,
   ]);
 
   return (

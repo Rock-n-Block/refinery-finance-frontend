@@ -5,7 +5,7 @@ import priceHelperLpsConfig from '@/config/priceHelperLps';
 
 import AddressModel from './Address';
 import TokenModel from './Token';
-import { Farm } from '@/types';
+import { FarmWithoutUserData } from '@/types';
 import {
   fetchFarms,
   fetchFarmsPrices,
@@ -52,6 +52,7 @@ const FarmModel = types.model({
 const FarmsModel = types
   .model({
     data: types.optional(types.array(FarmModel), farmsConfig),
+    userDataLoaded: false,
   })
   .actions((self) => ({
     async fetchFarmsPublicDataAsync(pids: number[]) {
@@ -64,17 +65,18 @@ const FarmsModel = types
       const farmsWithPrices = await fetchFarmsPrices(farms);
 
       // Filter out price helper LP config farms (there can be farms with "pid: -1" which must be excluded)
-      const farmsWithoutHelperLps = farmsWithPrices.filter((farm: Farm) => {
+      const farmsWithoutHelperLps = farmsWithPrices.filter((farm: FarmWithoutUserData) => {
         return farm.pid >= 0;
       });
 
       this.fetchFarmsPublicDataAsyncSuccess(farmsWithoutHelperLps);
     },
-    fetchFarmsPublicDataAsyncSuccess(newData: Farm[]) {
+    fetchFarmsPublicDataAsyncSuccess(newData: FarmWithoutUserData[]) {
       self.data.forEach((farm) => {
         const liveFarmData = newData.find(({ pid }: { pid: number }) => pid === farm.pid);
 
         if (!liveFarmData) return;
+
         farm.categoryType = liveFarmData.categoryType;
         farm.lpAddresses = liveFarmData.lpAddresses;
         farm.lpSymbol = liveFarmData.lpSymbol;
@@ -94,7 +96,6 @@ const FarmsModel = types
         farm.tokenAmountMc = liveFarmData.tokenAmountMc;
         farm.tokenAmountTotal = liveFarmData.tokenAmountTotal;
         farm.tokenPriceVsQuote = liveFarmData.tokenPriceVsQuote;
-        farm.userData = liveFarmData.userData;
       });
     },
     async fetchFarmUserDataAsync(account: string, pids: number[]) {
@@ -124,6 +125,7 @@ const FarmsModel = types
         const index = self.data.findIndex((farm) => farm.pid === pid);
         self.data[index].userData = userData;
       });
+      self.userDataLoaded = true;
     },
   }));
 
