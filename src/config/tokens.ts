@@ -5,7 +5,7 @@ import { contracts } from './contracts';
 const NO_LOGO = 'https://kovan.etherscan.io/images/main/empty-token.png';
 
 export const tokens: Record<
-  'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' | 'busd' | 'mana',
+  'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' | 'busd' | 'mana' | 'avoog',
   Token
 > = {
   tst: {
@@ -76,6 +76,15 @@ export const tokens: Record<
     symbol: 'MANA',
     address: {
       42: '0x738dc6380157429e957d223e6333dc385c85fec7',
+    },
+    decimals: 18,
+    projectLink: 'https://www.example.com/',
+    logoURI: NO_LOGO,
+  },
+  avoog: {
+    symbol: 'AVOOG',
+    address: {
+      42: '0x7118afa5c6cbab828f0d9a529c62e89d282df9e4',
     },
     decimals: 18,
     projectLink: 'https://www.example.com/',

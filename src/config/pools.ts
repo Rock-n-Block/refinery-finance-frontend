@@ -23,4 +23,13 @@ export const pools: PoolConfig[] = [
     tokenPerBlock: '0.0868',
     // isFinished: true,
   },
+  {
+    id: 2,
+    stakingToken: tokens.rp1,
+    earningToken: tokens.avoog,
+    contractAddress: {
+      42: '0x0a43e268e77cc967b192cc4126a022b0a780b9b0',
+    },
+    tokenPerBlock: '0.000000001',
+  }
 ];
