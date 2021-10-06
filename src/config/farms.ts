@@ -22,15 +22,14 @@ export const farms: FarmConfig[] = [
     token: tokens.tmpt,
     quoteToken: tokens.bbshk,
   },
-  // << NOT PRESENT IN POOLS
   {
     pid: 2,
-    lpSymbol: 'BUSD-BNB LP',
+    lpSymbol: 'UGBG-AVOOG LP',
     lpAddresses: {
-      42: '0x112Dc48d876F4179627F0A29a016E6F130b07E7E',
+      42: '0xc11425B023aF7AD46d16e880BFB56de9c6f16DA5',
     },
-    token: tokens.busd,
-    quoteToken: tokens.wbnb,
-  },
-  // NOT PRESENT IN POOLS >>
+    token: tokens.ugbg,
+    quoteToken: tokens.avoog,
+    categoryType: 'core',
+  }
 ];
