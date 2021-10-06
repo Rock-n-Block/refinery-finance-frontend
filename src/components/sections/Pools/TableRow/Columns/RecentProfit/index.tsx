@@ -3,8 +3,8 @@ import React from 'react';
 import { IColumn } from '../types';
 
 interface IRecentProfitColumnProps extends IColumn {
-  value: number;
-  usdValue: number;
+  value: string;
+  usdValue: string;
 }
 
 const RecentProfit: React.FC<IRecentProfitColumnProps> = ({ name, value, usdValue }) => {

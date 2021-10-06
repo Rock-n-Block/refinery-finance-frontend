@@ -11,9 +11,9 @@ import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { useFarmUserData } from '@/store/farms/hooks';
-import { FarmWithStakedValue } from '@/types';
+import { FarmWithStakedValue, Precisions } from '@/types';
 import { getAddLiquidityUrl } from '@/utils';
-import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
+import { getBalanceAmount } from '@/utils/formatBalance';
 
 import FarmsStakeUnstakeButtons from '../../FarmsStakeUnstakeButtons';
 import DetailsSectionTitle from '../DetailsSectionTitle';
@@ -89,17 +89,17 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
 
   const displayBalance = useCallback(() => {
     const stakedBalanceBigNumber = new BigNumber(getBalanceAmount(stakedBalance));
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0000001)) {
-      return stakedBalanceBigNumber.toFixed(10);
-    }
-    if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0001)) {
-      return getFullDisplayBalance({ balance: stakedBalance }).toLocaleString();
-    }
-    return stakedBalanceBigNumber.toFixed(3);
+    // if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0000001)) {
+    //   return stakedBalanceBigNumber.toFixed(10);
+    // }
+    // if (stakedBalanceBigNumber.gt(0) && stakedBalanceBigNumber.lt(0.0001)) {
+    //   return getFullDisplayBalance({ balance: stakedBalance });
+    // }
+    return stakedBalanceBigNumber.toFixed(Precisions.shortToken);
   }, [stakedBalance]);
 
   const displayBalanceAsUsd = useCallback(() => {
-    return getBalanceAmount(stakedBalance.times(lpPrice));
+    return getBalanceAmount(stakedBalance.times(lpPrice)).toFixed(Precisions.fiat);
   }, [lpPrice, stakedBalance]);
 
   const renderActions = useMemo(() => {

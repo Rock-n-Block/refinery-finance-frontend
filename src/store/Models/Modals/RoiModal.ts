@@ -6,6 +6,7 @@ import RoiOptionsModel from './RoiOptions';
 
 import { getBalanceAmount } from '@/utils/formatBalance';
 import { getInterestBreakdown, getPrincipalForInterest, getRoi } from '@/utils/compoundApy';
+import { Precisions } from '@/types';
 
 // Used to track/react which currency user is editing (i.e. USD amount or Token amount)
 export enum EditingCurrency {
@@ -17,11 +18,6 @@ export enum EditingCurrency {
 export enum CalculatorMode {
   ROI_BASED_ON_PRINCIPAL, // User edits principal value and sees what ROI they get
   PRINCIPAL_BASED_ON_ROI, // User edits ROI value and sees what principal they need to invest to reach it
-}
-
-enum Precisions {
-  token = 10,
-  fiat = 2, // 0.3244 USD = 0.32 USD, 100.1222 RUB = 100.12 RUB
 }
 
 export const DEFAULT_PRINCIPAL_AS_TOKEN = '0.00';

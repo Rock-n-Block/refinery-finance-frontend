@@ -9,6 +9,7 @@ import { BIG_ZERO } from '@/utils';
 import TextUnstakingFee from '../TextUnstakingFee';
 
 import UnstakingFeeTimer from './UnstakingFeeTimer';
+import { Precisions } from '@/types';
 
 interface IAutoVaultRecentProfitSectionProps {
   hasStakedValue: boolean;
@@ -34,6 +35,8 @@ const AutoVaultRecentProfitSection: React.FC<IAutoVaultRecentProfitSectionProps>
       pricePerFullShare || BIG_ZERO,
     );
 
+    const autoRefineryToDisplay = autoRefineryVaultRecentProfit.toFixed(Precisions.shortToken);
+
     if (user.address && !hasStakedValue) {
       return (
         <div className="p-card__auto">
@@ -50,7 +53,7 @@ const AutoVaultRecentProfitSection: React.FC<IAutoVaultRecentProfitSectionProps>
         <div className="p-card__auto">
           <div className="p-card__auto-title box-f box-f-jc-sb text-purple text-smd text-med">
             <div className="">Recent {stakingTokenSymbol} profit:</div>
-            <div>{autoRefineryVaultRecentProfit}</div>
+            <div>{autoRefineryToDisplay}</div>
           </div>
 
           <div className="p-card__auto-profit box-f box-f-jc-sb">

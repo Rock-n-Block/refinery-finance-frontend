@@ -10,7 +10,7 @@ import { getAddress, getContractAddress } from '@/services/web3/contractHelpers'
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
 import { feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
 
 const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer(({ pool, type }) => {
@@ -52,6 +52,9 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
         return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
     }
   }, [type, stakingToken.decimals, totalRefineryInVault, totalStaked]);
+  const totalStakedBalanceToDisplay = new BigNumber(totalStakedBalance).toFixed(
+    Precisions.shortToken,
+  );
   const performanceRow = useMemo(() => {
     return type === PoolFarmingMode.auto
       ? [
@@ -83,7 +86,7 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
       title: 'Total staked:',
       value: (
         <>
-          <span>{totalStakedBalance}</span>
+          <span>{totalStakedBalanceToDisplay}</span>
           <TotalStakedPopover symbol={stakingToken.symbol} />
         </>
       ),

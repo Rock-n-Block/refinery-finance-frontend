@@ -17,7 +17,7 @@ import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { getRefineryVaultEarnings, getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
 import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
 import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
 
@@ -129,13 +129,16 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
         return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
     }
   }, [farmMode, stakingToken.decimals, totalRefineryInVault, totalStaked]);
+  const totalStakedBalanceToDisplay = new BigNumber(totalStakedBalance).toFixed(
+    Precisions.shortToken,
+  );
 
   const stakedValueAsString = useMemo(
     () =>
       getFullDisplayBalance({
         balance: stakedValue,
         decimals: pool.stakingToken.decimals,
-        displayDecimals: 5,
+        displayDecimals: Precisions.shortToken,
       }).toString(),
     [stakedValue, pool.stakingToken.decimals],
   );
@@ -171,9 +174,10 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
   const convertedStakedValue = useMemo(() => {
     return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
   }, [stakedValueAsString, refineryUsdPrice]);
-  const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
-    convertedStakedValue,
-  ]);
+  const convertedStakedValueAsString = useMemo(
+    () => convertedStakedValue.toFixed(Precisions.fiat),
+    [convertedStakedValue],
+  );
 
   const recentProfit = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
@@ -198,10 +202,12 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     nonAutoVaultEarnings,
     pool.earningToken.decimals,
   ]);
+  const recentProfitToDisplay = recentProfit.toFixed(Precisions.shortToken);
 
   const convertedRecentProfit = useMemo(() => {
     return recentProfit * refineryUsdPrice;
   }, [recentProfit, refineryUsdPrice]);
+  const convertedRecentProfitToDisplay = convertedRecentProfit.toFixed(Precisions.fiat);
 
   return (
     <div className="pools-table-row">
@@ -231,8 +237,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
         </div>
         <RecentProfitColumn
           name={columns[0].name}
-          value={Number(recentProfit.toFixed(7))}
-          usdValue={Number(convertedRecentProfit.toFixed(7))}
+          value={recentProfitToDisplay}
+          usdValue={convertedRecentProfitToDisplay}
         />
         <AprColumn
           name={columns[1].name}
@@ -240,7 +246,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
           modalHandler={handleOpenRoiModal}
         />
         <TotalStakedColumn
-          value={Number(totalStakedBalance).toFixed(7)}
+          value={totalStakedBalanceToDisplay}
           currencySymbol={stakingToken.symbol}
           onlyDesktop
         />

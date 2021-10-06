@@ -8,7 +8,7 @@ import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
 import { BIG_ZERO, feeFormatter } from '@/utils';
 import { getFullDisplayBalance } from '@/utils/formatBalance';
 
@@ -80,7 +80,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
       getFullDisplayBalance({
         balance: stakedValue,
         decimals: pool.stakingToken.decimals,
-        displayDecimals: 5,
+        displayDecimals: Precisions.shortToken,
       }).toString(),
     [stakedValue, pool.stakingToken.decimals],
   );
@@ -116,9 +116,10 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   const convertedStakedValue = useMemo(() => {
     return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
   }, [stakedValueAsString, refineryUsdPrice]);
-  const convertedStakedValueAsString = useMemo(() => convertedStakedValue.toString(), [
-    convertedStakedValue,
-  ]);
+  const convertedStakedValueAsString = useMemo(
+    () => convertedStakedValue.toFixed(Precisions.fiat),
+    [convertedStakedValue],
+  );
 
   const convertedNonAutoVaultEarnings = useMemo(() => {
     return nonAutoVaultEarnings.times(refineryUsdPrice);
@@ -185,7 +186,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                     {getFullDisplayBalance({
                       balance: nonAutoVaultEarnings,
                       decimals: pool.earningToken.decimals,
-                      // displayDecimals: 8,
+                      displayDecimals: Precisions.shortToken,
                     })}
                   </div>
                   <div className="text-gray text-smd">
@@ -193,7 +194,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                     {getFullDisplayBalance({
                       balance: convertedNonAutoVaultEarnings,
                       decimals: pool.earningToken.decimals,
-                      displayDecimals: 5,
+                      displayDecimals: Precisions.fiat,
                     })}{' '}
                     USD
                   </div>

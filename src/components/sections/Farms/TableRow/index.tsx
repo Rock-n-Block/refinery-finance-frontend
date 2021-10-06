@@ -12,7 +12,7 @@ import { tokens } from '@/config/tokens';
 import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
-import { FarmWithStakedValue, Token } from '@/types';
+import { FarmWithStakedValue, Precisions, Token } from '@/types';
 import { numberWithCommas } from '@/utils';
 import { getBalanceAmount } from '@/utils/formatBalance';
 
@@ -76,7 +76,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
   const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
   const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(
-    5,
+    Precisions.shortToken,
   );
 
   const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
@@ -100,6 +100,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
       stakingTokenBalance,
     });
   };
+
+  const liquidityToDisplay = numberWithCommas(Number(liquidity?.toFixed(Precisions.fiat)) || 0);
 
   return (
     <div className="farms-table-row">
@@ -131,9 +133,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
           </div>
         </div>
         <div className="farms-table-row__liquidity farms-table-row__item box-f-ai-c text-smd t-box-none">
-          <span className="farms-table-row__text text-med text-purple">
-            ${numberWithCommas(liquidity?.toNumber() || 0)}
-          </span>
+          <span className="farms-table-row__text text-med text-purple">${liquidityToDisplay}</span>
           <LiquidityPopover />
         </div>
         <div className="farms-table-row__multiplier farms-table-row__item box-f-ai-c text-smd t-box-none">
