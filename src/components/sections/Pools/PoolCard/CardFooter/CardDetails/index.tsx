@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import OpenLink from '@/components/sections/Pools/OpenLink';
 import { getPoolBlockInfo } from '@/components/sections/Pools/PoolCard/utils';
 import { TotalStakedPopover } from '@/components/sections/Pools/Popovers';
+import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getAddress, getContractAddress } from '@/services/web3/contractHelpers';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
@@ -28,6 +29,14 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
   } = getPoolBlockInfo(pool, currentBlock);
   const { totalRefineryInVault } = useSelectVaultData();
   const { earningToken, stakingToken, totalStaked } = pool;
+  const seeTokenInfoLink = useScannerUrl(`token/${getAddress(earningToken.address)}`);
+  const viewContractLink = useScannerUrl(
+    `address/${
+      type === PoolFarmingMode.auto
+        ? getContractAddress('REFINERY_VAULT')
+        : getAddress(pool.contractAddress)
+    }`,
+  );
   const totalStakedBalance = useMemo(() => {
     switch (type) {
       case PoolFarmingMode.auto:
@@ -84,7 +93,7 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
   ];
   const links = [
     {
-      href: `/token/${earningToken.address ? getAddress(earningToken.address) : ''}`,
+      href: earningToken.address ? seeTokenInfoLink : '',
       text: 'See Token Info',
     },
     {
@@ -92,11 +101,7 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
       text: 'View Project Site',
     },
     {
-      href: `https://bscscan.com/address/${
-        type === PoolFarmingMode.auto
-          ? getContractAddress('REFINERY_VAULT')
-          : getAddress(pool.contractAddress)
-      }`,
+      href: viewContractLink,
       text: 'View Contract',
     },
   ];

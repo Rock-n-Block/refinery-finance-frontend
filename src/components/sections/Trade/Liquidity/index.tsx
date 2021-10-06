@@ -149,6 +149,11 @@ const Liquidity: React.FC = observer(() => {
         path="/trade/liquidity/add"
         render={() => <AddLiquidityComp settings={settings} />}
       />
+      <Route
+        exact
+        path="/trade/liquidity/add/:currencyIdA/:currencyIdB"
+        render={() => <AddLiquidityComp settings={settings} />}
+      />
       <Route exact path="/trade/liquidity/remove" component={RemoveLiquidity} />
       <Route exact path="/trade/liquidity/receive" component={Receive} />
       <Route

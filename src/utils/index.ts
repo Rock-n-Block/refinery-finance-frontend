@@ -1,3 +1,4 @@
+import { SCANNERS } from '@/config';
 import BigNumber from 'bignumber.js/bignumber';
 
 import { getFullDisplayBalance } from './formatBalance';
@@ -100,4 +101,8 @@ export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
 
 export const convertToBigNumber = (val: string | null): BigNumber | null => {
   return val === null ? val : new BigNumber(val);
+};
+
+export const getBaseScannerUrl = (chainId: number | string): string => {
+  return SCANNERS[Number(chainId)];
 };

@@ -3,14 +3,23 @@ import React from 'react';
 import FarmingModeStatus from '@/components/sections/Pools/FarmingModeStatus';
 import OpenLink from '@/components/sections/Pools/OpenLink';
 import { AutoFarmingPopover, ManualFarmingPopover } from '@/components/sections/Pools/Popovers';
+import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getAddress, getContractAddress } from '@/services/web3/contractHelpers';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 
 const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode; pool: Pool }> = ({ farmMode, pool }) => {
   const { earningToken } = pool;
+  const seeTokenInfoLink = useScannerUrl(`token/${getAddress(earningToken.address)}`);
+  const viewContractLink = useScannerUrl(
+    `address/${
+      farmMode === PoolFarmingMode.auto
+        ? getContractAddress('REFINERY_VAULT')
+        : getAddress(pool.contractAddress)
+    }`,
+  );
   const links = [
     {
-      href: `/token/${earningToken.address ? getAddress(earningToken.address) : ''}`,
+      href: earningToken.address ? seeTokenInfoLink : '',
       text: 'See Token Info',
     },
     {
@@ -18,11 +27,7 @@ const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode; pool: Pool }> = ({ fa
       text: 'View Project Site',
     },
     {
-      href: `https://bscscan.com/address/${
-        farmMode === PoolFarmingMode.auto
-          ? getContractAddress('REFINERY_VAULT')
-          : getAddress(pool.contractAddress)
-      }`,
+      href: viewContractLink,
       text: 'View Contract',
     },
   ];

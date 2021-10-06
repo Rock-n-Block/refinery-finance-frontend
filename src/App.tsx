@@ -47,6 +47,7 @@ const App: React.FC = observer(() => {
             '/trade/liquidity/history',
             '/trade/liquidity/find',
             '/trade/liquidity/add',
+            '/trade/liquidity/add/:currencyIdA/:currencyIdB',
             '/trade/liquidity/remove',
             '/trade/liquidity/receive',
           ]}

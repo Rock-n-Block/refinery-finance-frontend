@@ -14,3 +14,7 @@ export enum GAS_PRICE_ETHERS {
 
 export const BSC_BLOCK_TIME = 3;
 export const BLOCKS_PER_YEAR = new BigNumber((60 / BSC_BLOCK_TIME) * 60 * 24 * 365); // 10512000
+
+export const SCANNERS: Record<number, string> = {
+  0x2a: 'https://kovan.etherscan.io',
+};
