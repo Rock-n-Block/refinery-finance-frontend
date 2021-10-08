@@ -4,7 +4,7 @@ import cn from 'classnames';
 import MemberImg from '@/assets/img/icons/member.svg';
 import WinImg from '@/assets/img/icons/win-cup.svg';
 import { Button } from '@/components/atoms';
-import { numberWithCommas } from '@/utils';
+import { numberWithCommas } from '@/utils/formatters';
 
 import './TeamCard.scss';
 

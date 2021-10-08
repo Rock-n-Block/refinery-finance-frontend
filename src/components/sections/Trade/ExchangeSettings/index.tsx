@@ -1,15 +1,14 @@
 import React from 'react';
+import nextId from 'react-id-generator';
 import { useHistory } from 'react-router-dom';
 import cn from 'classnames';
-import nextId from 'react-id-generator';
 import moment from 'moment';
 
-import { Button, InputNumber, Switch } from '../../../atoms';
+import CrossImg from '../../../../assets/img/icons/cross.svg';
 import { ISettings } from '../../../../types';
+import { Button, InputNumber, Switch } from '../../../atoms';
 
 import './ExchangeSettings.scss';
-
-import CrossImg from '../../../../assets/img/icons/cross.svg';
 
 export interface IActiveSlippage {
   type: 'btn' | 'input';

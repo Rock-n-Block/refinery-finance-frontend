@@ -1,10 +1,11 @@
+import { useEffect } from 'react';
+
+import { farms as farmsConfig } from '@/config/farms';
 import useRefresh from '@/hooks/useRefresh';
 import { Farm } from '@/types';
-import { useEffect } from 'react';
+import { toBigNumber } from '@/utils';
+
 import { useMst } from '..';
-import { farms as farmsConfig } from '@/config/farms';
-import BigNumber from 'bignumber.js/bignumber';
-import { BIG_ZERO } from '@/utils';
 
 export const useFarms = (): { farms: Farm[] } => {
   const { farms } = useMst();
@@ -30,9 +31,9 @@ export const usePollFarmsData = () => {
 
 export const useFarmUserData = (farm: Farm) => {
   return {
-    allowance: farm.userData ? new BigNumber(farm.userData.allowance) : BIG_ZERO,
-    tokenBalance: farm.userData ? new BigNumber(farm.userData.tokenBalance) : BIG_ZERO,
-    stakedBalance: farm.userData ? new BigNumber(farm.userData.stakedBalance) : BIG_ZERO,
-    earnings: farm.userData ? new BigNumber(farm.userData.earnings) : BIG_ZERO,
-  }
+    allowance: toBigNumber(farm.userData?.allowance),
+    tokenBalance: toBigNumber(farm.userData?.tokenBalance),
+    stakedBalance: toBigNumber(farm.userData?.stakedBalance),
+    earnings: toBigNumber(farm.userData?.earnings),
+  };
 };

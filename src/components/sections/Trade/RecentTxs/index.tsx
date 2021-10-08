@@ -1,17 +1,17 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { useHistory } from 'react-router-dom';
 import { Scrollbar } from 'react-scrollbars-custom';
+import { observer } from 'mobx-react-lite';
 
-import { useMst } from '../../../../store';
-import { Button, Popover } from '../../../atoms';
-import { IRecentTx } from '../../../../types';
-
-import './RecentTxs.scss';
-
-import CrossImg from '../../../../assets/img/icons/cross.svg';
 import UnknownImg from '@/assets/img/currency/unknown.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+
+import CrossImg from '../../../../assets/img/icons/cross.svg';
+import { useMst } from '../../../../store';
+import { IRecentTx } from '../../../../types';
+import { Button, Popover } from '../../../atoms';
+
+import './RecentTxs.scss';
 
 interface IRecentTxs {
   items?: IRecentTx[];

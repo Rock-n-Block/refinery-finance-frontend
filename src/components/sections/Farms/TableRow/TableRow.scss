@@ -4,7 +4,7 @@
 .farms-table-row {
   position: relative;
 
-  &+& {
+  & + & {
     &::after {
       content: '';
       position: absolute;
@@ -31,7 +31,7 @@
     cursor: pointer;
 
     @include b(tablet) {
-      grid-template-columns: 2fr 1fr 1fr .1fr;
+      grid-template-columns: 2fr 1fr 1fr 0.1fr;
       padding: 20px 20px 20px 10px;
     }
   }
@@ -148,7 +148,7 @@
       border-radius: 12px;
       background: #f8f5fe;
 
-      &+& {
+      & + & {
         margin-left: 10px;
       }
 
@@ -161,7 +161,7 @@
           padding: 17px 0 !important;
         }
 
-        &+& {
+        & + & {
           margin: 10px 0;
         }
       }

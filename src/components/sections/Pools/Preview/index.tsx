@@ -4,20 +4,20 @@ import { observer } from 'mobx-react-lite';
 
 import BgImg from '@/assets/img/sections/pools/bg-2.svg';
 import { Button } from '@/components/atoms';
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { IReceipt } from '@/types';
-import { getFullDisplayBalance } from '@/utils/formatBalance';
+import { IReceipt, Precisions } from '@/types';
+import { getFullDisplayBalance } from '@/utils/formatters';
 
 // import { loadingDataFormatter } from '@/utils';
 import { AutoBountyPopover } from '../Popovers';
 
 import './Preview.scss';
-import { errorNotification, successNotification } from '@/components/atoms/Notification';
 
 const mockData = {
   symbol: 'RP1',
@@ -42,11 +42,17 @@ const ClaimBounty: React.FC = observer(() => {
         },
       });
       if ((tx as IReceipt).status) {
-        successNotification('Bounty collected!', `${mockData.symbol} bounty has been sent to your wallet.`);
+        successNotification(
+          'Bounty collected!',
+          `${mockData.symbol} bounty has been sent to your wallet.`,
+        );
       }
     } catch (error: any) {
       console.error(error);
-      errorNotification('Error', 'Please try again. Confirm the transaction and make sure you are paying enough gas!');
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
     } finally {
       setPendingTx(false);
     }
@@ -57,14 +63,17 @@ const ClaimBounty: React.FC = observer(() => {
   const displayBountyReward =
     estimatedRefineryBountyReward === null
       ? '###'
-      : getFullDisplayBalance({ balance: estimatedRefineryBountyReward, displayDecimals: 4 });
+      : getFullDisplayBalance({
+          balance: estimatedRefineryBountyReward,
+          displayDecimals: Precisions.shortToken,
+        });
 
   const displayBountyRewardUsd =
     estimatedRefineryBountyReward === null
       ? '###'
       : getFullDisplayBalance({
           balance: new BigNumber(estimatedRefineryBountyReward).multipliedBy(tokenUsdPrice),
-          displayDecimals: 2,
+          displayDecimals: Precisions.fiat,
         });
 
   return (

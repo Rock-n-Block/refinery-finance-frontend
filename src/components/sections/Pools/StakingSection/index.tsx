@@ -16,7 +16,8 @@ import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { ITokenMobx } from '@/store/Models/Modals/StakeUnstakeModal';
 import { Pool } from '@/types';
-import { BIG_ZERO } from '@/utils';
+import { toBigNumber } from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
 
 const StakingSection: React.FC<{
   pool: Pool;
@@ -31,7 +32,7 @@ const StakingSection: React.FC<{
   const [pendingTx, setPendingTx] = useState(false);
 
   // Data for regular approval buttons
-  const allowance = userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO;
+  const allowance = toBigNumber(userData?.allowance);
   const needsApproval = !allowance.gt(0);
 
   // Data for AUTO_VAULT approval buttons

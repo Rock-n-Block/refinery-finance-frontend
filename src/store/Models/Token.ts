@@ -1,4 +1,5 @@
 import { types } from 'mobx-state-tree';
+
 import AddressModel from './Address';
 
 const TokenModel = types.model({

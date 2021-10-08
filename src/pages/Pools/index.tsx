@@ -17,7 +17,7 @@ import { useMst } from '@/store';
 import { getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { usePools, useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
-import { BIG_ZERO } from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
 
 import './Pools.scss';
 

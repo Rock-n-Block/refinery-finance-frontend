@@ -1,12 +1,13 @@
 import BigNumber from 'bignumber.js/bignumber';
 
-import { Farm, FarmConfig, SerializedBigNumber } from '@/types';
 import { getAddress, getContractAddress, getContractData } from '@/services/web3/contractHelpers';
 import rootStore from '@/store';
+import { Farm, FarmConfig, SerializedBigNumber } from '@/types';
+import { toBigNumber } from '@/utils';
+import { BIG_ONE, BIG_TEN, BIG_ZERO } from '@/utils/constants';
 import { multicall } from '@/utils/multicall';
-import { BIG_ONE, BIG_TEN, BIG_ZERO } from '@/utils';
 
-export const getTokenPricesFromFarms = () => {
+export const getTokenPricesFromFarms = (): Record<string, number> => {
   const farms = rootStore.farms.data.slice() as Farm[];
   return farms.reduce((prices: Record<string, number>, farm) => {
     const quoteTokenAddress = getAddress(farm.quoteToken.address).toLocaleLowerCase();
@@ -61,7 +62,7 @@ const getFarmBaseTokenPrice = (
 ): BigNumber => {
   if (farm.quoteToken.symbol === 'BUSD') {
     // hasTokenPriceVsQuote
-    return farm.tokenPriceVsQuote ? new BigNumber(farm.tokenPriceVsQuote) : BIG_ZERO;
+    return toBigNumber(farm.tokenPriceVsQuote);
   }
 
   if (farm.quoteToken.symbol === 'wBNB') {
@@ -120,9 +121,7 @@ const getFarmQuoteTokenPrice = (
   }
 
   if (quoteTokenFarm.quoteToken.symbol === 'BUSD') {
-    return quoteTokenFarm.tokenPriceVsQuote
-      ? new BigNumber(quoteTokenFarm.tokenPriceVsQuote)
-      : BIG_ZERO;
+    return toBigNumber(quoteTokenFarm.tokenPriceVsQuote);
   }
 
   return BIG_ZERO;
@@ -242,7 +241,7 @@ export const fetchPublicFarmData = async (farm: Farm): Promise<PublicFarmData> =
       : [null, null];
 
   const [, allocPointRaw] = info || [];
-  const allocPoint = allocPointRaw ? new BigNumber(allocPointRaw) : BIG_ZERO;
+  const allocPoint = toBigNumber(allocPointRaw);
   const poolWeight = totalAllocPoint ? allocPoint.div(new BigNumber(totalAllocPoint)) : BIG_ZERO;
 
   return {
@@ -263,7 +262,7 @@ export const fetchFarm = async (farm: Farm): Promise<Farm> => {
   return { ...farm, ...farmPublicData };
 };
 
-export const fetchFarms = (farmsToFetch: FarmConfig[]) => {
+export const fetchFarms = (farmsToFetch: FarmConfig[]): Promise<Farm[]> => {
   return Promise.all(
     farmsToFetch.map((farmConfig) => {
       return fetchFarm(farmConfig);

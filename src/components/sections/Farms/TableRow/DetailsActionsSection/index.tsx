@@ -12,8 +12,8 @@ import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { useFarmUserData } from '@/store/farms/hooks';
 import { FarmWithStakedValue, Precisions } from '@/types';
-import { getAddLiquidityUrl } from '@/utils';
-import { getBalanceAmount } from '@/utils/formatBalance';
+import { getBalanceAmount } from '@/utils/formatters';
+import { getAddLiquidityUrl } from '@/utils/urlConstructors';
 
 import FarmsStakeUnstakeButtons from '../../FarmsStakeUnstakeButtons';
 import DetailsSectionTitle from '../DetailsSectionTitle';

@@ -1,14 +1,15 @@
-import { useWalletConnectorContext } from '@/services/MetamaskConnect';
-import { getAddress, getContract } from '@/services/web3/contractHelpers';
-import { useMst } from '@/store';
 import { useCallback } from 'react';
+import BigNumber from 'bignumber.js/bignumber';
+import { Contract } from 'web3-eth-contract';
+
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
-import { useCallWithGasPrice } from '@/services/web3/hooks';
-import BigNumber from 'bignumber.js/bignumber';
-import { BIG_TEN } from '@/utils';
-import { Contract } from 'web3-eth-contract';
 import { useUnstakeFarm } from '@/hooks/farms/useUnstakeFarm';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { getAddress, getContract } from '@/services/web3/contractHelpers';
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { useMst } from '@/store';
+import { BIG_TEN } from '@/utils/constants';
 
 export const useSmartRefinerUnstake = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();

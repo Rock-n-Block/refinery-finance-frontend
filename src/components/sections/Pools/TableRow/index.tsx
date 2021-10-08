@@ -18,8 +18,15 @@ import { useMst } from '@/store';
 import { getRefineryVaultEarnings, getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { BIG_ZERO, feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
-import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
+import { toBigNumber } from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
+import {
+  feeFormatter,
+  getBalanceAmount,
+  getFullDisplayBalance,
+  loadingDataFormatter,
+  numberWithCommas,
+} from '@/utils/formatters';
 
 import { getAprData, getPoolBlockInfo, useNonAutoVaultEarnings } from '../PoolCard/utils';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
@@ -165,9 +172,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     if (farmMode === PoolFarmingMode.auto) {
       return userShares && userShares.gt(0);
     }
-    const stakedBalance = userData?.stakedBalance
-      ? new BigNumber(userData.stakedBalance)
-      : BIG_ZERO;
+    const stakedBalance = toBigNumber(userData?.stakedBalance);
     return stakedBalance.gt(0);
   }, [farmMode, userData?.stakedBalance, userShares]);
 

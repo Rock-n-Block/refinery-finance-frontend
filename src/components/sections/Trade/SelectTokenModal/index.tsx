@@ -2,15 +2,15 @@ import React from 'react';
 import { Scrollbar } from 'react-scrollbars-custom';
 import { observer } from 'mobx-react-lite';
 
-import { Modal } from '../../../molecules';
-import { Search } from '../../../atoms';
-import { IToken } from '../../../../types';
+import UnknownImg from '@/assets/img/currency/unknown.svg';
+
 import { useMst } from '../../../../store';
+import { IToken } from '../../../../types';
+import { Search } from '../../../atoms';
+import { Modal } from '../../../molecules';
 import { ManageTokensModal } from '..';
 
 import './SelectTokenModal.scss';
-
-import UnknownImg from '@/assets/img/currency/unknown.svg';
 
 interface ISelectTokenModal {
   isVisible?: boolean;

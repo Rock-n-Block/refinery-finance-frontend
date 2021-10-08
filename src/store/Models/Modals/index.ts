@@ -1,10 +1,10 @@
 import { types } from 'mobx-state-tree';
 
+import FarmsStakeUnstakeModal from './FarmsStakeUnstakeModal';
 import MetamaskErrModal from './MetamaskErrModal';
+import PoolsCollectModal from './PoolsCollectModal';
 import RoiModal from './RoiModal';
 import StakeUnstakeModal from './StakeUnstakeModal';
-import PoolsCollectModal from './PoolsCollectModal';
-import FarmsStakeUnstakeModal from './FarmsStakeUnstakeModal';
 
 const ModalsModel = types.model({
   metamaskErr: MetamaskErrModal,

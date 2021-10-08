@@ -1,5 +1,7 @@
-import { Token } from '@/types';
 import { types } from 'mobx-state-tree';
+
+import { Token } from '@/types';
+
 import TokenModel from '../Token';
 
 export interface ITokenMobx extends Token {

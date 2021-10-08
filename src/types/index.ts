@@ -1,5 +1,5 @@
-import { Transaction } from 'web3-core';
 import BigNumber from 'bignumber.js/bignumber';
+import { Transaction } from 'web3-core';
 
 export interface IToken {
   logoURI?: string;

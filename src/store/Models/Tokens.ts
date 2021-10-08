@@ -1,4 +1,5 @@
-import { types, flow } from 'mobx-state-tree';
+import { flow, types } from 'mobx-state-tree';
+
 import { tokensApi } from '../../services/api';
 
 const TokenModel = types.model({

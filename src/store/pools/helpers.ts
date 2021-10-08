@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js/bignumber';
-import { getDecimalAmount, getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 
-import { BIG_ZERO } from '@/utils';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { toBigNumber } from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
+import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatters';
 
 type UserData =
   | Pool['userData']
@@ -18,7 +19,11 @@ export const convertSharesToRefinery = (
   refineryPerFullShare: BigNumber,
   decimals = 18,
   decimalsToRound = 3,
-) => {
+): {
+  refineryAsNumberBalance: number;
+  refineryAsBigNumber: BigNumber;
+  refineryAsDisplayBalance: string | number;
+} => {
   const sharePriceNumber = getBalanceAmount(refineryPerFullShare, decimals);
   const amountInRefinery = new BigNumber(shares.multipliedBy(sharePriceNumber));
   const refineryAsNumberBalance = getBalanceAmount(amountInRefinery, decimals);
@@ -31,12 +36,18 @@ export const convertSharesToRefinery = (
   return { refineryAsNumberBalance, refineryAsBigNumber, refineryAsDisplayBalance };
 };
 
+export interface IConvertRefineryToSharesResult {
+  sharesAsNumberBalance: number;
+  sharesAsBigNumber: BigNumber;
+  sharesAsDisplayBalance: string | number;
+}
+
 export const convertRefineryToShares = (
   refinery: BigNumber,
   refineryPerFullShare: BigNumber,
   decimals = 18,
   decimalsToRound = 3,
-) => {
+): IConvertRefineryToSharesResult => {
   const sharePriceNumber = getBalanceAmount(refineryPerFullShare, decimals);
   const amountInShares = new BigNumber(refinery.dividedBy(sharePriceNumber));
   const sharesAsNumberBalance = getBalanceAmount(amountInShares, decimals);
@@ -49,14 +60,19 @@ export const convertRefineryToShares = (
   return { sharesAsNumberBalance, sharesAsBigNumber, sharesAsDisplayBalance };
 };
 
-export const transformUserData = (userData: UserData) => {
+export const transformUserData = (
+  userData: UserData,
+): {
+  allowance: BigNumber;
+  stakingTokenBalance: BigNumber;
+  stakedBalance: BigNumber;
+  pendingReward: BigNumber;
+} => {
   return {
-    allowance: userData?.allowance ? new BigNumber(userData.allowance) : BIG_ZERO,
-    stakingTokenBalance: userData?.stakingTokenBalance
-      ? new BigNumber(userData.stakingTokenBalance)
-      : BIG_ZERO,
-    stakedBalance: userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
-    pendingReward: userData?.pendingReward ? new BigNumber(userData.pendingReward) : BIG_ZERO,
+    allowance: toBigNumber(userData?.allowance),
+    stakingTokenBalance: toBigNumber(userData?.stakingTokenBalance),
+    stakedBalance: toBigNumber(userData?.stakedBalance),
+    pendingReward: toBigNumber(userData?.pendingReward),
   };
 };
 
@@ -66,8 +82,8 @@ export const transformPool = (pool: Pool): Pool => {
   return {
     ...rest,
     userData: transformUserData(userData),
-    totalStaked: new BigNumber(totalStaked as BigNumber),
-    stakingLimit: new BigNumber(stakingLimit as BigNumber),
+    totalStaked: toBigNumber(totalStaked),
+    stakingLimit: toBigNumber(stakingLimit),
   } as Pool;
 };
 
@@ -76,9 +92,13 @@ export const getRefineryVaultEarnings = (
   refineryAtLastUserAction: BigNumber,
   userShares: BigNumber,
   pricePerFullShare: BigNumber,
-) => {
+): {
+  hasAutoEarnings: boolean;
+  autoRefineryToDisplay: number;
+  autoRefineryProfit: BigNumber;
+} => {
   const hasAutoEarnings =
-    accountAddress &&
+    Boolean(accountAddress) &&
     refineryAtLastUserAction &&
     refineryAtLastUserAction.gt(0) &&
     userShares &&
@@ -96,7 +116,7 @@ export const getRefineryVaultEarnings = (
 
 export const getStakingBalance = (pool: Pool): BigNumber => {
   const { userData } = pool;
-  return userData?.stakingTokenBalance ? new BigNumber(userData.stakingTokenBalance) : BIG_ZERO;
+  return toBigNumber(userData?.stakingTokenBalance);
 };
 
 export const getStakedValue = (
@@ -113,5 +133,5 @@ export const getStakedValue = (
     return refineryAsBigNumber;
   }
   const { userData } = pool;
-  return userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO;
+  return toBigNumber(userData?.stakedBalance);
 };

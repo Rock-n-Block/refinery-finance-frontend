@@ -1,5 +1,5 @@
-import { PoolConfig } from '@/types';
 import { tokens } from '@/config/tokens';
+import { PoolConfig } from '@/types';
 
 import { contracts } from './contracts';
 

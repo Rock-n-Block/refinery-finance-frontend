@@ -1,27 +1,27 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 import nextId from 'react-id-generator';
+import { NavLink } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { Button } from '../../atoms';
-import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
-import { WalletModal } from '..';
-import { useMst } from '../../../store';
-
-import './Menu.scss';
-
+import DaoImg from '@/assets/img/icons/dao.svg';
 import LogoImg from '@/assets/img/icons/logo.svg';
-import LogoMiniImg from '../../../assets/img/icons/logo-m.svg';
-import HomeImg from '../../../assets/img/icons/home.svg';
-import TradeImg from '../../../assets/img/icons/trade.svg';
+
+import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
 import FarmsImg from '../../../assets/img/icons/farms.svg';
+import HomeImg from '../../../assets/img/icons/home.svg';
+import LogoMiniImg from '../../../assets/img/icons/logo-m.svg';
 import LotteryImg from '../../../assets/img/icons/lottery.svg';
 import PoolsImg from '../../../assets/img/icons/pools.svg';
-import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
 import TeamsImg from '../../../assets/img/icons/teams.svg';
-import DaoImg from '@/assets/img/icons/dao.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
+import TradeImg from '../../../assets/img/icons/trade.svg';
 import { ReactComponent as TwImg } from '../../../assets/img/icons/tw.svg';
+import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
+import { useMst } from '../../../store';
+import { Button } from '../../atoms';
+import { WalletModal } from '..';
+
+import './Menu.scss';
 
 interface IMenuProps {
   onClick?: () => void;

@@ -1,15 +1,20 @@
 import BigNumber from 'bignumber.js/bignumber';
 
-import { multicall } from '@/utils/multicall';
 // import { convertSharesToRefinery } from './helpers';
-
 import { pools as poolsConfig } from '@/config';
-import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
-import { metamaskService } from '@/services/MetamaskConnect';
 import { SmartRefinerInitializable as smartRefinerInitializableAbi } from '@/config/abi';
-import { BIG_ZERO } from '@/utils';
+import { metamaskService } from '@/services/MetamaskConnect';
+import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
+import { BIG_ZERO } from '@/utils/constants';
+import { multicall } from '@/utils/multicall';
 
-export const fetchPoolsBlockLimits = async () => {
+export const fetchPoolsBlockLimits = async (): Promise<
+  {
+    id: number;
+    startBlock: number;
+    endBlock: number;
+  }[]
+> => {
   const poolsWithEnd = poolsConfig.filter((pool) => pool.id !== 0);
   const callsStartBlock = poolsWithEnd.map((poolConfig) => {
     return {
@@ -40,7 +45,12 @@ export const fetchPoolsBlockLimits = async () => {
   });
 };
 
-export const fetchPoolsTotalStaking = async () => {
+export const fetchPoolsTotalStaking = async (): Promise<
+  {
+    id: number;
+    totalStaked: string;
+  }[]
+> => {
   // TODO: если в будущем будет поддержка BNB, то надо будет стянуть ещё функциональность
   //       для пулов, работающих на BNB, BEP-20
   //       @see https://github.com/pancakeswap/pancake-frontend/blob/c8a7c5c3b32ae99801cf047b5d10afc5b68bf4f8/src/state/pools/fetchPools.ts#L40
@@ -53,12 +63,12 @@ export const fetchPoolsTotalStaking = async () => {
   });
 
   const [, rocketPropellantABI] = getContractData('RP1');
-  const poolsTotalStaked = await multicall(rocketPropellantABI, calls);
+  const poolsTotalStaked = await multicall<string[]>(rocketPropellantABI, calls);
 
   return [
     ...poolsConfig.map((pool, index) => ({
       id: pool.id,
-      totalStaked: new BigNumber(poolsTotalStaked[index]).toJSON(),
+      totalStaked: poolsTotalStaked ? new BigNumber(poolsTotalStaked[index]).toFixed() : '0',
     })),
   ];
 };

@@ -2,14 +2,14 @@ import { useCallback } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { Contract } from 'web3-eth-contract';
 
-import { useMst } from '@/store';
-import { getAddress, getContract } from '@/services/web3/contractHelpers';
-import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
-import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useStakeFarm } from '@/hooks/farms/useStakeFarm';
-import { BIG_TEN } from '@/utils';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { getAddress, getContract } from '@/services/web3/contractHelpers';
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { useMst } from '@/store';
+import { BIG_TEN } from '@/utils/constants';
 
 export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();

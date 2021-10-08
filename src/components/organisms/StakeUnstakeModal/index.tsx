@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
+import { Contract } from 'web3-eth-contract';
 
 import UnknownImg from '@/assets/img/currency/unknown.svg';
 import { Button, InputNumber, Slider } from '@/components/atoms';
@@ -12,10 +13,10 @@ import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
-import { convertRefineryToShares } from '@/store/pools/helpers';
+import { convertRefineryToShares, IConvertRefineryToSharesResult } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 // import { BIG_ZERO } from '@/utils';
-import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatBalance';
+import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatters';
 
 import './StakeUnstakeModal.scss';
 
@@ -156,6 +157,61 @@ const StakeUnstakeModal: React.FC = observer(() => {
     valueToStake,
   ]);
 
+  const withdrawAll = useCallback(
+    async (refineryVaultContract: Contract) => {
+        try {
+          const tx = await callWithGasPrice({
+            contract: refineryVaultContract,
+            methodName: 'withdrawAll',
+            methodArgs: undefined,
+            options: { gas: 380000 },
+          });
+          if (tx.status) {
+          successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet');
+            poolsStore.fetchVaultUserData(user.address);
+          }
+        } catch (error) {
+        console.error(error);
+          errorNotification(
+            'Error',
+            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+          );
+        } finally {
+          setPendingTx(false);
+        }
+    },
+    [callWithGasPrice, poolsStore, user.address],
+  );
+
+  const withdraw = useCallback(
+    async (
+      refineryVaultContract: Contract,
+      shareStakeToWithdraw: IConvertRefineryToSharesResult,
+    ) => {
+        try {
+          const tx = await callWithGasPrice({
+            contract: refineryVaultContract,
+            methodName: 'withdraw',
+            methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toFixed()],
+            options: { gas: 380000 },
+          });
+          if (tx.status) {
+          successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet');
+            poolsStore.fetchVaultUserData(user.address);
+          }
+        } catch (error) {
+        console.error(error);
+          errorNotification(
+            'Error',
+            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+          );
+        } finally {
+          setPendingTx(false);
+        }
+    },
+    [callWithGasPrice, poolsStore, user.address],
+  );
+
   const handleUnstake = useCallback(async () => {
     setPendingTx(true);
     if (modal.isAutoVault) {
@@ -165,12 +221,14 @@ const StakeUnstakeModal: React.FC = observer(() => {
         modal.stakingToken?.decimals,
       );
 
-      console.log(
-        'UNSTAKING VALUE',
+      console.log('UNSTAKING VALUE', {
         valueToStake,
-        valueToStakeDecimal.toFixed(),
-        pricePerFullShare?.toFixed(),
-      );
+        valueToStakeDecimal,
+        pricePerFullShare,
+        valueToStakeDecimalToFixed: valueToStakeDecimal.toFixed(),
+        pricePerFullShareToFixed: pricePerFullShare?.toFixed(),
+        userShares,
+      });
 
       if (!pricePerFullShare || !userShares) return;
 
@@ -181,51 +239,9 @@ const StakeUnstakeModal: React.FC = observer(() => {
       const isWithdrawingAll = sharesRemaining.lte(triggerWithdrawAllThreshold);
 
       if (isWithdrawingAll) {
-        try {
-          const tx = await callWithGasPrice({
-            contract: refineryVaultContract,
-            methodName: 'withdrawAll',
-            methodArgs: undefined,
-            options: { gas: 380000 },
-          });
-          if (tx.status) {
-            successNotification(
-              'Unstaked!',
-              'Your earnings have also been harvested to your wallet',
-            );
-            poolsStore.fetchVaultUserData(user.address);
-          }
-        } catch (error) {
-          errorNotification(
-            'Error',
-            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-          );
-        } finally {
-          setPendingTx(false);
-        }
+        await withdrawAll(refineryVaultContract);
       } else {
-        try {
-          const tx = await callWithGasPrice({
-            contract: refineryVaultContract,
-            methodName: 'withdraw',
-            methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toFixed()],
-            options: { gas: 380000 },
-          });
-          if (tx.status) {
-            successNotification(
-              'Unstaked!',
-              'Your earnings have also been harvested to your wallet',
-            );
-            poolsStore.fetchVaultUserData(user.address);
-          }
-        } catch (error) {
-          errorNotification(
-            'Error',
-            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-          );
-        } finally {
-          setPendingTx(false);
-        }
+        await withdraw(refineryVaultContract, shareStakeToWithdraw);
       }
     } else {
       try {
@@ -245,16 +261,15 @@ const StakeUnstakeModal: React.FC = observer(() => {
     }
   }, [
     modal.isAutoVault,
-    callWithGasPrice,
     modal.stakingToken?.decimals,
-    poolsStore,
-    pricePerFullShare,
-    user.address,
-    userShares,
-    valueToStakeAsBigNumber,
     modal.stakingToken?.symbol,
-    onUnstake,
+    userShares,
+    pricePerFullShare,
     valueToStake,
+    valueToStakeAsBigNumber,
+    onUnstake,
+    withdrawAll,
+    withdraw,
   ]);
 
   const handleConfirm = async () => {

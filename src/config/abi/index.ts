@@ -4,4 +4,3 @@ export { default as SmartRefinerInitializable } from './SmartRefinerInitializabl
 export { default as RocketPropellant } from './RocketPropellant.json';
 export { default as RocketFactory } from './RocketFactory.json';
 export { default as MasterRefiner } from './MasterRefiner.json';
-

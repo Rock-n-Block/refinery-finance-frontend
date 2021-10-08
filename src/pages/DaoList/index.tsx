@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './DaoList.scss';
-
 import { DaoPreview, DaoWrapper } from '@/components/sections/Dao';
 import { DaoListItemsList } from '@/components/sections/DaoList';
+
+import './DaoList.scss';
 
 const mockData = {
   items: [

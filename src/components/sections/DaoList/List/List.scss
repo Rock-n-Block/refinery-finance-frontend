@@ -7,7 +7,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 27px 10px 34px;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 2px 6px rgba(85, 32, 142, 0.25);
     border-radius: 20px;
 
@@ -22,7 +22,8 @@
     }
   }
 
-  &__item-content {}
+  &__item-content {
+  }
 
   &__item-status {
     border: 1px solid transparent;

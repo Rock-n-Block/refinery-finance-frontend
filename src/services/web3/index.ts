@@ -240,7 +240,10 @@ export default class MetamaskService {
         decimals = tokenInfo.decimals;
       }
 
-      const approveMethod = MetamaskService.getMethodInterface(contracts[contractName].ABI, 'approve');
+      const approveMethod = MetamaskService.getMethodInterface(
+        contracts[contractName].ABI,
+        'approve',
+      );
 
       const approveSignature = this.encodeFunctionCall(approveMethod, [
         approvedAddress || walletAddress || this.walletAddress,

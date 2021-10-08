@@ -1,12 +1,15 @@
 import { notification } from 'antd';
+import { ArgsProps } from 'antd/lib/notification';
 
 import 'antd/lib/notification/style/css';
 
-import { ArgsProps } from 'antd/lib/notification';
-
 export default notification;
 
-export const successNotification = (title: string, description?: string, ...props: ArgsProps[]) => {
+export const successNotification = (
+  title: string,
+  description?: string,
+  ...props: ArgsProps[]
+): void => {
   notification.success({
     message: title,
     description,
@@ -14,7 +17,11 @@ export const successNotification = (title: string, description?: string, ...prop
   });
 };
 
-export const errorNotification = (title: string, description?: string, ...props: ArgsProps[]) => {
+export const errorNotification = (
+  title: string,
+  description?: string,
+  ...props: ArgsProps[]
+): void => {
   notification.error({
     message: title,
     description,

@@ -1,8 +1,6 @@
-import { getContract } from '@/services/web3/contractHelpers';
-
 import { metamaskService } from '@/services/MetamaskConnect';
-
 import MetamaskService from '@/services/web3';
+import { getContract } from '@/services/web3/contractHelpers';
 
 export interface Call {
   address: string; // Address of the contract

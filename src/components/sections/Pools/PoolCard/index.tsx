@@ -9,8 +9,8 @@ import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { BIG_ZERO, feeFormatter } from '@/utils';
-import { getFullDisplayBalance } from '@/utils/formatBalance';
+import { toBigNumber } from '@/utils';
+import { feeFormatter, getFullDisplayBalance } from '@/utils/formatters';
 
 import 'antd/lib/select/style/css';
 
@@ -107,9 +107,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     if (farmMode === PoolFarmingMode.auto) {
       return userShares && userShares.gt(0);
     }
-    const stakedBalance = userData?.stakedBalance
-      ? new BigNumber(userData.stakedBalance)
-      : BIG_ZERO;
+    const stakedBalance = toBigNumber(userData?.stakedBalance);
     return stakedBalance.gt(0);
   }, [farmMode, userData?.stakedBalance, userShares]);
 

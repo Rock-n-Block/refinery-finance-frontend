@@ -4,7 +4,7 @@ import { SwitchClickEventHandler } from 'antd/lib/switch';
 import cn from 'classnames';
 
 import { RadioGroup, Search, SortSelect, Switch } from '@/components/atoms';
-import { debounce } from '@/utils';
+import { debounce } from '@/utils/debounce';
 
 import './ItemsController.scss';
 

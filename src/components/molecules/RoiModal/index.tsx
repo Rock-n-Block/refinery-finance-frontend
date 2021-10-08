@@ -18,7 +18,7 @@ import {
 // import { getBalanceAmount } from '@/utils/formatBalance';
 // import { feeFormatter, numberWithCommas } from '@/utils';
 // import { getApy, getRoi } from '@/utils/compoundApy';
-import { Modal } from '..';
+import Modal from '../Modal';
 
 import './RoiModal.scss';
 

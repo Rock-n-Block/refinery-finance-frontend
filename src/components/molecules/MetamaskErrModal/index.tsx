@@ -1,12 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
+import MetamaskImg from '../../../assets/img/icons/metamask.svg';
 import { useMst } from '../../../store';
-import { Modal } from '..';
+import Modal from '../Modal';
 
 import './MetamaskErrModal.scss';
-
-import MetamaskImg from '../../../assets/img/icons/metamask.svg';
 
 const MetamaskErrModal: React.FC = observer(() => {
   const { modals } = useMst();

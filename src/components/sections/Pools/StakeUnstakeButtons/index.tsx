@@ -9,7 +9,7 @@ import { ITokenMobx } from '@/store/Models/Modals/StakeUnstakeModal';
 import { convertSharesToRefinery, getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { Pool } from '@/types';
-import { BIG_ZERO } from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
 
 import './StakeUnstakeButtons.scss';
 

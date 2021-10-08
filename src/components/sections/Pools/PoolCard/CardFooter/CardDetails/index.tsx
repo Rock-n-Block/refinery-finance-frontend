@@ -11,7 +11,7 @@ import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils';
+import { feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils/formatters';
 
 const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer(({ pool, type }) => {
   const {

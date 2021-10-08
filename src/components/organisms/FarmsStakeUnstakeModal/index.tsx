@@ -8,7 +8,7 @@ import { Modal } from '@/components/molecules';
 import useStakeFarms from '@/hooks/farms/useStakeFarms';
 import useUnstakeFarms from '@/hooks/farms/useUnstakeFarms';
 import { useMst } from '@/store';
-import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatBalance';
+import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatters';
 
 import './FarmsStakeUnstakeModal.scss';
 

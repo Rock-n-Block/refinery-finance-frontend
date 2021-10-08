@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './Preview.scss';
-
 import Bg2 from '../../../../assets/img/sections/collectibles/bg-2.svg';
 import Bg3 from '../../../../assets/img/sections/collectibles/bg-3.svg';
+
+import './Preview.scss';
 
 const Preview: React.FC = () => {
   return (

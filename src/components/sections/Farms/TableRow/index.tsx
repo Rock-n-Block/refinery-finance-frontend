@@ -13,8 +13,7 @@ import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
-import { numberWithCommas } from '@/utils';
-import { getBalanceAmount } from '@/utils/formatBalance';
+import { getBalanceAmount, numberWithCommas } from '@/utils/formatters';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 

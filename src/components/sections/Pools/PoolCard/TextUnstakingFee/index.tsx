@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import { useMst } from '@/store';
-import { feeFormatter } from '@/utils';
+import { feeFormatter } from '@/utils/formatters';
 
 import { secondsToHoursFormatter } from '../utils';
 

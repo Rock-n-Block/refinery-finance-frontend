@@ -2,14 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 
+import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
+import InfoImg from '@/assets/img/icons/info.svg';
+import RecentTxImg from '@/assets/img/icons/recent-tx.svg';
+import SettingsImg from '@/assets/img/icons/settings.svg';
+
 import { Popover } from '../../../atoms';
 
 import './TradeBox.scss';
-
-import SettingsImg from '@/assets/img/icons/settings.svg';
-import RecentTxImg from '@/assets/img/icons/recent-tx.svg';
-import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
-import InfoImg from '@/assets/img/icons/info.svg';
 
 interface ITradeBox {
   title: string;

@@ -1,11 +1,10 @@
 import React from 'react';
-
-import { Button } from '../../../atoms';
 import { CSSTransition } from 'react-transition-group';
 
-import './Preview.scss';
-
 import AucImg from '../../../../assets/img/sections/farms/auc.svg';
+import { Button } from '../../../atoms';
+
+import './Preview.scss';
 
 const Preview: React.FC = React.memo(() => {
   const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);

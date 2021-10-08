@@ -1,8 +1,7 @@
 import { FarmConfig } from '@/types';
 
-import { tokens } from './tokens';
-
 import { contracts } from './contracts';
+import { tokens } from './tokens';
 
 export const farms: FarmConfig[] = [
   {
@@ -34,5 +33,5 @@ export const farms: FarmConfig[] = [
     token: tokens.ugbg,
     quoteToken: tokens.avoog,
     categoryType: 'core',
-  }
+  },
 ];

@@ -1,13 +1,14 @@
 import { useCallback } from 'react';
-import { useMst } from '@/store';
-import { getAddress } from '@/services/web3/contractHelpers';
+import { Contract } from 'web3-eth-contract';
+
 // import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
-import { Contract } from 'web3-eth-contract';
-import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useHarvestFarm } from '@/hooks/farms/useHarvestFarm';
 import { metamaskService } from '@/services/MetamaskConnect';
+import { getAddress } from '@/services/web3/contractHelpers';
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { useMst } from '@/store';
 
 const useHarvestPoolDeposit = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();

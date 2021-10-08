@@ -3,8 +3,8 @@
 @import 'src/styles/typography';
 
 $section-margin: 40px;
-$tip-color: #A1A1A1;
-$outline-color: #CECECE;
+$tip-color: #a1a1a1;
+$outline-color: #cecece;
 
 .dao-proposal {
   &__wrapper {
@@ -75,7 +75,6 @@ $outline-color: #CECECE;
   }
 
   &__input {
-
     // FIXME: fix .ant-input:hover { border-right-width: 1px !important; }
     // .ant-input:focus, .ant-input-focused { border-right-width: 1px !important; }
     &:hover,
@@ -143,7 +142,8 @@ $outline-color: #CECECE;
     }
   }
 
-  &__input-dropdown {}
+  &__input-dropdown {
+  }
 
   &__input-popup {
     // button {

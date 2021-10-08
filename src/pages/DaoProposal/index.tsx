@@ -6,7 +6,7 @@ import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
-import { throttle } from '@/utils';
+import { throttle } from '@/utils/throttle';
 
 import 'antd/lib/form/style/css';
 import 'antd/lib/time-picker/style/css';

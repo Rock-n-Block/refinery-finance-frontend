@@ -1,12 +1,12 @@
 import React from 'react';
 
 import OpenLink from '@/components/sections/Farms/OpenLink';
+import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getAddress } from '@/services/web3/contractHelpers';
 import { Farm } from '@/types';
-import { getAddLiquidityUrl } from '@/utils';
+import { getAddLiquidityUrl } from '@/utils/urlConstructors';
 
 import DetailsBadge from '../DetailsBadge';
-import { useScannerUrl } from '@/hooks/useScannerUrl';
 
 interface IDetailsLinksProps {
   farm: Farm;

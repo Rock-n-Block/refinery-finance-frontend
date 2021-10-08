@@ -1,19 +1,19 @@
 import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 import moment from 'moment';
-import BigNumber from 'bignumber.js/bignumber';
 
-import { TradeBox } from '..';
-import { Button, Popover } from '../../../atoms';
-import { ILiquidityInfo } from '../../../../types';
+import BnbImg from '@/assets/img/currency/unknown.svg';
+
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import MetamaskService from '../../../../services/web3';
 import { useMst } from '../../../../store';
+import { ILiquidityInfo } from '../../../../types';
+import { Button, Popover } from '../../../atoms';
+import { TradeBox } from '..';
 
 import './Receive.scss';
-
-import BnbImg from '@/assets/img/currency/unknown.svg';
 
 interface IReceiveState extends ILiquidityInfo {
   lpTokens: string;

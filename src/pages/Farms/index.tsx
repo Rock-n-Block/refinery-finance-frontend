@@ -10,7 +10,7 @@ import { FarmsPreview, FarmsTable } from '@/components/sections/Farms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useFarms, usePollFarmsData } from '@/store/farms/hooks';
 import { Farm, FarmWithStakedValue } from '@/types';
-import { BIG_ZERO } from '@/utils';
+import { toBigNumber } from '@/utils';
 import { getFarmApr } from '@/utils/apr';
 
 import './Farms.scss';
@@ -102,11 +102,7 @@ const Farms: React.FC = observer(() => {
   const getFilterByStakedOnly = useCallback((isStaked: boolean): [IFilterBy, IFilterFunc] => {
     return [
       FilterBy.stakedOnly,
-      ({ userData }) =>
-        filterByStakedOnly(
-          userData?.stakedBalance ? new BigNumber(userData.stakedBalance) : BIG_ZERO,
-          isStaked,
-        ),
+      ({ userData }) => filterByStakedOnly(toBigNumber(userData?.stakedBalance), isStaked),
     ];
   }, []);
   const getFilterBySearch = (value: string): [IFilterBy, IFilterFunc] => {

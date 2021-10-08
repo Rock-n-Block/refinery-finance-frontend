@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite';
 import { useMst } from '@/store';
 import { getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { BIG_ZERO } from '@/utils';
+import { Precisions } from '@/types';
+import { BIG_ZERO } from '@/utils/constants';
 
 import TextUnstakingFee from '../TextUnstakingFee';
 
 import UnstakingFeeTimer from './UnstakingFeeTimer';
-import { Precisions } from '@/types';
 
 interface IAutoVaultRecentProfitSectionProps {
   hasStakedValue: boolean;

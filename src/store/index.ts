@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
-import { UserModel, ModalsModel, TokensModel, PoolsModel, FarmsModel } from './Models';
 import { initialState as roiInitialState } from './Models/Modals/RoiModal';
+import { FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
@@ -74,7 +74,7 @@ const RootStoreContext = createContext<null | RootInstance>(null);
 
 export const { Provider } = RootStoreContext;
 
-export function useMst() {
+export function useMst(): RootInstance {
   const store = useContext(RootStoreContext);
   if (store === null) {
     throw new Error('Store cannot be null, please add a context provider');

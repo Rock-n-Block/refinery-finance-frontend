@@ -1,7 +1,7 @@
-import { metamaskService } from '../MetamaskConnect';
-
 import { contracts } from '@/config';
 import { Address } from '@/types';
+
+import { metamaskService } from '../MetamaskConnect';
 
 export type IContract = keyof typeof contracts;
 

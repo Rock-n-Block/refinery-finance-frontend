@@ -26,7 +26,7 @@ interface IColumn {
 
 const mockData = {
   profitTokenSymbol: 'RP1',
-}
+};
 
 const columns: IColumn[] = [
   {

@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js/bignumber';
+
 import { BLOCKS_PER_YEAR, RP1_PER_YEAR } from '@/config';
 /**
  * Get the APR value in %

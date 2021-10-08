@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-import './Dao.scss';
-
 import exampleAvatarPng from '@/assets/img/REMOVE_ME-avatar.png';
 import Button from '@/components/atoms/Button';
 import { DaoInformation, DaoPreview, DaoSection, DaoWrapper } from '@/components/sections/Dao';
+
+import './Dao.scss';
 
 const mockData = {
   id: '1',

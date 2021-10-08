@@ -1,10 +1,13 @@
 import { useEffect, useMemo } from 'react';
+import BigNumber from 'bignumber.js/bignumber';
+
+import useRefresh from '@/hooks/useRefresh';
+import { IPoolFarmingMode, Pool } from '@/types';
+import { toBigNumber } from '@/utils';
+
 import { useMst } from '..';
 
 import { getStakedValue, transformPool } from './helpers';
-import { IPoolFarmingMode, Pool } from '@/types';
-import useRefresh from '@/hooks/useRefresh';
-import { convertToBigNumber } from '@/utils';
 
 export const usePools = (): { pools: Pool[] } => {
   const { fastRefresh } = useRefresh();
@@ -38,27 +41,27 @@ export const useSelectVaultData = () => {
   } = useMst();
 
   const estimatedRefineryBountyReward = useMemo(() => {
-    return convertToBigNumber(estimatedRefineryBountyRewardRaw);
+    return toBigNumber(estimatedRefineryBountyRewardRaw, true);
   }, [estimatedRefineryBountyRewardRaw]);
 
   const totalRefineryInVault = useMemo(() => {
-    return convertToBigNumber(totalRefineryInVaultRaw);
+    return toBigNumber(totalRefineryInVaultRaw, true);
   }, [totalRefineryInVaultRaw]);
 
   const pricePerFullShare = useMemo(() => {
-    return convertToBigNumber(pricePerFullShareRaw);
+    return toBigNumber(pricePerFullShareRaw, true);
   }, [pricePerFullShareRaw]);
 
   const totalShares = useMemo(() => {
-    return convertToBigNumber(totalSharesRaw);
+    return toBigNumber(totalSharesRaw, true);
   }, [totalSharesRaw]);
 
   const userShares = useMemo(() => {
-    return convertToBigNumber(userSharesAsString);
+    return toBigNumber(userSharesAsString, true);
   }, [userSharesAsString]);
 
   const refineryAtLastUserAction = useMemo(() => {
-    return convertToBigNumber(refineryAtLastUserActionAsString);
+    return toBigNumber(refineryAtLastUserActionAsString, true);
   }, [refineryAtLastUserActionAsString]);
 
   return {
@@ -77,7 +80,7 @@ export const useSelectVaultData = () => {
   };
 };
 
-export const useStakedValue = (farmMode: IPoolFarmingMode, pool: Pool) => {
+export const useStakedValue = (farmMode: IPoolFarmingMode, pool: Pool): BigNumber => {
   const {
     pricePerFullShare,
     userData: { userShares },

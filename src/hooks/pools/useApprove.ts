@@ -1,16 +1,18 @@
-import { getAddress, getContract, getContractAddress } from '@/services/web3/contractHelpers';
-import { useCallWithGasPrice } from '@/services/web3/hooks';
-import { useMst } from '@/store';
+import { useCallback, useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
-import { useState, useEffect, useCallback } from 'react';
-import useLastUpdated from '../useLastUpdated';
+import { Contract } from 'web3-eth-contract';
+
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
 import { metamaskService } from '@/services/MetamaskConnect';
+import { getAddress, getContract, getContractAddress } from '@/services/web3/contractHelpers';
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { useMst } from '@/store';
 import { IReceipt } from '@/types';
-import { MAX_UINT_256 } from '@/utils';
-import { Contract } from 'web3-eth-contract';
-import { successNotification, errorNotification } from '@/components/atoms/Notification';
+import { MAX_UINT_256 } from '@/utils/constants';
+
+import useLastUpdated from '../useLastUpdated';
 
 export const useApprovePool = (lpContract: Contract, poolId: number) => {
   const [requestedApproval, setRequestedApproval] = useState(false);

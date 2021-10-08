@@ -1,21 +1,21 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import moment from 'moment';
-import { useLazyQuery, gql } from '@apollo/client';
+import { Route, Switch } from 'react-router-dom';
+import { gql, useLazyQuery } from '@apollo/client';
 import { observer } from 'mobx-react-lite';
+import moment from 'moment';
 
-import {
-  YourLiquidity,
-  ExchangeSettings,
-  RecentTxs,
-  ImportPool,
-  RemoveLiquidity,
-  Receive,
-} from '..';
-import AddLiquidity from '../AddLiquidity';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
-import { ISettings, IRecentTx } from '../../../../types';
 import { useMst } from '../../../../store';
+import { IRecentTx, ISettings } from '../../../../types';
+import AddLiquidity from '../AddLiquidity';
+import {
+  ExchangeSettings,
+  ImportPool,
+  Receive,
+  RecentTxs,
+  RemoveLiquidity,
+  YourLiquidity,
+} from '..';
 
 const GET_USER_TRX = gql`
   query User($address: String!) {

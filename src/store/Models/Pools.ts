@@ -1,29 +1,30 @@
-import { types } from 'mobx-state-tree';
 import BigNumber from 'bignumber.js/bignumber';
+import { types } from 'mobx-state-tree';
 
 import { pools as poolsConfig } from '@/config';
-import { convertSharesToRefinery } from '@/store/pools/helpers';
-import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
-import { multicall } from '@/utils/multicall';
 import { metamaskService } from '@/services/MetamaskConnect';
+import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
+import { getTokenPricesFromFarms } from '@/store/farms';
 import {
   fetchPoolsAllowance,
-  fetchUserBalances,
-  fetchUserStakeBalances,
-  fetchUserPendingRewards,
   // fetch block limits (ends in)
   fetchPoolsBlockLimits,
   fetchPoolsStakingLimits,
   fetchPoolsTotalStaking,
+  fetchUserBalances,
+  fetchUserPendingRewards,
+  fetchUserStakeBalances,
 } from '@/store/pools';
-import { getTokenPricesFromFarms } from '@/store/farms';
-
-import FeesModel from './Fees';
-import AddressModel from './Address';
-import TokenModel from './Token';
-import { getBalanceAmount } from '@/utils/formatBalance';
+import { convertSharesToRefinery } from '@/store/pools/helpers';
 import { getPoolApr } from '@/utils/apr';
-import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils';
+import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils/constants';
+import { getBalanceAmount } from '@/utils/formatters';
+import { multicall } from '@/utils/multicall';
+
+import AddressModel from './Address';
+import FeesModel from './Fees';
+import TokenModel from './Token';
+import { toBigNumber } from '@/utils';
 
 const UserDataModel = types.model({
   allowance: types.string,
@@ -119,18 +120,21 @@ const PoolsModel = types
       multicall(abi, calls).then(this.fetchVaultFeesSuccess, this.fetchVaultFeesError);
     },
 
-    fetchVaultPublicDataSuccess(aggregatedCallsResponse: any) {
+    fetchVaultPublicDataSuccess(aggregatedCallsResponse: Array<string[]>) {
       // if (!aggregatedCallsResponse) throw new Error('MultiCallResponse is null');
-      const callsResult = aggregatedCallsResponse?.flat();
+      const callsResult = aggregatedCallsResponse.flat();
       const [
         sharePrice,
         shares,
         estimatedRefineryBountyReward,
         // totalPendingRefineryHarvest,
-      ] = callsResult?.map((result: any) => Number(result));
+      ] = callsResult;
 
-      const totalSharesAsBigNumber = new BigNumber(shares ? shares.toString() : 0);
-      const sharePriceAsBigNumber = new BigNumber(sharePrice ? sharePrice.toString() : 0);
+      // TODO: REMOVE
+      console.log('QWEQEWQWEQWEWQ', sharePrice, shares);
+
+      const totalSharesAsBigNumber = toBigNumber(shares);
+      const sharePriceAsBigNumber = toBigNumber(sharePrice);
       const totalRefineryInVaultEstimate = convertSharesToRefinery(
         totalSharesAsBigNumber,
         sharePriceAsBigNumber,
@@ -184,10 +188,10 @@ const PoolsModel = types
       } = response;
       self.userData = {
         isLoading: false,
-        userShares: new BigNumber(shares).toJSON(),
+        userShares: new BigNumber(shares).toFixed(),
         lastDepositedTime,
         lastUserActionTime,
-        refineryAtLastUserAction: new BigNumber(refineryAtLastUserActionAsString).toJSON(),
+        refineryAtLastUserAction: new BigNumber(refineryAtLastUserActionAsString).toFixed(),
       };
     },
     fetchVaultUserData(address: string) {

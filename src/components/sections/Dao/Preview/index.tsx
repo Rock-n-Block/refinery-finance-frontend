@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './Preview.scss';
-
 import Button from '@/components/atoms/Button';
+
+import './Preview.scss';
 
 const Preview: React.FC = () => {
   return (

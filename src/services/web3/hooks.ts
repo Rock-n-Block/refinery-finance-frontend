@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Contract } from 'web3-eth-contract';
 
+import useRefresh from '@/hooks/useRefresh';
+import { IReceipt } from '@/types';
+
 import { useWalletConnectorContext } from '../MetamaskConnect';
 
 import { GAS_PRICE_GWEI } from './configHelpers';
-import { IReceipt } from '@/types';
-import useRefresh from '@/hooks/useRefresh';
 
 interface ICallWithGasPrice {
   (params: {

@@ -7,7 +7,7 @@ import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useMst } from '@/store';
 import { useFarmUserData } from '@/store/farms/hooks';
 import { Farm } from '@/types';
-import { getAddLiquidityUrl } from '@/utils';
+import { getAddLiquidityUrl } from '@/utils/urlConstructors';
 
 import './FarmsStakeUnstakeButtons.scss';
 

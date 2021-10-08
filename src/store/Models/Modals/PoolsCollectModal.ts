@@ -1,4 +1,4 @@
-import { types, Instance } from 'mobx-state-tree';
+import { Instance, types } from 'mobx-state-tree';
 
 const PoolsCollectOptions = types.model({
   poolId: types.identifierNumber,

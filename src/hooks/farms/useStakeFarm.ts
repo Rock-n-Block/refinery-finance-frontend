@@ -1,8 +1,9 @@
-import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useCallback } from 'react';
-import { Contract } from 'web3-eth-contract';
-import { DEFAULT_TOKEN_DECIMAL } from '@/utils';
 import BigNumber from 'bignumber.js/bignumber';
+import { Contract } from 'web3-eth-contract';
+
+import { useCallWithGasPrice } from '@/services/web3/hooks';
+import { DEFAULT_TOKEN_DECIMAL } from '@/utils/constants';
 
 export const useStakeFarm = (masterRefinerContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();

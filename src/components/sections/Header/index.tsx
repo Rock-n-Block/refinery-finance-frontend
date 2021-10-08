@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
+import logo from '@/assets/img/icons/logo-header.svg';
+
 import { Menu } from '../index';
 
 import './Header.scss';
-import logo from '@/assets/img/icons/logo-header.svg';
 
 const Header: React.FC = React.memo(() => {
   const [isBurger, setIsBurger] = useState(false);

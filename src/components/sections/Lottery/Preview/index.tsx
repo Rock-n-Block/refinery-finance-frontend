@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './Preview.scss';
-
 import { ReactComponent as OpenLinkImg } from '../../../../assets/img/icons/open-link.svg';
+
+import './Preview.scss';
 
 const Preview: React.FC = React.memo(() => {
   return (

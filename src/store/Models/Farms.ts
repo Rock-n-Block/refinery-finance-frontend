@@ -2,10 +2,8 @@ import { types } from 'mobx-state-tree';
 
 import { farms as farmsConfig } from '@/config';
 import priceHelperLpsConfig from '@/config/priceHelperLps';
-
-import AddressModel from './Address';
-import TokenModel from './Token';
 import { FarmWithoutUserData } from '@/types';
+
 import {
   fetchFarms,
   fetchFarmsPrices,
@@ -14,6 +12,9 @@ import {
   fetchFarmUserStakedBalances,
   fetchFarmUserTokenBalances,
 } from '../farms';
+
+import AddressModel from './Address';
+import TokenModel from './Token';
 
 const UserDataModel = types.model({
   allowance: types.string,

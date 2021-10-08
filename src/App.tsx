@@ -2,19 +2,19 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { Header } from './components/sections';
 import { MetamaskErrModal, RoiModal } from './components/molecules';
+import { Header } from './components/sections';
 import {
-  TradePage,
-  LotteryPage,
-  FarmsPage,
-  PoolsPage,
   CollectiblesPage,
-  TeamsPage,
-  TeamPage,
   DaoListPage,
   DaoPage,
   DaoProposalPage,
+  FarmsPage,
+  LotteryPage,
+  PoolsPage,
+  TeamPage,
+  TeamsPage,
+  TradePage,
 } from './pages';
 import { useMst } from './store';
 

@@ -1,6 +1,7 @@
+import { useCallback } from 'react';
+
 import { getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
-import { useCallback } from 'react';
 
 export const useHarvestFarm = (pid: number) => {
   const { callWithGasPrice } = useCallWithGasPrice();

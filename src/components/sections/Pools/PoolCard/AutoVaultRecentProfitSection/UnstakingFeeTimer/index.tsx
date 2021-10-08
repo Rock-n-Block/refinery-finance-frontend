@@ -1,11 +1,11 @@
 // import React, { useEffect, useState } from 'react';
 import React from 'react';
 
+import useWithdrawalFeeTimer from '@/hooks/pools/useWithdrawalTimer';
 import { useSelectVaultData } from '@/store/pools/hooks';
+import { BIG_ZERO } from '@/utils/constants';
 
 import { durationFormatter } from '../../utils';
-import useWithdrawalFeeTimer from '@/hooks/pools/useWithdrawalTimer';
-import { BIG_ZERO } from '@/utils';
 
 // const mockData = {
 //   timeLeft: 2 * 24 * 60 * 60 * 1000 + 23 * 60 * 60 * 1000 + 31 * 60 * 1000,

@@ -1,10 +1,10 @@
 import {
-  RefineryVault,
-  Multicall,
-  SmartRefinerInitializable,
-  RocketPropellant,
-  RocketFactory,
   MasterRefiner,
+  Multicall,
+  RefineryVault,
+  RocketFactory,
+  RocketPropellant,
+  SmartRefinerInitializable,
 } from './abi';
 
 // all of the current contracts are in 42 network
@@ -818,5 +818,5 @@ export const contracts = {
   MASTER_REFINER: {
     ADDRESS: '0x9d09e68e0BF54b12e26CeE52cA7Fda24C571e153',
     ABI: MasterRefiner,
-  }
+  },
 };

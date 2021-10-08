@@ -1,12 +1,12 @@
 import BigNumber from 'bignumber.js/bignumber';
-import { types, Instance, getParent } from 'mobx-state-tree';
 import { autorun } from 'mobx';
+import { getParent, Instance, types } from 'mobx-state-tree';
+
+import { Precisions } from '@/types';
+import { getInterestBreakdown, getPrincipalForInterest, getRoi } from '@/utils/compoundApy';
+import { getBalanceAmount } from '@/utils/formatters';
 
 import RoiOptionsModel from './RoiOptions';
-
-import { getBalanceAmount } from '@/utils/formatBalance';
-import { getInterestBreakdown, getPrincipalForInterest, getRoi } from '@/utils/compoundApy';
-import { Precisions } from '@/types';
 
 // Used to track/react which currency user is editing (i.e. USD amount or Token amount)
 export enum EditingCurrency {

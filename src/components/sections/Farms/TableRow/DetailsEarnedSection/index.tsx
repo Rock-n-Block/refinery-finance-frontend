@@ -1,18 +1,18 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import { Button, InputNumber } from '@/components/atoms';
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { tokens } from '@/config/tokens';
 import { useHarvestFarm } from '@/hooks/farms/useHarvestFarm';
 import { useMst } from '@/store';
 import { FarmWithStakedValue } from '@/types';
-import { tokens } from '@/config/tokens';
+import { getBalanceAmount } from '@/utils/formatters';
 
 import DetailsSectionTitle from '../DetailsSectionTitle';
 import { EARNING_TOKEN_SYMBOL } from '../utils';
-import { getBalanceAmount } from '@/utils/formatBalance';
-import BigNumber from 'bignumber.js/bignumber';
 
 interface IDetailsEarnedSectionProps {
   className?: string;

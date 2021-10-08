@@ -1,8 +1,8 @@
 import React from 'react';
 import { InputNumber } from 'antd';
 
-import { Modal } from '../../../molecules';
 import { Button } from '../../../atoms';
+import { Modal } from '../../../molecules';
 
 import './BuyTicketsModal.scss';
 
