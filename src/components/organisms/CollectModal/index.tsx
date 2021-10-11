@@ -13,6 +13,7 @@ import useStakePool from '@/hooks/pools/useStakePool';
 import { useMst } from '@/store';
 import { PoolFarmingMode } from '@/types';
 import { getFullDisplayBalance } from '@/utils/formatters';
+import { clogError } from '@/utils/logger';
 
 import './CollectModal.scss';
 
@@ -65,45 +66,51 @@ const CollectModal: React.FC = observer(() => {
 
   const shouldCompound = hasCompoundHarvestChoice && isCompounding;
 
+  const compound = async () => {
+    try {
+      await onStake(fullBalance, earningTokenDecimals);
+      successNotification(
+        'Compounded!',
+        `Your ${earningTokenSymbol} earnings have been re-invested into the pool!`,
+      );
+      poolsCollect.close();
+    } catch (error) {
+      clogError(error);
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
+    } finally {
+      setPendingTx(false);
+    }
+  };
+
+  const harvest = async () => {
+    try {
+      await onReward();
+      successNotification(
+        'Harvested!',
+        `Your ${earningTokenSymbol} earnings have been sent to your wallet!`,
+      );
+      poolsCollect.close();
+    } catch (error) {
+      clogError(error);
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
+    } finally {
+      setPendingTx(false);
+    }
+  };
+
   const handleConfirm = async () => {
     // if (!options) return;
-    // compounding
+    setPendingTx(true);
     if (shouldCompound) {
-      setPendingTx(true);
-      try {
-        await onStake(fullBalance, earningTokenDecimals);
-        successNotification(
-          'Compounded!',
-          `Your ${earningTokenSymbol} earnings have been re-invested into the pool!`,
-        );
-        poolsCollect.close();
-      } catch (e) {
-        console.error(e);
-        errorNotification(
-          'Error',
-          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-        );
-      } finally {
-        setPendingTx(false);
-      }
+      await compound();
     } else {
-      // harvesting
-      try {
-        await onReward();
-        successNotification(
-          'Harvested!',
-          `Your ${earningTokenSymbol} earnings have been sent to your wallet!`,
-        );
-        poolsCollect.close();
-      } catch (e) {
-        console.error(e);
-        errorNotification(
-          'Error',
-          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-        );
-      } finally {
-        setPendingTx(false);
-      }
+      await harvest();
     }
   };
 

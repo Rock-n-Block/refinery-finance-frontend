@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { clone } from 'mobx-state-tree';
 
 import { Button } from '@/components/atoms';
 import { useMst } from '@/store';
@@ -36,7 +36,7 @@ const StakeUnstakeButtons: React.FC<{
     }
     return userData?.stakedBalance || BIG_ZERO;
   }, [isAutoVault, pricePerFullShare, userData?.stakedBalance, userShares]);
-  const clonedStakingToken = clone(stakingToken) as ITokenMobx;
+  const clonedStakingToken = toJS(stakingToken) as ITokenMobx;
   const buttons = [
     {
       handler: () => {

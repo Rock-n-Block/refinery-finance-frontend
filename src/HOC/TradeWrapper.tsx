@@ -4,6 +4,7 @@ import { contracts } from '@/config';
 import { walletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { IToken, ITokens } from '@/types';
+import { clogError } from '@/utils/logger';
 
 interface ITradeWrapper {
   isAllowanceFrom: boolean;
@@ -137,7 +138,7 @@ const TradeWrapper = (
           isAllowanceTo: false,
           isApproving: false,
         });
-        console.log('err approve tokens', err);
+        clogError('err approve tokens', err);
       }
     }
 
@@ -326,7 +327,7 @@ const TradeWrapper = (
         this.setState({
           isLoadingExchange: false,
         });
-        console.log('get pair', err);
+        clogError('get pair', err);
       }
     }
 

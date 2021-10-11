@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 
 import BnbImg from '@/assets/img/currency/unknown.svg';
+import { clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import MetamaskService from '../../../../services/web3';
@@ -49,7 +50,7 @@ const Receive: React.FC = observer(() => {
       }
     } catch (err) {
       setIsActiveTx(false);
-      console.log('remove liquidity', err);
+      clogError('remove liquidity', err);
     }
   };
 

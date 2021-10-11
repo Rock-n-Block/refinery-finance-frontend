@@ -16,15 +16,16 @@ import {
   fetchUserStakeBalances,
 } from '@/store/pools';
 import { convertSharesToRefinery } from '@/store/pools/helpers';
+import { toBigNumber } from '@/utils';
 import { getPoolApr } from '@/utils/apr';
 import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils/constants';
 import { getBalanceAmount } from '@/utils/formatters';
+import { clog, clogError } from '@/utils/logger';
 import { multicall } from '@/utils/multicall';
 
 import AddressModel from './Address';
 import FeesModel from './Fees';
 import TokenModel from './Token';
-import { toBigNumber } from '@/utils';
 
 const UserDataModel = types.model({
   allowance: types.string,
@@ -66,6 +67,7 @@ const PoolsModel = types
     pricePerFullShare: types.optional(types.maybeNull(types.string), null),
     totalRefineryInVault: types.optional(types.maybeNull(types.string), null),
     estimatedRefineryBountyReward: types.optional(types.maybeNull(types.string), null),
+    availableRefineryAmountToCompound: types.optional(types.string, '0'),
     fees: FeesModel,
     userData: types.model({
       isLoading: types.boolean,
@@ -101,7 +103,7 @@ const PoolsModel = types
       };
     },
     fetchVaultFeesError(error: any) {
-      console.error(error);
+      clogError(error);
       self.fees = {
         performanceFee: null,
         callFee: null,
@@ -127,11 +129,9 @@ const PoolsModel = types
         sharePrice,
         shares,
         estimatedRefineryBountyReward,
+        availableRefineryAmountToCompound,
         // totalPendingRefineryHarvest,
       ] = callsResult;
-
-      // TODO: REMOVE
-      console.log('QWEQEWQWEQWEWQ', sharePrice, shares);
 
       const totalSharesAsBigNumber = toBigNumber(shares);
       const sharePriceAsBigNumber = toBigNumber(sharePrice);
@@ -146,9 +146,12 @@ const PoolsModel = types
       self.estimatedRefineryBountyReward = new BigNumber(
         estimatedRefineryBountyReward.toString(),
       ).toJSON();
+      self.availableRefineryAmountToCompound = toBigNumber(
+        availableRefineryAmountToCompound,
+      ).toJSON();
     },
     fetchVaultPublicDataError(error: any) {
-      console.error(error);
+      clogError(error);
       self.totalShares = null;
       self.pricePerFullShare = null;
       self.totalRefineryInVault = null;
@@ -161,6 +164,7 @@ const PoolsModel = types
         'getPricePerFullShare',
         'totalShares',
         'calculateHarvestRefineryRewards',
+        'available', // to retrieve available amount of RP1 which is needed to compound // is used to correct totalStaked amount of MASTER Contract (Manual Pool)
         // 'calculateTotalPendingRefineryRewards',
       ].map((method) => ({
         address,
@@ -170,7 +174,7 @@ const PoolsModel = types
     },
 
     fetchVaultUserDataError(error: any) {
-      console.error(error);
+      clogError(error);
       self.userData = {
         isLoading: true,
         userShares: null,
@@ -215,7 +219,7 @@ const PoolsModel = types
 
       const prices = getTokenPricesFromFarms();
 
-      console.log(Object.freeze(prices));
+      clog(Object.freeze(prices));
 
       const livePoolsData = poolsConfig.map((pool) => {
         const blockLimit = blockLimits.find((entry) => entry.id === pool.id);

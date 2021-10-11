@@ -10,6 +10,7 @@ import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { useMst } from '@/store';
 import { ILiquidityInfo } from '@/types';
+import { clogError } from '@/utils/logger';
 
 import './LiquidityInfoModal.scss';
 
@@ -61,7 +62,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
         setDeposit1(depos1);
       }
     } catch (err) {
-      console.log('get deposites', err);
+      clogError('get deposites', err);
     }
   }, [
     info?.address,

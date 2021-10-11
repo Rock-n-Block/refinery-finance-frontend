@@ -9,6 +9,7 @@ import { contracts } from '@/config';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
 import { ILiquidityInfo } from '@/types';
+import { clogError } from '@/utils/logger';
 
 import { LiquidityInfoModal, TradeBox } from '..';
 
@@ -76,7 +77,7 @@ const YourLiquidity: React.FC = observer(() => {
               }
             })
             .catch((err) => {
-              console.log('check lp balance', err);
+              clogError('check lp balance', err);
             });
         }
       }

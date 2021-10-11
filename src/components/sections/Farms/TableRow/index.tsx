@@ -14,6 +14,7 @@ import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
 import { getBalanceAmount, numberWithCommas } from '@/utils/formatters';
+import { clog } from '@/utils/logger';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
@@ -80,7 +81,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
 
   const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
   const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
-  console.log(earningTokenPrice, stakingTokenPriceAsBN.toString());
+  clog(earningTokenPrice, stakingTokenPriceAsBN.toString());
   const stakingTokenBalance = new BigNumber(stakedBalance)
     .plus(new BigNumber(tokenBalance))
     .toString();

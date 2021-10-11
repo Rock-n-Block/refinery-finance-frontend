@@ -10,6 +10,10 @@ export const getBalanceAmount = (amount: BigNumber, decimals = 18): number => {
   return new BigNumber(amount).dividedBy(BIG_TEN.pow(decimals)).toNumber();
 };
 
+export const getBalanceAmountBN = (amount: BigNumber, decimals = 18): BigNumber => {
+  return new BigNumber(amount).dividedBy(BIG_TEN.pow(decimals));
+};
+
 export const getFullDisplayBalance = (params: {
   balance: BigNumber;
   decimals?: number;

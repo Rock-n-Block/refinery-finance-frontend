@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { clone } from 'mobx-state-tree';
 
 import { Button } from '@/components/atoms';
 import { ButtonProps } from '@/components/atoms/Button';
@@ -89,7 +89,7 @@ const StakingSection: React.FC<{
       handler: () => {
         modals.stakeUnstake.open({
           isStaking: true,
-          stakingToken: clone(stakingToken) as ITokenMobx,
+          stakingToken: toJS(stakingToken) as ITokenMobx,
           isAutoVault: Boolean(isAutoVault),
           maxStakingValue: (userData?.stakingTokenBalance || BIG_ZERO).toNumber(),
           poolId: id,

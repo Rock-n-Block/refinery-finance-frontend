@@ -10,6 +10,7 @@ import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { useMst } from '@/store';
 import { IToken, ITokens } from '@/types';
+import { clog, clogError } from '@/utils/logger';
 
 import { SelectTokenModal } from '..';
 
@@ -210,7 +211,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
           }
           return result;
         } catch (err) {
-          console.log(err, 'err check token allowance');
+          clogError(err, 'err check token allowance');
 
           if (changeTokenFromAllowance) {
             changeTokenFromAllowance(false);
@@ -344,7 +345,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
             }
           }
         } catch (err) {
-          console.log(`get balance ${type}`, err);
+          clogError(`get balance ${type}`, err);
         }
       },
       [initialTokenData, metamaskService, user.address],
@@ -430,7 +431,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
               className="box-circle box-f-c"
               onClick={handleSwapPositions}
               onKeyDown={() => {
-                console.log(1);
+                clog(1);
               }}
               role="button"
               tabIndex={-1}

@@ -3,7 +3,12 @@ import BigNumber from 'bignumber.js/bignumber';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { toBigNumber } from '@/utils';
 import { BIG_ZERO } from '@/utils/constants';
-import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatters';
+import {
+  getBalanceAmount,
+  getBalanceAmountBN,
+  getDecimalAmount,
+  getFullDisplayBalance,
+} from '@/utils/formatters';
 
 type UserData =
   | Pool['userData']
@@ -24,10 +29,11 @@ export const convertSharesToRefinery = (
   refineryAsBigNumber: BigNumber;
   refineryAsDisplayBalance: string | number;
 } => {
-  const sharePriceNumber = getBalanceAmount(refineryPerFullShare, decimals);
+  const sharePriceNumber = getBalanceAmountBN(refineryPerFullShare, decimals);
   const amountInRefinery = new BigNumber(shares.multipliedBy(sharePriceNumber));
-  const refineryAsNumberBalance = getBalanceAmount(amountInRefinery, decimals);
-  const refineryAsBigNumber = getDecimalAmount(new BigNumber(refineryAsNumberBalance), decimals);
+  const refineryAsBigNumberBalance = getBalanceAmountBN(amountInRefinery, decimals);
+  const refineryAsNumberBalance = refineryAsBigNumberBalance.toNumber();
+  const refineryAsBigNumber = getDecimalAmount(refineryAsBigNumberBalance, decimals);
   const refineryAsDisplayBalance = getFullDisplayBalance({
     balance: amountInRefinery,
     decimals,

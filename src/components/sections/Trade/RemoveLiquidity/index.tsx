@@ -10,6 +10,7 @@ import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { useMst } from '@/store';
 import { ILiquidityInfo } from '@/types';
+import { clogError } from '@/utils/logger';
 
 import { TradeBox } from '..';
 
@@ -56,7 +57,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         setTokensApprove(result);
       }
     } catch (err) {
-      console.log('check lp approve');
+      clogError('check lp approve', err);
       setTokensApprove(false);
     }
   }, [liquidityInfo, metamaskService, user.address]);
@@ -75,7 +76,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         setTokensApprove(true);
       }
     } catch (err) {
-      console.log('approve lp', err);
+      clogError('approve lp', err);
       setTokensApproving(false);
       setTokensApprove(false);
     }

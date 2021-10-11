@@ -205,7 +205,6 @@ const RoiStateModel = types
       self.data.roiPercentage = roiPercentage;
     };
     autorun(() => {
-      console.log('wtf AUTORUN1');
       if (!parent.options) return;
       if (self.controls.mode === CalculatorMode.PRINCIPAL_BASED_ON_ROI) {
         const { compounding, compoundingFrequency, stakingDuration } = self.controls;

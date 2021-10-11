@@ -29,6 +29,7 @@ export const useSelectVaultData = () => {
       totalRefineryInVault: totalRefineryInVaultRaw,
       pricePerFullShare: pricePerFullShareRaw,
       totalShares: totalSharesRaw,
+      availableRefineryAmountToCompound: availableRefineryAmountToCompoundRaw,
       fees,
       userData: {
         isLoading,
@@ -40,35 +41,39 @@ export const useSelectVaultData = () => {
     },
   } = useMst();
 
-  const estimatedRefineryBountyReward = useMemo(() => {
-    return toBigNumber(estimatedRefineryBountyRewardRaw, true);
-  }, [estimatedRefineryBountyRewardRaw]);
+  const estimatedRefineryBountyReward = useMemo(
+    () => toBigNumber(estimatedRefineryBountyRewardRaw, true),
+    [estimatedRefineryBountyRewardRaw],
+  );
 
-  const totalRefineryInVault = useMemo(() => {
-    return toBigNumber(totalRefineryInVaultRaw, true);
-  }, [totalRefineryInVaultRaw]);
+  const totalRefineryInVault = useMemo(() => toBigNumber(totalRefineryInVaultRaw, true), [
+    totalRefineryInVaultRaw,
+  ]);
 
-  const pricePerFullShare = useMemo(() => {
-    return toBigNumber(pricePerFullShareRaw, true);
-  }, [pricePerFullShareRaw]);
+  const pricePerFullShare = useMemo(() => toBigNumber(pricePerFullShareRaw, true), [
+    pricePerFullShareRaw,
+  ]);
 
-  const totalShares = useMemo(() => {
-    return toBigNumber(totalSharesRaw, true);
-  }, [totalSharesRaw]);
+  const totalShares = useMemo(() => toBigNumber(totalSharesRaw, true), [totalSharesRaw]);
 
-  const userShares = useMemo(() => {
-    return toBigNumber(userSharesAsString, true);
-  }, [userSharesAsString]);
+  const availableRefineryAmountToCompound = useMemo(
+    () => toBigNumber(availableRefineryAmountToCompoundRaw),
+    [availableRefineryAmountToCompoundRaw],
+  );
 
-  const refineryAtLastUserAction = useMemo(() => {
-    return toBigNumber(refineryAtLastUserActionAsString, true);
-  }, [refineryAtLastUserActionAsString]);
+  const userShares = useMemo(() => toBigNumber(userSharesAsString, true), [userSharesAsString]);
+
+  const refineryAtLastUserAction = useMemo(
+    () => toBigNumber(refineryAtLastUserActionAsString, true),
+    [refineryAtLastUserActionAsString],
+  );
 
   return {
     estimatedRefineryBountyReward,
     totalRefineryInVault,
     pricePerFullShare,
     totalShares,
+    availableRefineryAmountToCompound,
     fees,
     userData: {
       isLoading,

@@ -17,6 +17,7 @@ import { convertRefineryToShares, IConvertRefineryToSharesResult } from '@/store
 import { useSelectVaultData } from '@/store/pools/hooks';
 // import { BIG_ZERO } from '@/utils';
 import { getBalanceAmount, getDecimalAmount, getFullDisplayBalance } from '@/utils/formatters';
+import { clog, clogData, clogError } from '@/utils/logger';
 
 import './StakeUnstakeModal.scss';
 
@@ -48,6 +49,8 @@ const percentBoundariesButtons = [
     name: 'Max',
   },
 ];
+
+const gasOptions = { gas: 380000 };
 
 const StakeUnstakeModal: React.FC = observer(() => {
   // const [isBalanceFetched, setIsBalanceFetched] = useState(false);
@@ -99,88 +102,97 @@ const StakeUnstakeModal: React.FC = observer(() => {
 
   const valueToStakeAsBigNumber = useMemo(() => new BigNumber(valueToStake), [valueToStake]);
 
+  const updateViewByFetchingBlockchainData = useCallback(() => {
+    poolsStore.fetchVaultUserData(user.address);
+    poolsStore.fetchPoolsPublicDataAsync();
+  }, [poolsStore, user.address]);
+
+  const vaultStake = useCallback(async () => {
+    const valueToStakeDecimal = getDecimalAmount(
+      valueToStakeAsBigNumber,
+      modal.stakingToken?.decimals,
+    );
+
+    clog('STAKING AUTO ', valueToStakeDecimal.toFixed());
+    try {
+      const refineryVaultContract = getContract('REFINERY_VAULT');
+      const tx = await callWithGasPrice({
+        contract: refineryVaultContract,
+        methodName: 'deposit',
+        methodArgs: [valueToStakeDecimal.toFixed()],
+        options: gasOptions,
+      });
+      if (tx.status) {
+        successNotification('Staked!', 'Your funds have been staked in the pool');
+        updateViewByFetchingBlockchainData();
+      }
+    } catch (error) {
+      clogError(error);
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
+    } finally {
+      setPendingTx(false);
+    }
+  }, [
+    callWithGasPrice,
+    modal.stakingToken?.decimals,
+    valueToStakeAsBigNumber,
+    updateViewByFetchingBlockchainData,
+  ]);
+
+  const nonVaultStake = useCallback(async () => {
+    try {
+      await onStake(valueToStake.toString(), modal.stakingToken?.decimals || 18);
+      successNotification(
+        'Staked!',
+        `Your ${modal.stakingToken?.symbol} funds have been staked in the pool!`,
+      );
+    } catch (error) {
+      clogError(error);
+      errorNotification(
+        'Error',
+        'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+      );
+    } finally {
+      setPendingTx(false);
+    }
+  }, [modal.stakingToken?.decimals, modal.stakingToken?.symbol, onStake, valueToStake]);
+
   const handleStake = useCallback(async () => {
     setPendingTx(true);
     if (modal.isAutoVault) {
-      const valueToStakeDecimal = getDecimalAmount(
-        valueToStakeAsBigNumber,
-        modal.stakingToken?.decimals,
-      );
-
-      console.log('STAKING AUTO ', valueToStakeDecimal.toFixed());
-      try {
-        const refineryVaultContract = getContract('REFINERY_VAULT');
-        const tx = await callWithGasPrice({
-          contract: refineryVaultContract,
-          methodName: 'deposit',
-          methodArgs: [valueToStakeDecimal.toFixed()],
-          options: { gas: 380000 },
-        });
-        if (tx.status) {
-          successNotification('Staked!', 'Your funds have been staked in the pool');
-          poolsStore.fetchVaultUserData(user.address);
-        }
-      } catch (error) {
-        console.error(error);
-        errorNotification(
-          'Error',
-          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-        );
-      } finally {
-        setPendingTx(false);
-      }
+      await vaultStake();
     } else {
-      try {
-        await onStake(valueToStake.toString(), modal.stakingToken?.decimals || 18);
-        successNotification(
-          'Staked!',
-          `Your ${modal.stakingToken?.symbol} funds have been staked in the pool!`,
-        );
-      } catch (e) {
-        errorNotification(
-          'Error',
-          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-        );
-      } finally {
-        setPendingTx(false);
-      }
+      await nonVaultStake();
     }
-  }, [
-    modal.isAutoVault,
-    callWithGasPrice,
-    modal.stakingToken?.decimals,
-    poolsStore,
-    user.address,
-    valueToStakeAsBigNumber,
-    modal.stakingToken?.symbol,
-    onStake,
-    valueToStake,
-  ]);
+  }, [modal.isAutoVault, vaultStake, nonVaultStake]);
 
   const withdrawAll = useCallback(
     async (refineryVaultContract: Contract) => {
-        try {
-          const tx = await callWithGasPrice({
-            contract: refineryVaultContract,
-            methodName: 'withdrawAll',
-            methodArgs: undefined,
-            options: { gas: 380000 },
-          });
-          if (tx.status) {
+      try {
+        const tx = await callWithGasPrice({
+          contract: refineryVaultContract,
+          methodName: 'withdrawAll',
+          methodArgs: undefined,
+          options: gasOptions,
+        });
+        if (tx.status) {
           successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet');
-            poolsStore.fetchVaultUserData(user.address);
-          }
-        } catch (error) {
-        console.error(error);
-          errorNotification(
-            'Error',
-            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-          );
-        } finally {
-          setPendingTx(false);
+          updateViewByFetchingBlockchainData();
         }
+      } catch (error) {
+        clogError(error);
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
+      } finally {
+        setPendingTx(false);
+      }
     },
-    [callWithGasPrice, poolsStore, user.address],
+    [callWithGasPrice, updateViewByFetchingBlockchainData],
   );
 
   const withdraw = useCallback(
@@ -188,28 +200,32 @@ const StakeUnstakeModal: React.FC = observer(() => {
       refineryVaultContract: Contract,
       shareStakeToWithdraw: IConvertRefineryToSharesResult,
     ) => {
-        try {
-          const tx = await callWithGasPrice({
-            contract: refineryVaultContract,
-            methodName: 'withdraw',
-            methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toFixed()],
-            options: { gas: 380000 },
-          });
-          if (tx.status) {
+      clogData(
+        'Converted to Shares UNSTAKING VALUE',
+        shareStakeToWithdraw.sharesAsBigNumber.toFixed(0, BigNumber.ROUND_DOWN),
+      );
+      try {
+        const tx = await callWithGasPrice({
+          contract: refineryVaultContract,
+          methodName: 'withdraw',
+          methodArgs: [shareStakeToWithdraw.sharesAsBigNumber.toFixed(0, BigNumber.ROUND_DOWN)],
+          options: gasOptions,
+        });
+        if (tx.status) {
           successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet');
-            poolsStore.fetchVaultUserData(user.address);
-          }
-        } catch (error) {
-        console.error(error);
-          errorNotification(
-            'Error',
-            'Please try again. Confirm the transaction and make sure you are paying enough gas!',
-          );
-        } finally {
-          setPendingTx(false);
+          updateViewByFetchingBlockchainData();
         }
+      } catch (error) {
+        clogError(error);
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
+      } finally {
+        setPendingTx(false);
+      }
     },
-    [callWithGasPrice, poolsStore, user.address],
+    [callWithGasPrice, updateViewByFetchingBlockchainData],
   );
 
   const handleUnstake = useCallback(async () => {
@@ -221,7 +237,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
         modal.stakingToken?.decimals,
       );
 
-      console.log('UNSTAKING VALUE', {
+      clogData('UNSTAKING VALUE', {
         valueToStake,
         valueToStakeDecimal,
         pricePerFullShare,
@@ -233,9 +249,20 @@ const StakeUnstakeModal: React.FC = observer(() => {
       if (!pricePerFullShare || !userShares) return;
 
       const shareStakeToWithdraw = convertRefineryToShares(valueToStakeDecimal, pricePerFullShare);
-      // trigger withdrawAll function if the withdrawal will leave 0.000001 CAKE or less
-      const triggerWithdrawAllThreshold = new BigNumber(1000000000000);
+      // trigger withdrawAll function if the withdrawal will leave 0.000001 RP1 or less
+      const triggerWithdrawAllThreshold = convertRefineryToShares(
+        new BigNumber(1000000000000),
+        pricePerFullShare,
+      ).sharesAsBigNumber;
       const sharesRemaining = userShares.minus(shareStakeToWithdraw.sharesAsBigNumber);
+
+      clogData(
+        'TEST WITHDRAW ALL',
+        userShares.toFixed(),
+        shareStakeToWithdraw.sharesAsBigNumber.toFixed(),
+        sharesRemaining.toFixed(),
+        triggerWithdrawAllThreshold.toFixed(),
+      );
       const isWithdrawingAll = sharesRemaining.lte(triggerWithdrawAllThreshold);
 
       if (isWithdrawingAll) {
@@ -273,7 +300,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
   ]);
 
   const handleConfirm = async () => {
-    console.log(valueToStake);
+    clog(valueToStake);
     if (modal.isStaking) {
       await handleStake();
     } else {

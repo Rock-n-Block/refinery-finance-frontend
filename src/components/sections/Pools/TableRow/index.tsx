@@ -12,6 +12,7 @@ import {
   RecentProfitColumn,
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
+import { useTotalStaked } from '@/hooks/pools/useTotalStaked';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
@@ -24,7 +25,6 @@ import {
   feeFormatter,
   getBalanceAmount,
   getFullDisplayBalance,
-  loadingDataFormatter,
   numberWithCommas,
 } from '@/utils/formatters';
 
@@ -68,17 +68,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
   const {
     pricePerFullShare,
     userData: { userShares, refineryAtLastUserAction },
-    totalRefineryInVault,
   } = useSelectVaultData();
-  const {
-    earningToken,
-    stakingToken,
-    userData,
-    apr,
-    earningTokenPrice,
-    totalStaked,
-    stakingTokenPrice,
-  } = pool;
+  const { earningToken, stakingToken, userData, apr, earningTokenPrice, stakingTokenPrice } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const [isOpenDetails, setOpenDetails] = useState(false);
@@ -121,24 +112,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     });
   };
 
-  const totalStakedBalance = useMemo(() => {
-    switch (farmMode) {
-      case PoolFarmingMode.auto:
-        return loadingDataFormatter(totalRefineryInVault, { decimals: stakingToken.decimals });
-      case PoolFarmingMode.manual: {
-        if (!totalStaked || !totalRefineryInVault) return loadingDataFormatter();
-        return loadingDataFormatter(new BigNumber(totalStaked).minus(totalRefineryInVault), {
-          decimals: stakingToken.decimals,
-        });
-      }
-      case PoolFarmingMode.earn:
-      default:
-        return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
-    }
-  }, [farmMode, stakingToken.decimals, totalRefineryInVault, totalStaked]);
-  const totalStakedBalanceToDisplay = new BigNumber(totalStakedBalance).toFixed(
-    Precisions.shortToken,
-  );
+  const { totalStakedBalanceToDisplay } = useTotalStaked(pool, farmMode);
 
   const stakedValueAsString = useMemo(
     () =>
@@ -251,7 +225,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
           modalHandler={handleOpenRoiModal}
         />
         <TotalStakedColumn
-          value={totalStakedBalanceToDisplay}
+          value={totalStakedBalanceToDisplay.toString()}
           currencySymbol={stakingToken.symbol}
           onlyDesktop
         />

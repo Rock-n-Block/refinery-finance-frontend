@@ -2,9 +2,9 @@
 /* eslint-disable no-console */
 import { SHOW_LOGS } from '@/config';
 
-export const clog = (data: string): void => {
+export const clog = (...data: any): void => {
   if (SHOW_LOGS) {
-    console.log(data);
+    console.log(...data);
   }
 };
 
@@ -22,4 +22,8 @@ export const clogGroup = (name: string, end?: boolean): void => {
     }
     console.group(name);
   }
+};
+
+export const clogError = (...errors: any): void => {
+  if (SHOW_LOGS) console.error(...errors);
 };

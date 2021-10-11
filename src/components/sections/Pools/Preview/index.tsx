@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import BgImg from '@/assets/img/sections/pools/bg-2.svg';
-import { Button } from '@/components/atoms';
+import { Button, Skeleton } from '@/components/atoms';
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { tokens } from '@/config';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { getContract } from '@/services/web3/contractHelpers';
@@ -12,23 +13,23 @@ import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
 import { IReceipt, Precisions } from '@/types';
-import { getFullDisplayBalance } from '@/utils/formatters';
+import { loadingDataFormatter } from '@/utils/formatters';
+import { clogError } from '@/utils/logger';
 
-// import { loadingDataFormatter } from '@/utils';
 import { AutoBountyPopover } from '../Popovers';
 
 import './Preview.scss';
 
-const mockData = {
-  symbol: 'RP1',
-};
+const gasOptions = { gas: 300000 };
 
 const ClaimBounty: React.FC = observer(() => {
   const [pendingTx, setPendingTx] = useState(false);
   const { tokenUsdPrice } = useRefineryUsdPrice();
-  const { user } = useMst();
+  const { user, pools: poolsStore } = useMst();
   const { connect } = useWalletConnectorContext();
   const { callWithGasPrice } = useCallWithGasPrice();
+
+  const tokenSymbol = tokens.rp1.symbol;
 
   const handleClaimBounty = async () => {
     setPendingTx(true);
@@ -37,18 +38,17 @@ const ClaimBounty: React.FC = observer(() => {
       const tx = await callWithGasPrice({
         contract,
         methodName: 'harvest',
-        options: {
-          gas: 300000,
-        },
+        options: gasOptions,
       });
       if ((tx as IReceipt).status) {
         successNotification(
           'Bounty collected!',
-          `${mockData.symbol} bounty has been sent to your wallet.`,
+          `${tokenSymbol} bounty has been sent to your wallet.`,
         );
+        poolsStore.fetchPoolsPublicDataAsync();
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (error) {
+      clogError(error);
       errorNotification(
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',
@@ -60,35 +60,48 @@ const ClaimBounty: React.FC = observer(() => {
 
   const { fees, estimatedRefineryBountyReward } = useSelectVaultData();
 
-  const displayBountyReward =
-    estimatedRefineryBountyReward === null
-      ? '###'
-      : getFullDisplayBalance({
-          balance: estimatedRefineryBountyReward,
-          displayDecimals: Precisions.shortToken,
-        });
+  const displayBountyReward = useMemo(
+    () =>
+      loadingDataFormatter(estimatedRefineryBountyReward, {
+        displayDecimals: Precisions.shortToken,
+      }),
+    [estimatedRefineryBountyReward],
+  );
 
-  const displayBountyRewardUsd =
-    estimatedRefineryBountyReward === null
-      ? '###'
-      : getFullDisplayBalance({
-          balance: new BigNumber(estimatedRefineryBountyReward).multipliedBy(tokenUsdPrice),
+  const displayBountyRewardUsd = useMemo(
+    () =>
+      loadingDataFormatter(
+        new BigNumber(estimatedRefineryBountyReward || 0).multipliedBy(tokenUsdPrice),
+        {
           displayDecimals: Precisions.fiat,
-        });
+        },
+      ),
+    [estimatedRefineryBountyReward, tokenUsdPrice],
+  );
+
+  const isLoadingBountyData = estimatedRefineryBountyReward === null;
 
   return (
     <div className="pools-preview__bounty box-white box-shadow">
       <div className="pools-preview__bounty-title box-f-ai-c">
-        <span className="text-upper text-med text-ssm text-purple">
-          Auto {mockData.symbol} Bounty
-        </span>
-        <AutoBountyPopover symbol={mockData.symbol} fee={fees.callFee} />
+        <span className="text-upper text-med text-ssm text-purple">Auto {tokenSymbol} Bounty</span>
+        <AutoBountyPopover symbol={tokenSymbol} fee={fees.callFee} />
       </div>
       <div className="pools-preview__bounty-box box-f-ai-c box-f-jc-sb">
         <div>
-          <div className="text-lg">{displayBountyReward}</div>
+          {isLoadingBountyData ? (
+            <Skeleton.Input style={{ width: 60 }} size="small" active />
+          ) : (
+            <div className="text-lg">{displayBountyReward}</div>
+          )}
           <div className="pools-preview__bounty-usd text-med text-gray">
-            ~ {displayBountyRewardUsd} USD
+            ~{' '}
+            {isLoadingBountyData ? (
+              <Skeleton.Input style={{ width: 40 }} size="small" active />
+            ) : (
+              displayBountyRewardUsd
+            )}{' '}
+            USD
           </div>
         </div>
         {!user.address ? (

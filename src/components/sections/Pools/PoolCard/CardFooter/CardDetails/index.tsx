@@ -2,16 +2,19 @@ import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
+import { Skeleton } from '@/components/atoms';
 import OpenLink from '@/components/sections/Pools/OpenLink';
 import { getPoolBlockInfo } from '@/components/sections/Pools/PoolCard/utils';
 import { TotalStakedPopover } from '@/components/sections/Pools/Popovers';
+import { useTotalStaked } from '@/hooks/pools/useTotalStaked';
 import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getAddress, getContractAddress } from '@/services/web3/contractHelpers';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { useSelectVaultData } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { feeFormatter, loadingDataFormatter, numberWithCommas } from '@/utils/formatters';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { feeFormatter, numberWithCommas } from '@/utils/formatters';
+import { clogData } from '@/utils/logger';
 
 const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer(({ pool, type }) => {
   const {
@@ -37,24 +40,18 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
         : getAddress(pool.contractAddress)
     }`,
   );
-  const totalStakedBalance = useMemo(() => {
-    switch (type) {
-      case PoolFarmingMode.auto:
-        return loadingDataFormatter(totalRefineryInVault, { decimals: stakingToken.decimals });
-      case PoolFarmingMode.manual: {
-        if (!totalStaked || !totalRefineryInVault) return loadingDataFormatter();
-        return loadingDataFormatter(new BigNumber(totalStaked).minus(totalRefineryInVault), {
-          decimals: stakingToken.decimals,
-        });
-      }
-      case PoolFarmingMode.earn:
-      default:
-        return loadingDataFormatter(totalStaked, { decimals: stakingToken.decimals });
-    }
-  }, [type, stakingToken.decimals, totalRefineryInVault, totalStaked]);
-  const totalStakedBalanceToDisplay = new BigNumber(totalStakedBalance).toFixed(
-    Precisions.shortToken,
+
+  const { totalStakedBalance, totalStakedBalanceToDisplay } = useTotalStaked(pool, type);
+
+  clogData(
+    `TotalStakedRaw ${type}`,
+    totalRefineryInVault?.toFixed(),
+    totalStaked?.toFixed(),
+    new BigNumber(totalStaked!).minus(totalRefineryInVault!).toFixed(),
   );
+
+  clogData(`totalStakedBalance ${type}`, totalStakedBalance);
+
   const performanceRow = useMemo(() => {
     return type === PoolFarmingMode.auto
       ? [
@@ -81,19 +78,31 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
         ]
       : [];
   }, [shouldShowBlockCountdown, blocksToDisplay]);
-  const items = [
-    {
-      title: 'Total staked:',
-      value: (
-        <>
-          <span>{totalStakedBalanceToDisplay}</span>
-          <TotalStakedPopover symbol={stakingToken.symbol} />
-        </>
-      ),
-    },
-    ...performanceRow,
-    ...endsInRow,
-  ];
+  const items = useMemo(() => {
+    return [
+      {
+        title: 'Total staked:',
+        value: (
+          <>
+            {totalStakedBalance ? (
+              <span>{totalStakedBalanceToDisplay}</span>
+            ) : (
+              <Skeleton.Input style={{ width: 60 }} size="small" active />
+            )}
+            <TotalStakedPopover symbol={stakingToken.symbol} />
+          </>
+        ),
+      },
+      ...performanceRow,
+      ...endsInRow,
+    ];
+  }, [
+    endsInRow,
+    performanceRow,
+    stakingToken.symbol,
+    totalStakedBalance,
+    totalStakedBalanceToDisplay,
+  ]);
   const links = [
     {
       href: earningToken.address ? seeTokenInfoLink : '',

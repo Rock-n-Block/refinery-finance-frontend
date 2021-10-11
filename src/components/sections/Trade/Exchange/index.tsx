@@ -1,6 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
+import { clogError } from '@/utils/logger';
+
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
 import MetamaskService from '../../../../services/web3';
 import { useMst } from '../../../../store';
@@ -77,7 +79,7 @@ const Exchange: React.FC<IExchange> = observer(
             },
           });
         } catch (err) {
-          console.log('swap err', err);
+          clogError('swap err', err);
         }
       }
     };

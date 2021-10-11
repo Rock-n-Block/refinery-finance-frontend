@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import exampleAvatarPng from '@/assets/img/REMOVE_ME-avatar.png';
 import Button from '@/components/atoms/Button';
 import { DaoInformation, DaoPreview, DaoSection, DaoWrapper } from '@/components/sections/Dao';
+import { clog } from '@/utils/logger';
 
 import './Dao.scss';
 
@@ -164,7 +165,7 @@ const Dao: React.FC = () => {
   const [votedOption, setVotedOption] = useState(-1);
 
   useEffect(() => {
-    console.log(`retrieve data by id=${id}`);
+    clog(`retrieve data by id=${id}`);
   }, [id]);
   return (
     <DaoWrapper>

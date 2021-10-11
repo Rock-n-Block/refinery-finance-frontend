@@ -1,6 +1,7 @@
 import { flow, types } from 'mobx-state-tree';
 
-import { tokensApi } from '../../services/api';
+import { tokensApi } from '@/services/api';
+import { clogError } from '@/utils/logger';
 
 const TokenModel = types.model({
   name: types.string,
@@ -39,7 +40,7 @@ const TokensModel = types
 
         self[type] = responce.data;
       } catch (err) {
-        console.log(err);
+        clogError(err);
       }
     });
 

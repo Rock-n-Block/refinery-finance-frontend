@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
+import { Skeleton } from '@/components/atoms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
@@ -119,14 +120,31 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     [convertedStakedValue],
   );
 
+  const nonAutoVaultEarningsToDisplay = useMemo(
+    () =>
+      getFullDisplayBalance({
+        balance: nonAutoVaultEarnings,
+        decimals: pool.earningToken.decimals,
+        displayDecimals: Precisions.shortToken,
+      }),
+    [nonAutoVaultEarnings, pool.earningToken.decimals],
+  );
+
   const convertedNonAutoVaultEarnings = useMemo(() => {
     return nonAutoVaultEarnings.times(refineryUsdPrice);
   }, [nonAutoVaultEarnings, refineryUsdPrice]);
 
-  // const convertedNonAutoVaultEarningsAsString = useMemo(
-  //   () => convertedNonAutoVaultEarnings.toString(),
-  //   [convertedNonAutoVaultEarnings],
-  // );
+  const convertedNonAutoVaultEarningsToDisplay = useMemo(
+    () =>
+      getFullDisplayBalance({
+        balance: convertedNonAutoVaultEarnings,
+        decimals: pool.earningToken.decimals,
+        displayDecimals: Precisions.fiat,
+      }),
+    [convertedNonAutoVaultEarnings, pool.earningToken.decimals],
+  );
+
+  const isNonAutoVaultEarningsLoading = nonAutoVaultEarnings.isNaN();
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -154,7 +172,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         <span className="text-smd text-purple text-med text-upper">
           {farmMode === PoolFarmingMode.auto ? 'apy' : 'apr'}
         </span>
-        {/* TODO: APR APY modal */}
         <div
           className="p-card__apr-percent box-pointer"
           onClick={handleOpenApr}
@@ -163,7 +180,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
           tabIndex={0}
         >
           <span className="text-smd">{earningsPercentageToDisplay}%</span>
-          {/* <span className="text-smd">{Number(apr).toFixed(2).replace('.', ',')}%</span> */}
           <img src={CalcImg} alt="calculator" />
         </div>
       </div>
@@ -181,19 +197,19 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                 <div>
                   <div className="text-smd text-purple text-med">{earningToken.symbol} Earned</div>
                   <div className="p-card__earned-profit-value text-blue-d text-smd">
-                    {getFullDisplayBalance({
-                      balance: nonAutoVaultEarnings,
-                      decimals: pool.earningToken.decimals,
-                      displayDecimals: Precisions.shortToken,
-                    })}
+                    {isNonAutoVaultEarningsLoading ? (
+                      <Skeleton.Input style={{ width: 60 }} size="small" active />
+                    ) : (
+                      nonAutoVaultEarningsToDisplay
+                    )}
                   </div>
                   <div className="text-gray text-smd">
                     ~
-                    {getFullDisplayBalance({
-                      balance: convertedNonAutoVaultEarnings,
-                      decimals: pool.earningToken.decimals,
-                      displayDecimals: Precisions.fiat,
-                    })}{' '}
+                    {isNonAutoVaultEarningsLoading ? (
+                      <Skeleton.Input style={{ width: 40 }} size="small" active />
+                    ) : (
+                      convertedNonAutoVaultEarningsToDisplay
+                    )}
                     USD
                   </div>
                 </div>

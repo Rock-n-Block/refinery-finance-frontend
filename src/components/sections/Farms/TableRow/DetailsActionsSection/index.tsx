@@ -7,12 +7,12 @@ import { errorNotification, successNotification } from '@/components/atoms/Notif
 import useApproveFarm from '@/hooks/farms/useApprove';
 import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
-// import { BIG_ZERO } from '@/utils';
 import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { useFarmUserData } from '@/store/farms/hooks';
 import { FarmWithStakedValue, Precisions } from '@/types';
 import { getBalanceAmount } from '@/utils/formatters';
+import { clog, clogError } from '@/utils/logger';
 import { getAddLiquidityUrl } from '@/utils/urlConstructors';
 
 import FarmsStakeUnstakeButtons from '../../FarmsStakeUnstakeButtons';
@@ -55,14 +55,14 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
       if (txStatus) {
         successNotification('Contract Enabled!', `You can now stake in the ${lpSymbol} farm!`);
       } else {
-        console.info(txStatus);
+        clog(txStatus);
         errorNotification(
           'Error',
           'Please try again. Confirm the transaction and make sure you are paying enough gas!',
         );
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      clogError(error);
       errorNotification(
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',

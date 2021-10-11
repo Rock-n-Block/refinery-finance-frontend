@@ -12,12 +12,12 @@ import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/o
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
 import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
 import useRefresh from '@/hooks/useRefresh';
-// import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { useMst } from '@/store';
 import { getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { usePools, useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { BIG_ZERO } from '@/utils/constants';
+import { clog } from '@/utils/logger';
 
 import './Pools.scss';
 
@@ -288,7 +288,7 @@ const Pools: React.FC = observer(() => {
   const handleSortSelectChange = (selected: any) => {
     const { value } = selected;
     setSortOption(value as SortOptions);
-    console.log(value);
+    clog(value);
   };
 
   useEffect(() => {
@@ -339,8 +339,6 @@ const Pools: React.FC = observer(() => {
   useEffect(() => {
     poolsStore.fetchPoolsPublicData();
   }, [poolsStore, slowRefresh]);
-
-  // console.log(pools);
 
   return (
     <>

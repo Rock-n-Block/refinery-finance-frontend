@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js/bignumber';
 import { Contract } from 'web3-eth-contract';
 
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
-import { pools as poolsConfig } from '@/config';
+import { pools as poolsConfig, tokens } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
 import { metamaskService } from '@/services/MetamaskConnect';
 import { getAddress, getContract, getContractAddress } from '@/services/web3/contractHelpers';
@@ -11,8 +11,11 @@ import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { IReceipt } from '@/types';
 import { MAX_UINT_256 } from '@/utils/constants';
+import { clogError } from '@/utils/logger';
 
 import useLastUpdated from '../useLastUpdated';
+
+const gasOptions = { gas: 300000 };
 
 export const useApprovePool = (lpContract: Contract, poolId: number) => {
   const [requestedApproval, setRequestedApproval] = useState(false);
@@ -32,9 +35,7 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
         contract: lpContract,
         methodName: 'approve',
         methodArgs: [smartRefinerInitContract.options.address, MAX_UINT_256],
-        options: {
-          gas: 300000,
-        },
+        options: gasOptions,
       });
 
       poolsStore.updateUserAllowance(poolId, user.address);
@@ -50,8 +51,8 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
         );
       }
       setRequestedApproval(false);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      clogError(error);
       errorNotification(
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',
@@ -72,7 +73,6 @@ export const useApprovePool = (lpContract: Contract, poolId: number) => {
 
 // Approve RP1 auto pool
 export const useVaultApprove = (setLastUpdated: () => void) => {
-  const MOCK_RP1_SYMBOL = 'RP1';
   const [requestedApproval, setRequestedApproval] = useState(false);
   const { callWithGasPrice } = useCallWithGasPrice();
 
@@ -84,15 +84,13 @@ export const useVaultApprove = (setLastUpdated: () => void) => {
       contract: rocketPropellantContract,
       methodName: 'approve',
       methodArgs: [vaultAddress, MAX_UINT_256],
-      options: {
-        gas: 300000,
-      },
+      options: gasOptions,
     });
     setRequestedApproval(true);
     if ((tx as IReceipt).status) {
       successNotification(
         'Contract Enabled!',
-        `You can now stake in the ${MOCK_RP1_SYMBOL} vault!`,
+        `You can now stake in the ${tokens.rp1.symbol} vault!`,
       );
       setLastUpdated();
     } else {

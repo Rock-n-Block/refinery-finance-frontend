@@ -9,6 +9,7 @@ import useStakeFarms from '@/hooks/farms/useStakeFarms';
 import useUnstakeFarms from '@/hooks/farms/useUnstakeFarms';
 import { useMst } from '@/store';
 import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatters';
+import { clog, clogError } from '@/utils/logger';
 
 import './FarmsStakeUnstakeModal.scss';
 
@@ -81,41 +82,40 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
   const valueToStakeAsBigNumber = useMemo(() => new BigNumber(valueToStake), [valueToStake]);
 
   const handleStake = useCallback(async () => {
-    setPendingTx(true);
     try {
       await onStake(valueToStake.toString());
       farmsStore.fetchFarmUserDataAsync(user.address, [modal.farmId]);
       successNotification('Staked!', 'Your funds have been staked in the farm!');
-    } catch (e) {
+    } catch (error) {
+      clogError(error);
       errorNotification(
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',
       );
-      console.error(e);
     } finally {
       setPendingTx(false);
     }
   }, [user.address, onStake, valueToStake, farmsStore, modal.farmId]);
 
   const handleUnstake = useCallback(async () => {
-    setPendingTx(true);
     try {
       await onUnstake(valueToStake.toString());
       farmsStore.fetchFarmUserDataAsync(user.address, [modal.farmId]);
       successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet!');
-    } catch (e) {
+    } catch (error) {
+      clogError(error);
       errorNotification(
         'Error',
         'Please try again. Confirm the transaction and make sure you are paying enough gas!',
       );
-      console.error(e);
     } finally {
       setPendingTx(false);
     }
   }, [user.address, onUnstake, valueToStake, farmsStore, modal.farmId]);
 
   const handleConfirm = async () => {
-    console.log(valueToStake);
+    clog(valueToStake);
+    setPendingTx(true);
     if (modal.isStaking) {
       await handleStake();
     } else {
