@@ -140,7 +140,9 @@ const Pools: React.FC = observer(() => {
   } = useSelectVaultData();
   // const [filteredPools, setFilteredPools] = useState(poolsWithoutAutoVault);
   const [appliedFilters, setAppliedFilters] = useState<Map<IFilterBy, IFilterFunc>>(new Map());
-  const [isListView, setIsListView] = useState(false);
+  const [isListView, setIsListView] = useState(
+    localStorage['refinery-finance-pools-view'] === PoolsContentView.list,
+  );
   // const [poolsTypeFilter, setPoolsTypeFilter] = useState(PoolsType.live);
   const [sortOption, setSortOption] = useState(SortOptions.hot);
 
@@ -229,6 +231,9 @@ const Pools: React.FC = observer(() => {
   }, [filteredPools]);
 
   const handleSwitchView = (value: boolean) => {
+    localStorage['refinery-finance-pools-view'] = value
+      ? PoolsContentView.list
+      : PoolsContentView.card;
     setIsListView(value);
   };
 

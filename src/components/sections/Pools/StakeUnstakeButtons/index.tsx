@@ -17,7 +17,7 @@ const StakeUnstakeButtons: React.FC<{
   className?: string;
   pool: Pool;
 }> = observer(({ className, pool }) => {
-  const { stakingToken, isAutoVault, userData, id: poolId } = pool;
+  const { id: poolId, isAutoVault, stakingToken, userData, isFinished } = pool;
   const {
     pricePerFullShare,
     userData: { userShares },
@@ -51,6 +51,7 @@ const StakeUnstakeButtons: React.FC<{
       text: '-',
     },
     {
+      disabled: isFinished,
       handler: () => {
         modals.stakeUnstake.open({
           isStaking: true,
@@ -65,8 +66,14 @@ const StakeUnstakeButtons: React.FC<{
   ];
   return (
     <div className={classNames(className, 'pools-stake-unstake-buttons', 'box-f')}>
-      {buttons.map(({ text, handler }) => (
-        <Button key={text} colorScheme="outline-purple" size="ssm" onClick={handler}>
+      {buttons.map(({ text, handler, disabled = false }) => (
+        <Button
+          key={text}
+          colorScheme="outline-purple"
+          size="ssm"
+          disabled={disabled}
+          onClick={disabled ? undefined : handler}
+        >
           <span className="text-smd text-purple text-bold">{text}</span>
         </Button>
       ))}

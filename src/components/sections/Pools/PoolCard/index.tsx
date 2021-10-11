@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
-import { Skeleton } from '@/components/atoms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
@@ -15,7 +14,6 @@ import { feeFormatter, getFullDisplayBalance } from '@/utils/formatters';
 
 import 'antd/lib/select/style/css';
 
-import CollectButton from '../CollectButton';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
@@ -23,7 +21,8 @@ import AutoVaultRecentProfitSection from './AutoVaultRecentProfitSection';
 import CardFooter from './CardFooter';
 import CardSubtitle from './CardSubtitle';
 import CardTitle from './CardTitle';
-import { getAprData, useNonAutoVaultEarnings } from './utils';
+import EarnedSection from './EarnedSection';
+import { getAprData } from './utils';
 
 import './PoolCard.scss';
 
@@ -48,7 +47,15 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   const {
     userData: { userShares },
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData, apr, earningTokenPrice, stakingTokenPrice } = pool;
+  const {
+    earningToken,
+    stakingToken,
+    userData,
+    apr,
+    earningTokenPrice,
+    stakingTokenPrice,
+    isFinished,
+  } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const performanceFee =
@@ -80,27 +87,11 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     () =>
       getFullDisplayBalance({
         balance: stakedValue,
-        decimals: pool.stakingToken.decimals,
+        decimals: stakingToken.decimals,
         displayDecimals: Precisions.shortToken,
       }).toString(),
-    [stakedValue, pool.stakingToken.decimals],
+    [stakedValue, stakingToken.decimals],
   );
-
-  const { nonAutoVaultEarnings, nonAutoVaultEarningsAsString } = useNonAutoVaultEarnings(pool);
-
-  const collectHandler = () => {
-    modals.poolsCollect.open({
-      poolId: pool.id,
-      farmMode,
-      earningTokenSymbol: pool.earningToken.symbol,
-      earnings: nonAutoVaultEarningsAsString,
-      earningTokenDecimals: Number(pool.earningToken.decimals),
-      fullBalance: getFullDisplayBalance({
-        balance: nonAutoVaultEarnings,
-        decimals: pool.earningToken.decimals,
-      }).toString(),
-    });
-  };
 
   const hasConnectedWallet = Boolean(user.address);
 
@@ -119,32 +110,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     () => convertedStakedValue.toFixed(Precisions.fiat),
     [convertedStakedValue],
   );
-
-  const nonAutoVaultEarningsToDisplay = useMemo(
-    () =>
-      getFullDisplayBalance({
-        balance: nonAutoVaultEarnings,
-        decimals: pool.earningToken.decimals,
-        displayDecimals: Precisions.shortToken,
-      }),
-    [nonAutoVaultEarnings, pool.earningToken.decimals],
-  );
-
-  const convertedNonAutoVaultEarnings = useMemo(() => {
-    return nonAutoVaultEarnings.times(refineryUsdPrice);
-  }, [nonAutoVaultEarnings, refineryUsdPrice]);
-
-  const convertedNonAutoVaultEarningsToDisplay = useMemo(
-    () =>
-      getFullDisplayBalance({
-        balance: convertedNonAutoVaultEarnings,
-        decimals: pool.earningToken.decimals,
-        displayDecimals: Precisions.fiat,
-      }),
-    [convertedNonAutoVaultEarnings, pool.earningToken.decimals],
-  );
-
-  const isNonAutoVaultEarningsLoading = nonAutoVaultEarnings.isNaN();
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -167,6 +132,9 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
           {earningToken && <img src={earningToken.logoURI} alt="" />}
           <img src={stakingToken.logoURI} alt="" />
         </div>
+        {isFinished && (
+          <div className="p-card__badge_finished box-purple-l text-orange text-bold">Finished</div>
+        )}
       </div>
       <div className="p-card__apr p-card__box box-f-ai-c box-f-jc-sb">
         <span className="text-smd text-purple text-med text-upper">
@@ -190,37 +158,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
             stakingTokenSymbol={stakingToken.symbol}
           />
         )}
-        {hasConnectedWallet &&
-          (farmMode === PoolFarmingMode.earn || farmMode === PoolFarmingMode.manual) && (
-            <>
-              <div className="p-card__earned box-f box-f-jc-sb">
-                <div>
-                  <div className="text-smd text-purple text-med">{earningToken.symbol} Earned</div>
-                  <div className="p-card__earned-profit-value text-blue-d text-smd">
-                    {isNonAutoVaultEarningsLoading ? (
-                      <Skeleton.Input style={{ width: 60 }} size="small" active />
-                    ) : (
-                      nonAutoVaultEarningsToDisplay
-                    )}
-                  </div>
-                  <div className="text-gray text-smd">
-                    ~
-                    {isNonAutoVaultEarningsLoading ? (
-                      <Skeleton.Input style={{ width: 40 }} size="small" active />
-                    ) : (
-                      convertedNonAutoVaultEarningsToDisplay
-                    )}
-                    USD
-                  </div>
-                </div>
-                <CollectButton
-                  farmMode={farmMode}
-                  value={nonAutoVaultEarnings.toNumber()}
-                  collectHandler={collectHandler}
-                />
-              </div>
-            </>
-          )}
+        {farmMode !== PoolFarmingMode.auto && <EarnedSection pool={pool} farmMode={farmMode} />}
         {hasConnectedWallet && hasStakedValue ? (
           <div className="p-card__staked">
             <div className="text-smd text-purple text-med">

@@ -41,7 +41,7 @@ const DetailsLinks: React.FC<{ farmMode: IPoolFarmingMode; pool: Pool }> = ({ fa
           text={text}
         />
       ))}
-      <div className="box-f-c">
+      <div className="box-f-ai-c box-f-jc-s">
         <FarmingModeStatus type={farmMode} />
         {farmMode === PoolFarmingMode.auto ? (
           <AutoFarmingPopover className="pools-table-row__details-info-popover" />

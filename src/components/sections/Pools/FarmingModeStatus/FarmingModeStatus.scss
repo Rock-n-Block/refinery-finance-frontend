@@ -2,20 +2,10 @@
 
 .farming-mode-status {
   &__button {
-    padding-left: 8px;
+    padding: 4px 4px 4px 0;
+    border: none;
 
     &_auto {
-      padding-top: 8px;
-      padding-bottom: 8px;
-
-      &:hover {
-        & > :first-child {
-          svg {
-            animation: rotation 0.7s infinite linear;
-          }
-        }
-      }
-
       & > :first-child {
         width: 20px;
         height: 20px;

@@ -266,46 +266,49 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
       >
         <div className="pools-table-row__details box-purple-l">
           <DetailsLinks farmMode={farmMode} pool={pool} />
-          <div className="pools-table-row__buttons box-f-ai-c t-box-b">
-            <RecentProfit
-              farmMode={farmMode}
-              tokenStake={stakingToken}
-              value={recentProfit}
-              onCollect={collectHandler}
-            />
-            <div className="pools-table-row__details-box">
-              {hasConnectedWallet && hasStakedValue ? (
-                <>
-                  <div className="pools-table-row__details-title text-ssm text-upper text-purple text-med">
-                    {stakingToken.symbol} Staked{' '}
-                    {farmMode === PoolFarmingMode.auto && '(compounding)'}
-                  </div>
-                  <div className="box-f box-f-jc-sb box-f-ai-e">
-                    <div className="pools-table-row__details-staked-values-group">
-                      <div className="pools-table-row__details-staked-value text-blue-d text-smd">
-                        {stakedValueAsString}
-                      </div>
-                      <div className="text-gray text-smd">
-                        ~{convertedStakedValueAsString} {mockData.currencyToConvert}
-                      </div>
+          {pool.isFinished && !hasStakedValue ? null : (
+            <div className="pools-table-row__buttons box-f-ai-c t-box-b">
+              <RecentProfit
+                farmMode={farmMode}
+                tokenStake={stakingToken}
+                earnings={recentProfit}
+                isFinished={pool.isFinished}
+                onCollect={collectHandler}
+              />
+              <div className="pools-table-row__details-box">
+                {hasConnectedWallet && hasStakedValue ? (
+                  <>
+                    <div className="pools-table-row__details-title text-ssm text-upper text-purple text-med">
+                      {stakingToken.symbol} Staked{' '}
+                      {farmMode === PoolFarmingMode.auto && '(compounding)'}
                     </div>
-                    <StakeUnstakeButtons pool={pool} />
-                  </div>
-                </>
-              ) : (
-                <StakingSection
-                  pool={pool}
-                  titleClassName="pools-table-row__details-title text-ssm text-upper"
-                  buttonProps={{
-                    className: 'pools-table-row__details-box-start-staking-button',
-                    size: 'lg',
-                  }}
-                  tokenSymbol={stakingToken.symbol}
-                  stakedValue={stakedValue}
-                />
-              )}
+                    <div className="box-f box-f-jc-sb box-f-ai-e">
+                      <div className="pools-table-row__details-staked-values-group">
+                        <div className="pools-table-row__details-staked-value text-blue-d text-smd">
+                          {stakedValueAsString}
+                        </div>
+                        <div className="text-gray text-smd">
+                          ~{convertedStakedValueAsString} {mockData.currencyToConvert}
+                        </div>
+                      </div>
+                      <StakeUnstakeButtons pool={pool} />
+                    </div>
+                  </>
+                ) : (
+                  <StakingSection
+                    pool={pool}
+                    titleClassName="pools-table-row__details-title text-ssm text-upper"
+                    buttonProps={{
+                      className: 'pools-table-row__details-box-start-staking-button',
+                      size: 'lg',
+                    }}
+                    tokenSymbol={stakingToken.symbol}
+                    stakedValue={stakedValue}
+                  />
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CSSTransition>
     </div>

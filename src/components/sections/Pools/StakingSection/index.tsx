@@ -28,7 +28,7 @@ const StakingSection: React.FC<{
 }> = observer(({ pool, stakedValue, titleClassName, tokenSymbol, buttonProps }) => {
   const { connect, metamaskService } = useWalletConnectorContext();
   const { user, modals } = useMst();
-  const { isAutoVault = false, userData, id, stakingToken } = pool;
+  const { isAutoVault = false, userData, id, stakingToken, isFinished } = pool;
   const [pendingTx, setPendingTx] = useState(false);
 
   // Data for regular approval buttons
@@ -49,6 +49,9 @@ const StakingSection: React.FC<{
     );
     handleApprove = useApprovePool(stakingTokenContract, id).handleApprove;
   }
+
+  // Not staked && Pool ended
+  if (isFinished) return null;
 
   const approveHandler = async () => {
     setPendingTx(true);

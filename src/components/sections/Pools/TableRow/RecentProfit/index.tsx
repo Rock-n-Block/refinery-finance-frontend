@@ -10,14 +10,20 @@ import CollectButton from '../../CollectButton';
 interface IRecentProfitProps {
   farmMode: IPoolFarmingMode;
   tokenStake: Token;
-  value: number;
+  earnings: number;
+  isFinished?: boolean;
   onCollect: () => void;
 }
 
 const RecentProfit: React.FC<IRecentProfitProps> = observer(
-  ({ farmMode, tokenStake, value, onCollect }) => {
+  ({ farmMode, tokenStake, earnings, isFinished, onCollect }) => {
     const { user } = useMst();
     const hasConnectedWallet = Boolean(user.address);
+
+    if (isFinished && earnings === 0) {
+      return null;
+    }
+
     return (
       <div className="pools-table-row__details-box">
         <div className="pools-table-row__details-title text-purple text-ssm text-med text-upper">
@@ -25,11 +31,12 @@ const RecentProfit: React.FC<IRecentProfitProps> = observer(
         </div>
         <InputNumber
           colorScheme="white"
-          value={value}
+          value={earnings}
           inputPrefix={
             hasConnectedWallet &&
-            (farmMode === PoolFarmingMode.earn || farmMode === PoolFarmingMode.manual) ? (
-              <CollectButton farmMode={farmMode} value={value} collectHandler={onCollect} />
+            (farmMode === PoolFarmingMode.earn || farmMode === PoolFarmingMode.manual) &&
+            !isFinished ? (
+              <CollectButton farmMode={farmMode} value={earnings} collectHandler={onCollect} />
             ) : undefined
           }
           readOnly
