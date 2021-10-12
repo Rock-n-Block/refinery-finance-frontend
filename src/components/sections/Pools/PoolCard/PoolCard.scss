@@ -37,7 +37,7 @@ $card-bg-color: #f9f9f9;
       width: 62px;
     }
 
-    img+img {
+    img + img {
       position: absolute;
       width: 32px;
       bottom: -8px;
@@ -58,12 +58,13 @@ $card-bg-color: #f9f9f9;
   &__box {
     padding: 25px 30px;
 
-    &+& {
+    & + & {
       border-top: 1px solid #e6e6e6;
     }
   }
 
-  &__footer {}
+  &__footer {
+  }
 
   &__footer-info-popover {
     width: 20px;
@@ -108,7 +109,7 @@ $card-bg-color: #f9f9f9;
     &-item {
       margin-left: auto;
 
-      &+& {
+      & + & {
         margin-top: 10px;
       }
 

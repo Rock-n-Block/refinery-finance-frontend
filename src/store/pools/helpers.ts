@@ -141,3 +141,9 @@ export const getStakedValue = (
   const { userData } = pool;
   return toBigNumber(userData?.stakedBalance);
 };
+
+export const getFarmMode = (pool: Pool): IPoolFarmingMode => {
+  if (pool.isAutoVault) return PoolFarmingMode.auto;
+  if (pool.id === 0) return PoolFarmingMode.manual;
+  return PoolFarmingMode.earn;
+};

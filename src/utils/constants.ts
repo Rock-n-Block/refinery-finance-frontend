@@ -9,4 +9,5 @@ export const MAX_UINT_256 = Web3.utils.hexToNumberString(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
 
-export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(18);
+export const DEFAULT_TOKEN_POWER = 18;
+export const DEFAULT_TOKEN_DECIMAL = BIG_TEN.pow(DEFAULT_TOKEN_POWER);

@@ -1,8 +1,7 @@
 @import 'src/styles/vars';
 @import 'src/styles/mixins/media';
 
-$columns: 1fr 1fr 0.5fr 1fr 1fr 0.1fr;
-$columns-tablet: 1fr 1fr 1fr 0.1fr;
+@import '../styles';
 
 .pools-table-row {
   position: relative;

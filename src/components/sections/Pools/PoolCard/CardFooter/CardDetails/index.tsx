@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import { Skeleton } from '@/components/atoms';
@@ -11,10 +10,8 @@ import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getAddress, getContractAddress } from '@/services/web3/contractHelpers';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
-import { useSelectVaultData } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { feeFormatter, numberWithCommas } from '@/utils/formatters';
-import { clogData } from '@/utils/logger';
 
 const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer(({ pool, type }) => {
   const {
@@ -30,8 +27,7 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
     // hasPoolStarted,
     blocksToDisplay,
   } = getPoolBlockInfo(pool, currentBlock);
-  const { totalRefineryInVault } = useSelectVaultData();
-  const { earningToken, stakingToken, totalStaked } = pool;
+  const { earningToken, stakingToken } = pool;
   const seeTokenInfoLink = useScannerUrl(`token/${getAddress(earningToken.address)}`);
   const viewContractLink = useScannerUrl(
     `address/${
@@ -42,15 +38,6 @@ const CardDetails: React.FC<{ type: IPoolFarmingMode; pool: Pool }> = observer((
   );
 
   const { totalStakedBalance, totalStakedBalanceToDisplay } = useTotalStaked(pool, type);
-
-  clogData(
-    `TotalStakedRaw ${type}`,
-    totalRefineryInVault?.toFixed(),
-    totalStaked?.toFixed(),
-    new BigNumber(totalStaked!).minus(totalRefineryInVault!).toFixed(),
-  );
-
-  clogData(`totalStakedBalance ${type}`, totalStakedBalance);
 
   const performanceRow = useMemo(() => {
     return type === PoolFarmingMode.auto

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
+import { ValueType } from 'rc-input-number/lib/utils/MiniDecimal';
 
 import { Button, InputNumber, Slider } from '@/components/atoms';
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
@@ -8,7 +9,10 @@ import { Modal } from '@/components/molecules';
 import useStakeFarms from '@/hooks/farms/useStakeFarms';
 import useUnstakeFarms from '@/hooks/farms/useUnstakeFarms';
 import { useMst } from '@/store';
-import { getBalanceAmount, getFullDisplayBalance } from '@/utils/formatters';
+import { Precisions } from '@/types';
+import { getTokenUsdPrice } from '@/utils';
+import { BIG_ZERO, DEFAULT_TOKEN_POWER } from '@/utils/constants';
+import { getBalanceAmountBN } from '@/utils/formatters';
 import { clog, clogError } from '@/utils/logger';
 
 import './FarmsStakeUnstakeModal.scss';
@@ -38,53 +42,69 @@ const percentBoundariesButtons = [
 ];
 
 const FarmsStakeUnstakeModal: React.FC = observer(() => {
-  // const [isBalanceFetched, setIsBalanceFetched] = useState(false);
   const [pendingTx, setPendingTx] = useState(false);
   const [percent, setPercent] = useState(MAX_PERCENTAGE / 4);
-  const [valueToStake, setValueToStake] = useState(0);
+  const [inputValue, setInputValue] = useState(BIG_ZERO);
 
   const { modals, farms: farmsStore, user } = useMst();
   const modal = modals.farmsStakeUnstake;
+  const { isStaking, farmId, maxValue: maxStakeUnstakeValueRaw } = modal;
   const tokenUsdPrice = modal.lpPrice;
-  // const { tokenUsdPrice } = useRefineryUsdPrice();
-  const { onStake } = useStakeFarms(modal.farmId);
-  const { onUnstake } = useUnstakeFarms(modal.farmId);
-  // const { callWithGasPrice } = useCallWithGasPrice();
+  const { onStake } = useStakeFarms(farmId);
+  const { onUnstake } = useUnstakeFarms(farmId);
+
+  const maxStakeUnstakeValueBN = useMemo(
+    () => getBalanceAmountBN(new BigNumber(maxStakeUnstakeValueRaw)),
+    [maxStakeUnstakeValueRaw],
+  );
 
   const calculateValueByPercent = useCallback(
     (newPercentValue: number) =>
-      (getBalanceAmount(new BigNumber(modal.maxValue)) * newPercentValue) / MAX_PERCENTAGE,
-    [modal.maxValue],
+      maxStakeUnstakeValueBN.times(newPercentValue).dividedBy(MAX_PERCENTAGE),
+    [maxStakeUnstakeValueBN],
   );
-  const calculatePercentByValue = (newValue: number) =>
-    (MAX_PERCENTAGE * newValue) / getBalanceAmount(new BigNumber(modal.maxValue));
+  const calculatePercentByValue = (newValue: BigNumber) =>
+    newValue.times(MAX_PERCENTAGE).dividedBy(maxStakeUnstakeValueBN).toNumber();
+
+  const validateInputValue = useCallback((value: string | number | BigNumber) => {
+    return new BigNumber(new BigNumber(value).toFixed(DEFAULT_TOKEN_POWER));
+  }, []);
+
+  const updateInputValue = useCallback(
+    (newValue: string | number | BigNumber) => {
+      setInputValue(validateInputValue(newValue));
+    },
+    [validateInputValue],
+  );
 
   const updateValueByPercent = useCallback(
     (newPercent: number) => {
-      setValueToStake(calculateValueByPercent(newPercent));
+      updateInputValue(calculateValueByPercent(newPercent));
     },
-    [calculateValueByPercent],
+    [updateInputValue, calculateValueByPercent],
   );
-  const updatePercentByValue = (newValue: number) => {
-    setPercent(calculatePercentByValue(newValue));
+  const updatePercentByValue = (newValue: string | number | BigNumber) => {
+    const validatedValue = validateInputValue(newValue);
+    setPercent(calculatePercentByValue(validatedValue));
   };
 
-  const handleValueChange = (newValue: any) => {
-    setValueToStake(newValue);
+  const handleValueChange = (newValue: ValueType | null) => {
+    if (newValue === null) return;
+    updateInputValue(newValue);
     updatePercentByValue(newValue);
   };
 
   const handlePercentChange = (newPercentValue: number) => {
+    if (percent === newPercentValue) return;
     setPercent(newPercentValue);
     updateValueByPercent(newPercentValue);
   };
 
-  const valueToStakeAsBigNumber = useMemo(() => new BigNumber(valueToStake), [valueToStake]);
-
+  const inputValueAsString = useMemo(() => inputValue.toFixed(), [inputValue]);
   const handleStake = useCallback(async () => {
     try {
-      await onStake(valueToStake.toString());
-      farmsStore.fetchFarmUserDataAsync(user.address, [modal.farmId]);
+      await onStake(inputValueAsString);
+      farmsStore.fetchFarmUserDataAsync(user.address, [farmId]);
       successNotification('Staked!', 'Your funds have been staked in the farm!');
     } catch (error) {
       clogError(error);
@@ -95,12 +115,12 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
     } finally {
       setPendingTx(false);
     }
-  }, [user.address, onStake, valueToStake, farmsStore, modal.farmId]);
+  }, [user.address, farmId, inputValueAsString, farmsStore, onStake]);
 
   const handleUnstake = useCallback(async () => {
     try {
-      await onUnstake(valueToStake.toString());
-      farmsStore.fetchFarmUserDataAsync(user.address, [modal.farmId]);
+      await onUnstake(inputValueAsString);
+      farmsStore.fetchFarmUserDataAsync(user.address, [farmId]);
       successNotification('Unstaked!', 'Your earnings have also been harvested to your wallet!');
     } catch (error) {
       clogError(error);
@@ -111,12 +131,12 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
     } finally {
       setPendingTx(false);
     }
-  }, [user.address, onUnstake, valueToStake, farmsStore, modal.farmId]);
+  }, [user.address, farmId, inputValueAsString, farmsStore, onUnstake]);
 
   const handleConfirm = async () => {
-    clog(valueToStake);
+    clog(inputValue);
     setPendingTx(true);
-    if (modal.isStaking) {
+    if (isStaking) {
       await handleStake();
     } else {
       await handleUnstake();
@@ -128,11 +148,6 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
     updateValueByPercent(percent);
   }, [percent, updateValueByPercent]);
 
-  const usdValueToStake = useMemo(() => valueToStakeAsBigNumber.times(tokenUsdPrice).toFixed(2), [
-    valueToStakeAsBigNumber,
-    tokenUsdPrice,
-  ]);
-
   useEffect(() => {
     // for any 'location' changes with opened modal
     return () => {
@@ -140,9 +155,18 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
     };
   }, [modal]);
 
-  const isNotEnoughBalanceToStake = modal.maxValue === '0';
+  const inputValueUsdToDisplay = useMemo(() => getTokenUsdPrice(inputValue, tokenUsdPrice), [
+    inputValue,
+    tokenUsdPrice,
+  ]);
+  const balanceToDisplay = useMemo(() => maxStakeUnstakeValueBN.toFixed(Precisions.shortToken), [
+    maxStakeUnstakeValueBN,
+  ]);
 
-  const { addLiquidityUrl } = modal;
+  const isNotEnoughBalanceToStake = maxStakeUnstakeValueRaw === '0';
+  const hasValidationErrors = isNotEnoughBalanceToStake || inputValue.eq(0) || inputValue.isNaN();
+
+  const { addLiquidityUrl, tokenSymbol } = modal;
 
   return (
     <Modal
@@ -154,36 +178,32 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
     >
       <div className="farms-stake-unstake-modal__content">
         <div className="farms-stake-unstake-modal__title text-smd text-bold text-purple">
-          {modal.isStaking ? 'Stake in Pool' : 'Unstake'}
+          {isStaking ? 'Stake in Farm' : 'Unstake'}
         </div>
         <div className="farms-stake-unstake-modal__subtitle box-f-ai-c box-f-jc-sb">
-          <span className="text-purple text-med text">{modal.isStaking ? 'Stake' : 'Unstake'}</span>
+          <span className="text-purple text-med text">{isStaking ? 'Stake' : 'Unstake'}</span>
           <div className="box-f-ai-c farms-stake-unstake-modal__currency text-smd text-purple">
-            <span>{modal.tokenSymbol}</span>
+            <span>{tokenSymbol}</span>
           </div>
         </div>
         <InputNumber
           className="farms-stake-unstake-modal__input"
-          value={valueToStakeAsBigNumber.toNumber()}
+          value={inputValueAsString}
           colorScheme="outline"
           inputSize="md"
           inputPrefix={
             <span className="text-ssm text-gray">
-              ~{usdValueToStake} {mockData.additionalCurrency}
+              ~{inputValueUsdToDisplay} {mockData.additionalCurrency}
             </span>
           }
           prefixPosition="button"
           min={0}
-          max={getBalanceAmount(new BigNumber(modal.maxValue))}
-          // readOnly={!isBalanceFetched}
+          max={maxStakeUnstakeValueBN.toFixed()}
+          stringMode // to support high precision decimals
           onChange={handleValueChange}
         />
         <div className="farms-stake-unstake-modal__balance text-right">
-          Balance:{' '}
-          {getFullDisplayBalance({
-            balance: new BigNumber(modal.maxValue),
-            displayDecimals: 3,
-          })}
+          Balance: {balanceToDisplay}
         </div>
         <Slider value={percent} onChange={handlePercentChange} />
         <div className="box-f-ai-c box-f-jc-sb farms-stake-unstake-modal__btns">
@@ -201,18 +221,18 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
         <Button
           className="farms-stake-unstake-modal__btn"
           loading={pendingTx}
-          disabled={isNotEnoughBalanceToStake}
-          onClick={isNotEnoughBalanceToStake ? undefined : handleConfirm}
+          disabled={hasValidationErrors}
+          onClick={hasValidationErrors ? undefined : handleConfirm}
         >
           <span className="text-white text-bold text-smd">Confirm</span>
         </Button>
-        {modal.isStaking && (
+        {isStaking && (
           <Button
             className="farms-stake-unstake-modal__btn farms-stake-unstake-modal__btn-get-currency"
             colorScheme="outline-purple"
             link={addLiquidityUrl}
           >
-            <span className="text-bold text-smd">Get {modal.tokenSymbol}</span>
+            <span className="text-bold text-smd">Get {tokenSymbol}</span>
           </Button>
         )}
       </div>

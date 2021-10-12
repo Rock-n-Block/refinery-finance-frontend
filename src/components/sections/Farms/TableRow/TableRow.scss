@@ -1,6 +1,8 @@
 @import 'src/styles/vars';
 @import 'src/styles/mixins/media';
 
+@import '../styles';
+
 .farms-table-row {
   position: relative;
 
@@ -24,14 +26,14 @@
 
   &__content {
     display: grid;
-    grid-template-columns: 2fr 0.5fr 1fr 2fr 1fr 1fr;
+    grid-template-columns: $columns;
     align-items: center;
     grid-column-gap: 20px;
     padding: 35px 30px;
     cursor: pointer;
 
     @include b(tablet) {
-      grid-template-columns: 2fr 1fr 1fr 0.1fr;
+      grid-template-columns: $columns-tablet;
       padding: 20px 20px 20px 10px;
     }
   }
@@ -88,7 +90,20 @@
     }
 
     &:last-of-type {
+      // margin-left: auto;
       text-align: right;
+
+      @include b(1120) {
+        span {
+          visibility: hidden;
+          opacity: 0;
+          width: 0;
+        }
+
+        svg {
+          margin-left: 0;
+        }
+      }
     }
 
     &-img {

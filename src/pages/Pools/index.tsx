@@ -12,11 +12,13 @@ import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/o
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
 import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
 import useRefresh from '@/hooks/useRefresh';
+import { getAddress } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
-import { getRefineryVaultEarnings } from '@/store/pools/helpers';
+import { getFarmMode, getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { usePools, useSelectVaultData } from '@/store/pools/hooks';
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { Pool, Token } from '@/types';
 import { BIG_ZERO } from '@/utils/constants';
+import { feeFormatter } from '@/utils/formatters';
 import { clog } from '@/utils/logger';
 
 import './Pools.scss';
@@ -83,18 +85,9 @@ const PoolsContent: React.FC<IPoolsContent> = ({ view, content }) => {
         {view === PoolsContentView.list && <PoolTable data={content} />}
         {view === PoolsContentView.card &&
           content.map((pool) => {
-            let farmMode: IPoolFarmingMode;
-            if (pool.isAutoVault) {
-              farmMode = PoolFarmingMode.auto;
-            } else if (pool.id === 0) {
-              farmMode = PoolFarmingMode.manual;
-            } else {
-              farmMode = PoolFarmingMode.earn;
-            }
+            const farmMode = getFarmMode(pool);
             return (
               <PoolCard
-                // {...pool}
-                // `${pool.tokenEarn?.address}${pool.tokenStake.address}`
                 key={pool.isAutoVault ? 'auto-pool' : pool.id}
                 farmMode={farmMode}
                 pool={pool}
@@ -157,7 +150,7 @@ const Pools: React.FC = observer(() => {
       let sortFunc: (pool1: typeof array[0], pool2: typeof array[0]) => number;
       switch (sortOption) {
         case SortOptions.apr: {
-          const performanceFeeAsDecimal = Number(performanceFee) / 100;
+          const performanceFeeAsDecimal = feeFormatter(Number(performanceFee));
           const getAprValue = (pool: Pool) => {
             // Ternary is needed to prevent pools without APR getting top spot
             return pool.apr ? getAprData(pool, performanceFeeAsDecimal).apr : 0;
@@ -213,12 +206,7 @@ const Pools: React.FC = observer(() => {
     ],
   );
 
-  const filteredPools = useMemo(() => {
-    // useEffect(() => {
-    //   setFilteredPools(sort(filter()));
-    // }, [filter, sort]);
-    return sort(filter());
-  }, [sort, filter]);
+  const filteredPools = useMemo(() => sort(filter()), [sort, filter]);
 
   const pools = useMemo(() => {
     const refinerPool = filteredPools.find((pool) => pool.id === 0);
@@ -243,7 +231,9 @@ const Pools: React.FC = observer(() => {
   };
 
   const filterByName = (whereToFind: string, toBeFound: string) => {
-    return whereToFind.toUpperCase().startsWith(String(toBeFound).toUpperCase());
+    return whereToFind.split(' ').some((value) => {
+      return value.toUpperCase().startsWith(toBeFound.toUpperCase());
+    });
   };
 
   const handleStakedSwitchChange: SwitchClickEventHandler = (isStaked) => {
@@ -262,11 +252,30 @@ const Pools: React.FC = observer(() => {
     );
   };
 
+  const searchByTokenAddress = (stakingToken: Token, earningToken: Token, value: string) => {
+    return filterByName(
+      `${getAddress(stakingToken.address)} ${getAddress(earningToken.address)}`,
+      value,
+    );
+  };
+  const searchByTokenSymbol = (stakingToken: Token, earningToken: Token, value: string) => {
+    return filterByName(`${stakingToken.symbol} ${earningToken.symbol}`, value);
+  };
+
   const handleSearch = (value: string | number) => {
+    const validatedValue = String(value);
     setAppliedFilters(
       new Map([
         ...appliedFilters,
-        [FilterBy.name, ({ stakingToken }) => filterByName(stakingToken.symbol, String(value))],
+        [
+          FilterBy.name,
+          ({ stakingToken, earningToken }) => {
+            if (validatedValue.startsWith('0x')) {
+              return searchByTokenAddress(stakingToken, earningToken, validatedValue);
+            }
+            return searchByTokenSymbol(stakingToken, earningToken, validatedValue);
+          },
+        ],
       ]),
     );
   };

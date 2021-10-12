@@ -7,9 +7,8 @@ import CalcImg from '@/assets/img/icons/calc.svg';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
-import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
+import { useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { toBigNumber } from '@/utils';
 import { feeFormatter, getFullDisplayBalance } from '@/utils/formatters';
 
 import 'antd/lib/select/style/css';
@@ -45,12 +44,8 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     },
   } = useMst();
   const {
-    userData: { userShares },
-  } = useSelectVaultData();
-  const {
     earningToken,
     stakingToken,
-    userData,
     apr,
     earningTokenPrice,
     stakingTokenPrice,
@@ -65,7 +60,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
     performanceFee,
   );
 
-  const stakedValue = useStakedValue(farmMode, pool);
+  const { hasStakedValue, stakedValue } = useStakedValue(farmMode, pool);
   const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
 
   const handleOpenApr = (e: any): void => {
@@ -94,14 +89,6 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   );
 
   const hasConnectedWallet = Boolean(user.address);
-
-  const hasStakedValue = useMemo(() => {
-    if (farmMode === PoolFarmingMode.auto) {
-      return userShares && userShares.gt(0);
-    }
-    const stakedBalance = toBigNumber(userData?.stakedBalance);
-    return stakedBalance.gt(0);
-  }, [farmMode, userData?.stakedBalance, userShares]);
 
   const convertedStakedValue = useMemo(() => {
     return new BigNumber(stakedValueAsString).times(refineryUsdPrice);

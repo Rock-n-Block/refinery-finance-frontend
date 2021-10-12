@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
@@ -31,6 +31,11 @@ const ClaimBounty: React.FC = observer(() => {
 
   const tokenSymbol = tokens.rp1.symbol;
 
+  const updateViewByFetchingBlockchainData = useCallback(() => {
+    poolsStore.fetchPoolsPublicDataAsync();
+    poolsStore.fetchVaultPublicData();
+  }, [poolsStore]);
+
   const handleClaimBounty = async () => {
     setPendingTx(true);
     try {
@@ -45,7 +50,7 @@ const ClaimBounty: React.FC = observer(() => {
           'Bounty collected!',
           `${tokenSymbol} bounty has been sent to your wallet.`,
         );
-        poolsStore.fetchPoolsPublicDataAsync();
+        updateViewByFetchingBlockchainData();
       }
     } catch (error) {
       clogError(error);

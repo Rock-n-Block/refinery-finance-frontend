@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js/bignumber';
 
+import { Precisions } from '@/types';
+
 import { BIG_ZERO } from './constants';
 
 /**
@@ -19,4 +21,31 @@ export function toBigNumber(
   if (value === undefined) return BIG_ZERO;
   if (BigNumber.isBigNumber(value)) return value;
   return new BigNumber(value);
+}
+
+/**
+ * Converts tokens amount to usd amount.
+ */
+export function getTokenUsdPrice(
+  tokens: BigNumber,
+  tokenUsdPrice: number | string | BigNumber,
+): string;
+export function getTokenUsdPrice(
+  tokens: BigNumber,
+  tokenUsdPrice: number | string | BigNumber,
+  humanFriendly: true,
+): string;
+export function getTokenUsdPrice(
+  tokens: BigNumber,
+  tokenUsdPrice: number | string | BigNumber,
+  humanFriendly: false,
+): BigNumber;
+export function getTokenUsdPrice(
+  tokens: BigNumber,
+  tokenUsdPrice: number | string | BigNumber,
+  humanFriendly = true,
+): BigNumber | string {
+  const tokenUsdPriceAsBigNumber = toBigNumber(tokenUsdPrice);
+  const convertedTokenPrice = tokens.times(tokenUsdPriceAsBigNumber);
+  return humanFriendly ? convertedTokenPrice.toFixed(Precisions.fiat) : convertedTokenPrice;
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { getFarmMode } from '@/store/pools/helpers';
+import { Pool } from '@/types';
 
-// import { IPoolCard } from '@/components/sections/Pools/PoolCard';
 import { PoolTableRow } from '..';
 
 import './Table.scss';
@@ -62,14 +62,7 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
         ))}
       </div>
       {data.map((pool) => {
-        let farmMode: IPoolFarmingMode;
-        if (pool.isAutoVault) {
-          farmMode = PoolFarmingMode.auto;
-        } else if (pool.id === 0) {
-          farmMode = PoolFarmingMode.manual;
-        } else {
-          farmMode = PoolFarmingMode.earn;
-        }
+        const farmMode = getFarmMode(pool);
         return (
           <PoolTableRow
             // key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}

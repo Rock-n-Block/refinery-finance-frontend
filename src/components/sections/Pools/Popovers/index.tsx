@@ -19,10 +19,12 @@ export const ManualFarmingPopover = withPopover(
 // ???
 // export const createTotalStakedPopoverComponent = (symbol: string) => withPopover(`Total amount of ${symbol} staked in this pool`);
 
-export const TotalStakedPopover: React.FC<ITotalStakedPopoverProps> = ({ symbol, ...props }) => {
-  const Component = withPopover(`Total amount of ${symbol} staked in this pool`);
-  return <Component {...props} />;
-};
+export const TotalStakedPopover: React.FC<ITotalStakedPopoverProps> = React.memo(
+  ({ symbol, ...props }) => {
+    const Component = withPopover(`Total amount of ${symbol} staked in this pool`);
+    return <Component {...props} />;
+  },
+);
 
 export const AutoBountyPopover: React.FC<IAutoBountyPopoverProps> = ({ symbol, fee, ...props }) => {
   const Component = withPopover(
@@ -49,23 +51,25 @@ export const AutoBountyPopover: React.FC<IAutoBountyPopoverProps> = ({ symbol, f
   return <Component {...props} />;
 };
 
-export const PoolsCollectPopover: React.FC<IPoolsCollectPopoverProps> = ({ symbol, ...props }) => {
-  const Component = withPopover(
-    <>
-      {[
-        `Compound: collect and restake ${symbol} into pool.`,
+export const PoolsCollectPopover: React.FC<IPoolsCollectPopoverProps> = React.memo(
+  ({ symbol, ...props }) => {
+    const Component = withPopover(
+      <>
+        {[
+          `Compound: collect and restake ${symbol} into pool.`,
 
-        `Harvest: collect ${symbol} and send to wallet`,
-      ].map((text, index, arr) => {
-        const isLast = index === arr.length - 1;
-        const styles = isLast ? { className: 'text-bold' } : { style: { marginBottom: '10px' } };
-        return (
-          <p key={text} {...styles}>
-            {text}
-          </p>
-        );
-      })}
-    </>,
-  );
-  return <Component {...props} />;
-};
+          `Harvest: collect ${symbol} and send to wallet`,
+        ].map((text, index, arr) => {
+          const isLast = index === arr.length - 1;
+          const styles = isLast ? { className: 'text-bold' } : { style: { marginBottom: '10px' } };
+          return (
+            <p key={text} {...styles}>
+              {text}
+            </p>
+          );
+        })}
+      </>,
+    );
+    return <Component {...props} />;
+  },
+);

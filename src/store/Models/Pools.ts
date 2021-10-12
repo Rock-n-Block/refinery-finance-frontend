@@ -3,7 +3,12 @@ import { types } from 'mobx-state-tree';
 
 import { pools as poolsConfig } from '@/config';
 import { metamaskService } from '@/services/MetamaskConnect';
-import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
+import {
+  getAddress,
+  getContract,
+  getContractAddress,
+  getContractData,
+} from '@/services/web3/contractHelpers';
 import { getTokenPricesFromFarms } from '@/store/farms';
 import {
   fetchPoolsAllowance,
@@ -68,6 +73,7 @@ const PoolsModel = types
     totalRefineryInVault: types.optional(types.maybeNull(types.string), null),
     estimatedRefineryBountyReward: types.optional(types.maybeNull(types.string), null),
     availableRefineryAmountToCompound: types.optional(types.string, '0'),
+    fuelTokensAmount: types.optional(types.string, '0'),
     fees: FeesModel,
     userData: types.model({
       isLoading: types.boolean,
@@ -171,6 +177,24 @@ const PoolsModel = types
         name: method,
       }));
       multicall(abi, calls).then(this.fetchVaultPublicDataSuccess, this.fetchVaultPublicDataError);
+
+      this.fetchVaultFuelTokensAmount();
+    },
+
+    fetchVaultFuelTokensAmountSuccess(response: { amount: string; rewardDebt: string }) {
+      const { amount } = response;
+      self.fuelTokensAmount = amount;
+    },
+    fetchVaultFuelTokensAmountError() {
+      self.fuelTokensAmount = '0';
+    },
+    fetchVaultFuelTokensAmount() {
+      const masterRefinerContract = getContract('MASTER_REFINER');
+      const refineryVaultAddress = getContractAddress('REFINERY_VAULT');
+      masterRefinerContract.methods
+        .userInfo('0', refineryVaultAddress)
+        .call()
+        .then(this.fetchVaultFuelTokensAmountSuccess, this.fetchVaultFuelTokensAmountError);
     },
 
     fetchVaultUserDataError(error: any) {

@@ -19,7 +19,6 @@ import { useMst } from '@/store';
 import { getRefineryVaultEarnings, getStakingBalance } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { toBigNumber } from '@/utils';
 import { BIG_ZERO } from '@/utils/constants';
 import {
   feeFormatter,
@@ -69,7 +68,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     pricePerFullShare,
     userData: { userShares, refineryAtLastUserAction },
   } = useSelectVaultData();
-  const { earningToken, stakingToken, userData, apr, earningTokenPrice, stakingTokenPrice } = pool;
+  const { earningToken, stakingToken, apr, earningTokenPrice, stakingTokenPrice } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const [isOpenDetails, setOpenDetails] = useState(false);
@@ -94,7 +93,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     performanceFee,
   );
 
-  const stakedValue = useStakedValue(farmMode, pool);
+  const { hasStakedValue, stakedValue } = useStakedValue(farmMode, pool);
   const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
@@ -141,14 +140,6 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
   };
 
   const hasConnectedWallet = Boolean(user.address);
-
-  const hasStakedValue = useMemo(() => {
-    if (farmMode === PoolFarmingMode.auto) {
-      return userShares && userShares.gt(0);
-    }
-    const stakedBalance = toBigNumber(userData?.stakedBalance);
-    return stakedBalance.gt(0);
-  }, [farmMode, userData?.stakedBalance, userShares]);
 
   const convertedStakedValue = useMemo(() => {
     return new BigNumber(stakedValueAsString).times(refineryUsdPrice);

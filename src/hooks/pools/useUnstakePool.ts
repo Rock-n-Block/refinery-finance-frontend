@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { Contract } from 'web3-eth-contract';
 
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
 import { useUnstakeFarm } from '@/hooks/farms/useUnstakeFarm';
@@ -10,6 +11,10 @@ import { getAddress, getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { BIG_TEN } from '@/utils/constants';
+
+const gasOptions = {
+  gas: 300000,
+};
 
 export const useSmartRefinerUnstake = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();
@@ -21,9 +26,7 @@ export const useSmartRefinerUnstake = (smartRefinerInitContract: Contract) => {
         contract: smartRefinerInitContract,
         methodName: 'withdraw',
         methodArgs: [value],
-        options: {
-          gas: 300000,
-        },
+        options: gasOptions,
       });
       return tx.status;
     },
@@ -65,3 +68,29 @@ const useUnstakePool = (poolId: number) => {
 };
 
 export default useUnstakePool;
+
+export const useNonVaultUnstake = (poolId: number, onFinally: () => void) => {
+  const { onUnstake } = useUnstakePool(poolId);
+
+  const nonVaultUnstake = useCallback(
+    async (valueToUnstake: string, stakingTokenDecimals: number, stakingTokenSymbol = '') => {
+      try {
+        await onUnstake(valueToUnstake, stakingTokenDecimals);
+        successNotification(
+          'Unstaked!',
+          `Your ${stakingTokenSymbol} earnings have also been harvested to your wallet!`,
+        );
+      } catch (e) {
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
+      } finally {
+        onFinally();
+      }
+    },
+    [onUnstake, onFinally],
+  );
+
+  return { nonVaultUnstake };
+};

@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { Contract } from 'web3-eth-contract';
 
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { pools as poolsConfig } from '@/config';
 import { SmartRefinerInitializable as SmartRefinerInitializableAbi } from '@/config/abi';
 import { useStakeFarm } from '@/hooks/farms/useStakeFarm';
@@ -10,6 +11,7 @@ import { getAddress, getContract } from '@/services/web3/contractHelpers';
 import { useCallWithGasPrice } from '@/services/web3/hooks';
 import { useMst } from '@/store';
 import { BIG_TEN } from '@/utils/constants';
+import { clogError } from '@/utils/logger';
 
 export const useSmartRefinerStake = (smartRefinerInitContract: Contract) => {
   const { callWithGasPrice } = useCallWithGasPrice();
@@ -66,3 +68,30 @@ const useStakePool = (poolId: number) => {
 };
 
 export default useStakePool;
+
+export const useNonVaultStake = (poolId: number, onFinally: () => void) => {
+  const { onStake } = useStakePool(poolId);
+
+  const nonVaultStake = useCallback(
+    async (valueToStake: string, stakingTokenDecimals: number, stakingTokenSymbol = '') => {
+      try {
+        await onStake(valueToStake, stakingTokenDecimals);
+        successNotification(
+          'Staked!',
+          `Your ${stakingTokenSymbol} funds have been staked in the pool!`,
+        );
+      } catch (error) {
+        clogError(error);
+        errorNotification(
+          'Error',
+          'Please try again. Confirm the transaction and make sure you are paying enough gas!',
+        );
+      } finally {
+        onFinally();
+      }
+    },
+    [onStake, onFinally],
+  );
+
+  return { nonVaultStake };
+};

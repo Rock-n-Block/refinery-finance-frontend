@@ -8,6 +8,7 @@ import { ItemsController } from '@/components/organisms';
 import FarmsStakeUnstakeModal from '@/components/organisms/FarmsStakeUnstakeModal';
 import { FarmsPreview, FarmsTable } from '@/components/sections/Farms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
+import { getAddress } from '@/services/web3/contractHelpers';
 import { useFarms, usePollFarmsData } from '@/store/farms/hooks';
 import { Farm, FarmWithStakedValue } from '@/types';
 import { toBigNumber } from '@/utils';
@@ -87,15 +88,17 @@ const Farms: React.FC = observer(() => {
     if (!isStaked) return true; // show all
     return !Number.isNaN(value.toNumber()) && value.gt(0);
   };
-  const filterBySearch = (whereToFind: string, toBeFound: string) => {
-    return whereToFind.toUpperCase().startsWith(String(toBeFound).toUpperCase());
+  const filterBySearch = (whereToFind: string[], toBeFound: string) => {
+    return whereToFind.some((value) => {
+      return value.toUpperCase().startsWith(toBeFound.toUpperCase());
+    });
   };
 
   const getFilterByFarmsType = (isOpenedLiveTab: boolean): [IFilterBy, IFilterFunc] => {
     return [
       FilterBy.farmsType,
       ({ multiplier }) => {
-        return isOpenedLiveTab && multiplier !== '0X';
+        return isOpenedLiveTab && multiplier !== '0X'; // multiplier is set to 0X when farm is finished
       },
     ];
   };
@@ -105,8 +108,24 @@ const Farms: React.FC = observer(() => {
       ({ userData }) => filterByStakedOnly(toBigNumber(userData?.stakedBalance), isStaked),
     ];
   }, []);
+
   const getFilterBySearch = (value: string): [IFilterBy, IFilterFunc] => {
-    return [FilterBy.search, ({ lpSymbol }) => filterBySearch(lpSymbol, value)];
+    return [
+      FilterBy.search,
+      ({ lpSymbol, lpAddresses, quoteToken, token }) => {
+        if (value.startsWith('0x')) {
+          const searchSource = [lpAddresses, quoteToken.address, token.address].map((rawAddress) =>
+            getAddress(rawAddress),
+          );
+          return filterBySearch(searchSource, value);
+        }
+
+        // normalize 'RP1', 'RP1-AVOOG LP' into same array presentation: ['RP1'] or ['RP1', 'AVOOG']
+        const [removedLPSymbols] = lpSymbol.split(' ');
+        const searchSource = removedLPSymbols.split('-');
+        return filterBySearch(searchSource, value);
+      },
+    ];
   };
 
   const [appliedFilters, setAppliedFilters] = useState<Map<IFilterBy, IFilterFunc>>(

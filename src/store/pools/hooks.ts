@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 
 import useRefresh from '@/hooks/useRefresh';
-import { IPoolFarmingMode, Pool } from '@/types';
+import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { toBigNumber } from '@/utils';
 
 import { useMst } from '..';
@@ -30,6 +30,7 @@ export const useSelectVaultData = () => {
       pricePerFullShare: pricePerFullShareRaw,
       totalShares: totalSharesRaw,
       availableRefineryAmountToCompound: availableRefineryAmountToCompoundRaw,
+      fuelTokensAmount: fuelTokensAmountRaw,
       fees,
       userData: {
         isLoading,
@@ -61,6 +62,8 @@ export const useSelectVaultData = () => {
     [availableRefineryAmountToCompoundRaw],
   );
 
+  const fuelTokensAmount = useMemo(() => toBigNumber(fuelTokensAmountRaw), [fuelTokensAmountRaw]);
+
   const userShares = useMemo(() => toBigNumber(userSharesAsString, true), [userSharesAsString]);
 
   const refineryAtLastUserAction = useMemo(
@@ -74,6 +77,7 @@ export const useSelectVaultData = () => {
     pricePerFullShare,
     totalShares,
     availableRefineryAmountToCompound,
+    fuelTokensAmount,
     fees,
     userData: {
       isLoading,
@@ -85,11 +89,37 @@ export const useSelectVaultData = () => {
   };
 };
 
-export const useStakedValue = (farmMode: IPoolFarmingMode, pool: Pool): BigNumber => {
+export const useStakedValue = (
+  farmMode: IPoolFarmingMode,
+  pool: Pool,
+): {
+  hasStakedValue: boolean;
+  stakedValue: BigNumber;
+} => {
   const {
     pricePerFullShare,
     userData: { userShares },
   } = useSelectVaultData();
 
-  return getStakedValue(farmMode, pool, userShares, pricePerFullShare);
+  const { userData } = pool;
+
+  const hasStakedValue = useMemo(() => {
+    if (farmMode === PoolFarmingMode.auto) {
+      return userShares ? userShares.gt(0) : false;
+    }
+    const stakedBalance = toBigNumber(userData?.stakedBalance);
+    return stakedBalance.gt(0);
+  }, [farmMode, userData?.stakedBalance, userShares]);
+
+  const stakedValue = useMemo(() => getStakedValue(farmMode, pool, userShares, pricePerFullShare), [
+    farmMode,
+    pool,
+    pricePerFullShare,
+    userShares,
+  ]);
+
+  return {
+    hasStakedValue,
+    stakedValue,
+  };
 };
