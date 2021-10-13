@@ -59,4 +59,13 @@ export const pools: PoolConfig[] = [
     },
     tokenPerBlock: '1',
   },
+  {
+    id: 6,
+    stakingToken: tokens.rp1,
+    earningToken: tokens.ugbg,
+    contractAddress: {
+      42: '0x1fDc3fA2C156a8F74829975EF0bFE7eD9bA268BB',
+    },
+    tokenPerBlock: '0.000000001',
+  },
 ];
