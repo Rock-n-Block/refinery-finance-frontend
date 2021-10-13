@@ -64,7 +64,7 @@ export const pools: PoolConfig[] = [
     stakingToken: tokens.rp1,
     earningToken: tokens.ugbg,
     contractAddress: {
-      42: '0x1fDc3fA2C156a8F74829975EF0bFE7eD9bA268BB',
+      42: '0x874993122d979fc1be14d8b1154ee4ee638e322f',
     },
     tokenPerBlock: '0.000000001',
   },
