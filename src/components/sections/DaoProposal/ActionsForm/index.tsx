@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DatePicker as DatePickerAntd,
   Form as FormAntd,
@@ -6,10 +6,14 @@ import {
   TimePicker as TimePickerAntd,
 } from 'antd';
 import classNames from 'classnames';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { Rule } from 'rc-field-form/lib/interface';
 
 import openLinkIcon from '@/assets/img/icons/open-link.svg';
+import { useScannerUrl } from '@/hooks/useScannerUrl';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+
+import { getMomentDate } from '../helpers';
 
 interface IActionsFormProps {
   form: FormInstance;
@@ -35,9 +39,25 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
       labelContent: 'Start date',
       rules: [
         {
-          type: 'object',
           required: true,
-          message: 'Please select date',
+          validator: (_, value: Moment) => {
+            const formFieldsValues: { [key: string]: Moment } = form.getFieldsValue();
+            if (!value) {
+              return Promise.reject(new Error('Please select date'));
+            }
+
+            const startDate = getMomentDate(value);
+            if (startDate < getMomentDate(moment())) {
+              return Promise.reject(new Error('Start date cannot be earlier than today'));
+            }
+
+            // If some of the values is empty then skip validating
+            if (Object.values(formFieldsValues).some((fieldValue) => !fieldValue)) {
+              return Promise.resolve();
+            }
+
+            return Promise.resolve();
+          },
         },
       ],
       child: (
@@ -77,32 +97,26 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
       rules: [
         {
           required: true,
-          validator: (_, value) => {
+          validator: (_, value: Moment) => {
             const formFieldsValues: { [key: string]: Moment } = form.getFieldsValue();
             if (!value) {
               return Promise.reject(new Error('Please select date'));
             }
 
+            console.log('TEST', value, moment(), value === formFieldsValues.actionsForm_end_date);
+
+            const endDate = getMomentDate(value);
+            if (endDate < getMomentDate(moment())) {
+              return Promise.reject(new Error('End date cannot be earlier than today'));
+            }
+
+            // If some of the values is empty then skip validating
             if (Object.values(formFieldsValues).some((fieldValue) => !fieldValue)) {
               return Promise.resolve();
             }
 
-            const { actionsForm_start_date, actionsForm_end_date } = formFieldsValues;
-
-            // Note: if you chain multiple actions to construct a date, you should start from a year, then a month, then a day etc. Otherwise you may get unexpected results, like when day=31 and current month has only 30 days
-            const startDate = actionsForm_start_date
-              .clone()
-              .hours(0)
-              .minutes(0)
-              .seconds(0)
-              .milliseconds(0);
-
-            const endDate = actionsForm_end_date
-              .clone()
-              .hours(0)
-              .minutes(0)
-              .seconds(0)
-              .milliseconds(0);
+            const { actionsForm_start_date } = formFieldsValues;
+            const startDate = getMomentDate(actionsForm_start_date);
 
             if (startDate > endDate) {
               return Promise.reject(new Error('End date must be after the start date'));
@@ -164,6 +178,10 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
               return Promise.reject(new Error('End date must be after the start date'));
             }
 
+            if (startDate.unix() === endDate.unix()) {
+              return Promise.reject(new Error('The start and end times must not be the same'));
+            }
+
             return Promise.resolve();
           },
         },
@@ -171,6 +189,20 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
       child: <TimePickerAntd className="actions-section__input" name="end_time" format="HH:mm" />,
     },
   ];
+
+  const [latestBlock, setLatestBlock] = useState(0);
+  const { metamaskService } = useWalletConnectorContext();
+
+  useEffect(() => {
+    const getBlock = async () => {
+      const currentBlock = await metamaskService.web3Provider.eth.getBlockNumber();
+      setLatestBlock(currentBlock);
+    };
+    getBlock();
+  }, [metamaskService.web3Provider.eth]);
+
+  const latestBlockUrl = useScannerUrl(`block/${latestBlock}`);
+
   return (
     <FormAntd name="actionsForm" form={form} layout="vertical">
       {actionsFormItems.map(({ key, labelClassName, labelContent, rules, child }) => {
@@ -190,8 +222,8 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
         );
       })}
       <FormAntd.Item className={snapshotClassName}>
-        <a href="/" className="text-ssm text-purple box-f-ai-c">
-          <span className={snapshotTitleClassName}>Snapshot 0</span>
+        <a href={latestBlockUrl} className="text-ssm text-purple box-f-ai-c">
+          <span className={snapshotTitleClassName}>Snapshot {latestBlock}</span>
           <img src={openLinkIcon} alt="external link" />
         </a>
       </FormAntd.Item>

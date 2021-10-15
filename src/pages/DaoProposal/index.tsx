@@ -20,6 +20,8 @@ const DaoProposal: React.FC = () => {
   const [contentForm] = FormAntd.useForm();
   const [choicesForm] = FormAntd.useForm();
   const [actionsForm] = FormAntd.useForm();
+  const forms = [titleForm, contentForm, choicesForm, actionsForm];
+
   const [editorPlainText, setEditorPlainText] = useState('');
 
   const throttledEditorValidation = throttle(() => {
@@ -32,8 +34,7 @@ const DaoProposal: React.FC = () => {
   };
 
   const onSubmit = () => {
-    const forms = [titleForm, contentForm, choicesForm, actionsForm];
-    const validatePromises = forms.map((form) => form.validateFields());
+    const validatePromises = Object.values(forms).map((form) => form.validateFields());
     Promise.all(validatePromises)
       .then((result) => {
         clogData('RESULT', result);

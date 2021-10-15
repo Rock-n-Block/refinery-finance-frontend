@@ -25,6 +25,10 @@ const TitleForm: React.FC<ITitleFormProps> = ({ form, fieldClassName, inputClass
             whitespace: true,
             message: 'Title must not be empty',
           },
+          {
+            max: 100, // snapshot.js backend allows up to 256 chars
+            message: 'Character limit exceeded',
+          },
         ]}
       >
         <Input

@@ -9,6 +9,7 @@ import { throttle } from '@/utils/throttle';
 
 interface IChoicesFormProps {
   form: FormInstance;
+  // validateForms: () => void;
   inputClassName?: string;
   inputPostfixClassName?: string;
   formErrorsClassName?: string;
@@ -17,6 +18,7 @@ interface IChoicesFormProps {
 
 const ChoicesForm: React.FC<IChoicesFormProps> = ({
   form,
+  // validateForms,
   inputClassName,
   inputPostfixClassName,
   formErrorsClassName,
@@ -25,13 +27,13 @@ const ChoicesForm: React.FC<IChoicesFormProps> = ({
   const [choicesFormError, setChoicesFormError] = useState(['']);
   const throttledUpdateChoicesFormFieldsError = throttle(() => {
     const formFields = form.getFieldsError();
-    const hasError = formFields.some(({ errors }, index) => {
+    formFields.some(({ errors }, index) => {
       if (errors.length || index === formFields.length - 1) {
         setChoicesFormError(errors);
       }
-      return errors.length;
+      return Boolean(errors.length);
     });
-    return hasError;
+    // validateForms();
   }, 1500);
   return (
     <FormAntd
@@ -56,6 +58,10 @@ const ChoicesForm: React.FC<IChoicesFormProps> = ({
                       required: true,
                       whitespace: true,
                       message: 'Choices must not be empty',
+                    },
+                    {
+                      max: 36,
+                      message: 'Character limit exceeded',
                     },
                   ]}
                   noStyle
