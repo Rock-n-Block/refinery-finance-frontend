@@ -3,6 +3,8 @@
 @import 'src/styles/typography';
 
 $section-margin: 60px;
+$information-column-min-width: 300px;
+$document-column-width: calc(100% - #{$information-column-min-width});
 
 .dao {
   &__wrapper {
@@ -37,6 +39,7 @@ $section-margin: 60px;
   &__wrapper {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     padding: 27px 27px 27px 34px;
 
     @include b(mobile) {
@@ -47,9 +50,19 @@ $section-margin: 60px;
   }
 
   &__column {
+    flex: 1 1 $document-column-width;
+    width: $document-column-width;
+
+    @include b(mobile) {
+      flex: unset;
+      width: unset;
+    }
   }
 
   &__text {
+    white-space: break-spaces;
+    overflow-wrap: break-word;
+
     @extend .text-smd;
 
     strong {
@@ -65,6 +78,16 @@ $section-margin: 60px;
     &_active {
       color: $green1;
       box-shadow: 0 0 0 1px $green1;
+    }
+
+    &_closed {
+      color: $gray-4;
+      box-shadow: 0 0 0 1px $gray-4;
+    }
+
+    &_pending {
+      color: $orange;
+      box-shadow: 0 0 0 1px $orange;
     }
 
     @include b(mobile) {
@@ -85,124 +108,15 @@ $section-margin: 60px;
   flex-direction: column;
   align-items: flex-end;
   padding-left: 20px;
-  min-width: 300px;
+  min-width: $information-column-min-width;
 
   @include b(mobile) {
+    flex: unset;
+    width: unset;
     padding-left: 0;
   }
 
   @include b(extramobile) {
     min-width: initial;
-  }
-}
-
-.additional-information {
-  &__content-row {
-    display: flex;
-    flex-direction: row;
-    margin-top: 10px;
-  }
-
-  &__content-col {
-  }
-
-  &__option-name {
-    flex: 0 0 35%;
-  }
-
-  &__option-value {
-    flex: 0 0 65%;
-    color: black;
-  }
-}
-
-.votes-progression {
-  &__item {
-    margin-top: 30px;
-  }
-
-  &__captions {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  &__option {
-  }
-
-  &__value {
-  }
-
-  &__progress-bar {
-    height: 6px;
-    border: 1px solid $purple;
-    border-radius: 20px;
-
-    &_active {
-      background-color: $purple;
-    }
-  }
-}
-
-.buttons-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 450px;
-  margin: 0 auto;
-
-  &__button {
-    width: 100%;
-    margin-bottom: 20px;
-    border: 3px solid #cecece;
-
-    &_active {
-      background-color: $purple;
-      border-color: $purple;
-      color: white;
-    }
-  }
-
-  &__submit-button {
-    width: 50%;
-  }
-
-  & &__button,
-  & &__submit-button {
-    @extend .text-bold;
-
-    font-size: 18px;
-    line-height: 26px;
-  }
-}
-
-.votes-list {
-  &__item {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    padding: 10px;
-
-    &:not(:last-child) {
-      padding-bottom: 20px;
-      border-bottom: 1px solid #b8b8b8;
-    }
-  }
-
-  &__name {
-    margin-right: auto;
-    padding-left: 13px;
-  }
-
-  &__tokens {
-    display: flex;
-    flex-direction: row;
-    margin-left: auto;
-  }
-
-  &__tokens-value {
-    padding-right: 12px;
-    font-weight: 500;
   }
 }
