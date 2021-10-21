@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js/bignumber';
 import { Transaction } from 'web3-core';
 
+export type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+
 export interface IToken {
   logoURI?: string;
   name: string;

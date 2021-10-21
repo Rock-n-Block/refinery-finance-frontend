@@ -4,8 +4,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
+
 // import { Helmet } from 'react-helmet';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@/services/apolloClient';
 
 import { RefreshContextProvider } from './hooks/useRefresh';
 import Connector from './services/MetamaskConnect';
@@ -35,16 +36,12 @@ import rootStore, { Provider } from './store';
         { property: 'og:description', content: 'Project description' },
       ]}
     /> */
-const client = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/rock-n-block/rf-exchange',
-  cache: new InMemoryCache(),
-});
 
 ReactDOM.render(
   <Provider value={rootStore}>
     <Router>
       <Connector>
-        <ApolloProvider client={client}>
+        <ApolloProvider>
           <RefreshContextProvider>
             <App />
           </RefreshContextProvider>
