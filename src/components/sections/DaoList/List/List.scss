@@ -32,12 +32,17 @@
 
     &_active {
       color: $green1;
-      border-color: $green1;
+      box-shadow: 0 0 0 1px $green1;
     }
 
     &_closed {
       color: $gray-4;
-      border-color: $gray-4;
+      box-shadow: 0 0 0 1px $gray-4;
+    }
+
+    &_pending {
+      color: $orange;
+      box-shadow: 0 0 0 1px $orange;
     }
   }
 }
