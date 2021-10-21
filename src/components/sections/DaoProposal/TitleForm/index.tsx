@@ -8,9 +8,16 @@ interface ITitleFormProps {
   form: FormInstance;
   fieldClassName?: string;
   inputClassName?: string;
+  onChange?: () => void;
 }
 
-const TitleForm: React.FC<ITitleFormProps> = ({ form, fieldClassName, inputClassName }) => {
+const TitleForm: React.FC<ITitleFormProps> = ({
+  form,
+  fieldClassName,
+  inputClassName,
+  onChange,
+}) => {
+  console.log(/* TODO: remove */ onChange);
   const [titleValue, setTitleValue] = useState('');
   const titleInputHandler = ({ target }: React.ChangeEvent<HTMLInputElement>) =>
     setTitleValue(target.value);

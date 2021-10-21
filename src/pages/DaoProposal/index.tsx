@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
-import { Form as FormAntd } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import { Form as FormAntd, FormInstance } from 'antd';
+import { observer } from 'mobx-react-lite';
 
 import Button from '@/components/atoms/Button';
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
+import { getMomentMergedDateTime } from '@/components/sections/DaoProposal/helpers';
+import { useGetCurrentBalance } from '@/services/api/refinery-finance-pairs';
+import { useSnapshotService } from '@/services/api/snapshot.org';
+import { ISnapshotSpace } from '@/services/api/snapshot.org/spaces';
+// import { strategies } from '@/services/api/snapshot.org/strategies';
+import { ProposalVotingSystem } from '@/services/api/snapshot.org/types';
+// import { metamaskService } from '@/services/MetamaskConnect';
+import { getBlockNumber } from '@/services/web3/helpers';
+import { useMst } from '@/store';
 import { clog, clogData, clogError } from '@/utils/logger';
 import { throttle } from '@/utils/throttle';
 
@@ -15,13 +27,45 @@ import 'antd/lib/date-picker/style/css';
 
 import './DaoProposal.scss';
 
-const DaoProposal: React.FC = () => {
+const extractDataForProposalFromForms = (forms: Array<any>) => {
+  const [
+    { title }, // has empty data, so skip it
+    ,
+    { choices },
+    { actionsForm_start_date, actionsForm_start_time, actionsForm_end_date, actionsForm_end_time },
+  ] = forms;
+
+  const start = getMomentMergedDateTime(actionsForm_start_date, actionsForm_start_time).unix();
+  const end = getMomentMergedDateTime(actionsForm_end_date, actionsForm_end_time).unix();
+
+  return {
+    name: title,
+    choices,
+    start,
+    end,
+  };
+};
+
+interface ICreateProposalResult {
+  id: string;
+  ipfsHash: string;
+  relayer: {
+    address: string;
+    receipt: string;
+  };
+}
+
+const DaoProposal: React.FC = observer(() => {
+  const history = useHistory();
   const [titleForm] = FormAntd.useForm();
   const [contentForm] = FormAntd.useForm();
   const [choicesForm] = FormAntd.useForm();
   const [actionsForm] = FormAntd.useForm();
   const forms = [titleForm, contentForm, choicesForm, actionsForm];
 
+  const { user } = useMst();
+
+  // const [isFormValidated] = useState(false);
   const [editorPlainText, setEditorPlainText] = useState('');
 
   const throttledEditorValidation = throttle(() => {
@@ -33,17 +77,103 @@ const DaoProposal: React.FC = () => {
     setEditorPlainText(text);
   };
 
-  const onSubmit = () => {
+  const { snapshotClient, provider } = useSnapshotService();
+
+  const createProposal = async ({
+    formsData,
+    body,
+  }: {
+    formsData: Array<FormInstance>;
+    body: string;
+  }): Promise<ICreateProposalResult> => {
+    const partialProposalData = extractDataForProposalFromForms(formsData);
+
+    const blockNumber = await getBlockNumber();
+    const proposalCreationResult = (await snapshotClient.proposal(
+      provider,
+      user.address,
+      ISnapshotSpace.CAKE_ETH_SPACE,
+      {
+        ...partialProposalData,
+        snapshot: blockNumber, // 10765072,
+        body,
+        // metadata: {
+        //   plugins: {},
+        //   network: metamaskService.usedChain,
+        //   strategies: [strategies.erc20WithBalance],
+        // },
+        type: ProposalVotingSystem.singleChoice,
+      },
+    )) as ICreateProposalResult;
+
+    console.info(proposalCreationResult);
+    return proposalCreationResult;
+  };
+
+  const [pendingTx, setPendingTx] = useState(false);
+
+  const handleCreateProposal = async (result: any[]) => {
+    setPendingTx(true);
+    try {
+      const { ipfsHash } = await createProposal({
+        formsData: result,
+        body: editorPlainText,
+      });
+
+      // Redirect user to newly created proposal page
+      history.push(`/dao/${ipfsHash}`);
+
+      successNotification('Success', 'Created a new proposal!');
+    } catch (error: any) {
+      clogError(error);
+      errorNotification('Error', new Error(error).message);
+    } finally {
+      setPendingTx(false);
+    }
+  };
+
+  const onSubmit = async () => {
+    // if (!isFormValidated) return;
     const validatePromises = Object.values(forms).map((form) => form.validateFields());
+
     Promise.all(validatePromises)
-      .then((result) => {
+      .then(async (result) => {
         clogData('RESULT', result);
         clog(result[2].choices[0]);
+
+        handleCreateProposal(result);
       })
       .catch((err) => {
         clogError('ERROR', err);
       });
   };
+
+  // const validateForms = () => {
+
+  // };
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log(titleForm.isFieldsTouched());
+  //     titleForm.validateFields();
+  //     // короче, механизм такой:
+  //     // есть Farms, вкладываем в каждую форму readonly метод validateForms(), который каждая форма дергает сама собой на каждое изменение в форме
+  //     // TODO: добавить провайдер контекста или убрать в MobX (wut?)
+  //   }, 2000);
+  // }, [titleForm]);
+
+  const {
+    getCurrentBalance,
+    options: [, { error: currentBalanceError, data: currentBalance }],
+  } = useGetCurrentBalance();
+
+  clog(currentBalance, currentBalanceError);
+
+  useEffect(() => {
+    if (user.address) {
+      getCurrentBalance(user.address);
+    }
+  }, [getCurrentBalance, user.address]);
 
   return (
     <DaoWrapper>
@@ -58,6 +188,7 @@ const DaoProposal: React.FC = () => {
               form={titleForm}
               fieldClassName="title-section__field"
               inputClassName="title-section__input"
+              // onChange={validate}
             />
           </DaoSection>
 
@@ -115,6 +246,7 @@ const DaoProposal: React.FC = () => {
           >
             <ChoicesForm
               form={choicesForm}
+              // validateForms={}
               inputClassName="choices-section__input"
               inputPostfixClassName="choices-section__input-postfix"
               formErrorsClassName="choices-section__form-errors"
@@ -130,7 +262,13 @@ const DaoProposal: React.FC = () => {
               snapshotClassName="actions-section__snapshot"
               snapshotTitleClassName="actions-section__snapshot-title"
             />
-            <Button className="actions-section__submit" onClick={onSubmit}>
+            <Button
+              className="actions-section__submit"
+              // disabled={!isFormValidated}
+              loading={pendingTx}
+              disabled={pendingTx}
+              onClick={onSubmit}
+            >
               <span className="text-white text-smd text-bold">Publish</span>
             </Button>
           </DaoSection>
@@ -138,6 +276,6 @@ const DaoProposal: React.FC = () => {
       </div>
     </DaoWrapper>
   );
-};
+});
 
 export default DaoProposal;

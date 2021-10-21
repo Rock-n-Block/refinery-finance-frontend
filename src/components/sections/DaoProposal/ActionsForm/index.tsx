@@ -9,11 +9,11 @@ import classNames from 'classnames';
 import moment, { Moment } from 'moment';
 import { Rule } from 'rc-field-form/lib/interface';
 
-import openLinkIcon from '@/assets/img/icons/open-link.svg';
+import OpenLink from '@/components/atoms/OpenLink';
 import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 
-import { getMomentDate } from '../helpers';
+import { getMomentDate, getMomentMergedDateTime } from '../helpers';
 
 interface IActionsFormProps {
   form: FormInstance;
@@ -160,19 +160,12 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
             } = formFieldsValues;
 
             // Note: if you chain multiple actions to construct a date, you should start from a year, then a month, then a day etc. Otherwise you may get unexpected results, like when day=31 and current month has only 30 days
-            const startDate = actionsForm_start_date
-              .clone()
-              .hours(actionsForm_start_time.hours())
-              .minutes(actionsForm_start_time.minutes())
-              .seconds(0)
-              .milliseconds(0);
+            const startDate = getMomentMergedDateTime(
+              actionsForm_start_date,
+              actionsForm_start_time,
+            );
 
-            const endDate = actionsForm_end_date
-              .clone()
-              .hours(actionsForm_end_time.hours())
-              .minutes(actionsForm_end_time.minutes())
-              .seconds(0)
-              .milliseconds(0);
+            const endDate = getMomentMergedDateTime(actionsForm_end_date, actionsForm_end_time);
 
             if (startDate > endDate) {
               return Promise.reject(new Error('End date must be after the start date'));
@@ -222,10 +215,10 @@ const ActionsForm: React.FC<IActionsFormProps> = ({
         );
       })}
       <FormAntd.Item className={snapshotClassName}>
-        <a href={latestBlockUrl} className="text-ssm text-purple box-f-ai-c">
-          <span className={snapshotTitleClassName}>Snapshot {latestBlock}</span>
-          <img src={openLinkIcon} alt="external link" />
-        </a>
+        <OpenLink
+          href={latestBlockUrl}
+          text={<span className={snapshotTitleClassName}>Snapshot {latestBlock}</span>}
+        />
       </FormAntd.Item>
     </FormAntd>
   );
