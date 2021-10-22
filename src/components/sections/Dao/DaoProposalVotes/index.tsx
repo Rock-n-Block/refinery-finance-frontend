@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js/bignumber';
 
 import exampleAvatarPng from '@/assets/img/REMOVE_ME-avatar.png';
 import OpenLink from '@/components/atoms/OpenLink';
-import { getScannerUrl } from '@/hooks/useScannerUrl';
+import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getIpfsUrl } from '@/services/api/snapshot.org';
 import { Precisions, Token } from '@/types';
 import { addressShortener, getFullDisplayBalance, numberWithCommas } from '@/utils/formatters';
@@ -28,6 +28,30 @@ interface IDaoProposalVotesProps {
   token: Token;
 }
 
+const UserAvatar: React.FC<{ url: IPerson['avatar'] }> = React.memo(({ url }) => {
+  return (
+    <div className="votes-list__avatar">
+      <img className="votes-list__avatar-image" src={url || exampleAvatarPng} alt="avatar" />
+    </div>
+  );
+});
+
+const UserName: React.FC<{ name: IPerson['name']; userAddress: IPerson['address'] }> = React.memo(
+  ({ name, userAddress }) => {
+    const userAddressUrl = useScannerUrl(`address/${userAddress}`);
+    return (
+      <div className="votes-list__name">
+        <OpenLink
+          className="text-smd text-purple"
+          href={userAddressUrl}
+          text={name || addressShortener(userAddress)}
+          iconClassName="votes-list__link-icon"
+        />
+      </div>
+    );
+  },
+);
+
 const DaoProposalVotes: React.FC<IDaoProposalVotesProps> = ({ votes, token }) => {
   return (
     <ul className="votes-list">
@@ -35,11 +59,9 @@ const DaoProposalVotes: React.FC<IDaoProposalVotesProps> = ({ votes, token }) =>
         const {
           voteId,
           choice,
-          person: { address, avatar, name },
+          person: { address: userAddress, avatar: avatarUrl, name },
           votingPower,
         } = item;
-
-        const addressUrl = getScannerUrl(`address/${address}`);
         const tokensValue = getFullDisplayBalance({
           balance: new BigNumber(votingPower),
           decimals: token.decimals,
@@ -47,23 +69,8 @@ const DaoProposalVotes: React.FC<IDaoProposalVotesProps> = ({ votes, token }) =>
         });
         return (
           <li key={voteId} className="votes-list__item text-smd">
-            {Boolean(avatar) && (
-              <div className="votes-list__avatar">
-                <img
-                  className="votes-list__avatar-image"
-                  src={avatar || exampleAvatarPng}
-                  alt="avatar"
-                />
-              </div>
-            )}
-            <div className="votes-list__name">
-              <OpenLink
-                className="text-smd text-purple"
-                href={addressUrl}
-                text={name || addressShortener(address)}
-                iconClassName="votes-list__link-icon"
-              />
-            </div>
+            {Boolean(avatarUrl) && <UserAvatar url={avatarUrl} />}
+            <UserName userAddress={userAddress} name={name} />
             <div className="votes-list__vote">{choice}</div>
             <div className="votes-list__tokens">
               <OpenLink

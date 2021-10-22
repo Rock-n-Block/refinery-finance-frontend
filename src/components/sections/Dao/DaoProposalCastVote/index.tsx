@@ -2,59 +2,35 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import Button from '@/components/atoms/Button';
-import { errorNotification, successNotification } from '@/components/atoms/Notification';
-import { useSnapshotService } from '@/services/api/snapshot.org';
-import { ISnapshotSpace } from '@/services/api/snapshot.org/spaces';
-// import { strategies } from '@/services/api/snapshot.org/strategies';
-import { useMst } from '@/store';
-import { clogError } from '@/utils/logger';
+import { useCastVote } from '@/hooks/dao/useCastVote';
 
 import './DaoProposalCastVote.scss';
 
 interface IDaoProposalCastVoteProps {
   proposalId: string;
   choices: string[];
+  onVote: () => void;
 }
 
-const DaoProposalCastVote: React.FC<IDaoProposalCastVoteProps> = ({ proposalId, choices }) => {
+const DaoProposalCastVote: React.FC<IDaoProposalCastVoteProps> = ({
+  proposalId,
+  choices,
+  onVote,
+}) => {
   const [pendingTx, setPendingTx] = useState(false);
   const [votedOption, setVotedOption] = useState(-1);
-  const { user } = useMst();
 
-  const { snapshotClient, provider } = useSnapshotService();
+  const { vote } = useCastVote({
+    onSuccessTx: onVote,
+    onStartTx: () => setPendingTx(true),
+    onEndTx: () => setPendingTx(false),
+  });
+
+  const voteHandler = () => {
+    vote(proposalId, choices, votedOption);
+  };
 
   const votingDisabled = pendingTx || votedOption === -1;
-
-  const vote = async () => {
-    if (!proposalId) {
-      return errorNotification('Error', 'Invalid IPFS hash or ID!');
-    }
-
-    // votingPower: '5',
-    // strategies: [strategies.erc20WithBalance],
-
-    const msg = {
-      choice: votedOption,
-      proposal: proposalId,
-      // metadata: {},
-    };
-
-    setPendingTx(true);
-
-    try {
-      await snapshotClient.vote(provider, user.address, ISnapshotSpace.CAKE_ETH_SPACE, msg);
-      successNotification(`Success', 'Successfully voted for ${choices[votedOption - 1]}!`);
-    } catch (error: any) {
-      clogError(error);
-      const errorMessage = error?.error_description ? error.error_description : error.message;
-      errorNotification('Error', errorMessage);
-    } finally {
-      setPendingTx(false);
-    }
-
-    // just to prevent eslint-error
-    return null;
-  };
 
   return (
     <div className="buttons-group">
@@ -79,7 +55,7 @@ const DaoProposalCastVote: React.FC<IDaoProposalCastVoteProps> = ({ proposalId, 
         loading={pendingTx}
         disabled={votingDisabled}
         colorScheme="purple"
-        onClick={votingDisabled ? undefined : vote}
+        onClick={votingDisabled ? undefined : voteHandler}
       >
         <span className="text-bold">Vote</span>
       </Button>

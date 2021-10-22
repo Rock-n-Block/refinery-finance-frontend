@@ -1,8 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
 
 import { Skeleton } from '@/components/atoms';
+import { SkeletonSixRows, SkeletonTenRows, SkeletonTwoRows } from '@/components/atoms/Skeleton';
 import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import { DaoInformation, DaoSection } from '@/components/sections/Dao';
 import DaoProposalCastVote from '@/components/sections/Dao/DaoProposalCastVote';
@@ -28,36 +30,44 @@ const DaoWrapperContentSkeleton: React.FC = React.memo(() => {
       <section className="section document dao__section box-shadow box-white">
         <div className="document__wrapper">
           <div className="document__column">
-            <Skeleton active title={false} paragraph={{ rows: 10 }} />
+            <SkeletonTenRows />
           </div>
           <div className="document__column information-column text-ssm">
             <div className={classNames('document__status', 'btn', 'btn-ssm', 'text-ssmd')}>
               <Skeleton active title paragraph={false} />
             </div>
             <DaoInformation className="document__information" title="Information">
-              <Skeleton active title={false} paragraph={{ rows: 6 }} />
+              <SkeletonSixRows />
             </DaoInformation>
 
             <DaoInformation className="document__information" title="Current results">
-              <Skeleton active title={false} paragraph={{ rows: 2 }} />
+              <SkeletonTwoRows />
             </DaoInformation>
           </div>
         </div>
       </section>
 
       <DaoSection className="dao__section" title="Cast your vote">
-        <Skeleton active title={false} paragraph={{ rows: 2 }} />
+        <SkeletonTwoRows />
       </DaoSection>
 
       <DaoSection className="dao__section" title="Votes">
-        <Skeleton active title={false} paragraph={{ rows: 10 }} />
+        <SkeletonTenRows />
       </DaoSection>
     </>
   );
 });
 
-const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = React.memo(({ proposal }) => {
-  const { votes: votesRaw } = useProposalVotes(proposal?.id);
+const getPercents = (amount: BigNumber, totalAmount: BigNumber) => {
+  const percents = amount.div(totalAmount).multipliedBy(100);
+  const percentsRounded = percents.toFixed(2);
+  return { percents, percentsRounded };
+};
+
+const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = observer(({ proposal }) => {
+  const { votes: votesRaw, votingPowersLoading, updateProposalVotes } = useProposalVotes(
+    proposal?.id,
+  );
   const { user } = useMst();
 
   if (!proposal) return <DaoWrapperContentSkeleton />;
@@ -99,7 +109,8 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = React.memo(({ propo
         return {
           choice,
           votingPower,
-          percents: votingPower.div(totalChoicesVotingPower).multipliedBy(100).toFixed(2),
+          percents: getPercents(votingPower, totalChoicesVotingPower).percentsRounded,
+          // percents: votingPower.div(totalChoicesVotingPower).multipliedBy(100).toFixed(2),
         };
       })
     : [];
@@ -115,6 +126,7 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = React.memo(({ propo
     } as IVote;
   });
 
+  const hasConnectedWallet = Boolean(user.address);
   const hasAlreadyVoted = votesRaw.some(({ voter }) => voter === user.address);
 
   return (
@@ -149,22 +161,31 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = React.memo(({ propo
             </DaoInformation>
 
             <DaoInformation className="document__information" title="Current results">
-              {/* TODO: */}
-              <DaoProposalVotesResult results={results} />
+              <SkeletonTwoRows loading={votingPowersLoading}>
+                <DaoProposalVotesResult results={results} />
+              </SkeletonTwoRows>
             </DaoInformation>
           </div>
         </div>
       </section>
 
-      {status === 'active' && !hasAlreadyVoted && Boolean(votesRaw.length) && (
+      {status === 'active' && hasConnectedWallet && !hasAlreadyVoted && (
         <DaoSection className="dao__section" title="Cast your vote">
-          <DaoProposalCastVote proposalId={proposalId} choices={choices} />
+          <SkeletonTwoRows loading={votingPowersLoading}>
+            <DaoProposalCastVote
+              proposalId={proposalId}
+              choices={choices}
+              onVote={updateProposalVotes}
+            />
+          </SkeletonTwoRows>
         </DaoSection>
       )}
 
       {status !== 'pending' && (
         <DaoSection className="dao__section" title="Votes">
-          <DaoProposalVotes votes={votes} token={tokens.rp1} />
+          <SkeletonTenRows loading={votingPowersLoading}>
+            <DaoProposalVotes votes={votes} token={tokens.rp1} />
+          </SkeletonTenRows>
         </DaoSection>
       )}
     </>

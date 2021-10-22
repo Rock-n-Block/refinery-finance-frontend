@@ -58,7 +58,7 @@ export const useGetProposalVotes = (
   options?: LazyQueryHookOptions<IGetProposalVotesResponse, IGetProposalVotesVariables>,
 ): {
   getProposalVotes: (id: string) => void;
-  options: QueryTuple<IGetProposalVotesResponse, IGetProposalVotesVariables>; // ReturnType<typeof useLazyQuery>;
+  options: QueryTuple<IGetProposalVotesResponse, IGetProposalVotesVariables>;
 } => {
   const [func, responseData] = useLazyQuery<IGetProposalVotesResponse, IGetProposalVotesVariables>(
     GET_VOTES,

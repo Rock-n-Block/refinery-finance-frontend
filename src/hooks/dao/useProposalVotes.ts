@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import EthDater from 'ethereum-block-by-date';
 
 import {
@@ -12,7 +12,6 @@ import {
   useGetProposalVotes,
 } from '@/services/api/snapshot.org/hooks';
 import { metamaskService } from '@/services/MetamaskConnect';
-// import { useMst } from '@/store';
 import { clog } from '@/utils/logger';
 
 const selectVotersAddresses = (data: IGetProposalVotesResponse) => {
@@ -23,25 +22,38 @@ export const useProposalVotes = (
   proposalId?: string,
 ): {
   votes: IProposalVoteWithVotingPower[];
-  loading: boolean;
+  proposalVotesLoading: boolean;
+  votingPowersLoading: boolean;
+  updateProposalVotes: () => void;
 } => {
   const {
     getProposalVotes,
     options: [, { loading: proposalVotesLoading, data: proposalVotesData }],
-  } = useGetProposalVotes();
+  } = useGetProposalVotes({
+    fetchPolicy: 'network-only',
+  });
 
   clog('useGetProposalVotes', proposalVotesLoading, proposalVotesData);
 
-  useEffect(() => {
+  const updateProposalVotes = useCallback(() => {
     if (proposalId) {
       getProposalVotes(proposalId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, getProposalVotes]);
 
+  useEffect(() => {
+    updateProposalVotes();
+  }, [updateProposalVotes]);
+
   const [votes, setVotes] = useState<IProposalVoteWithVotingPower[]>([]);
+  const [votingPowersLoading, setVotingPowersLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true; // is just to prevent error executing requests
+    // and setting new state on unloaded component
     if (!proposalVotesLoading && proposalVotesData) {
+      setVotingPowersLoading(true);
       const mapAddressToVoteData = proposalVotesData.votes.reduce(
         (acc: Record<string, IProposalVote>, currentItem) => {
           const voter = currentItem.voter.toLowerCase();
@@ -73,20 +85,31 @@ export const useProposalVotes = (
         });
         const usersBalancesRaw = await fetchUserBalancesByBlock(addresses, blockWhereWereVotes);
         const totalUserBalancesByBlock = selectTotalUserBalancesByBlock(usersBalancesRaw);
-        setVotes(
-          totalUserBalancesByBlock.map((item) => {
-            const voteData = mapAddressToVoteData[item.id];
-            return {
-              ...voteData,
-              votingPower: item.TotalBalance,
-            };
-          }),
-        );
+
+        if (isMounted) {
+          setVotes(
+            totalUserBalancesByBlock.map((item) => {
+              const voteData = mapAddressToVoteData[item.id];
+              return {
+                ...voteData,
+                votingPower: item.TotalBalance,
+              };
+            }),
+          );
+        }
       };
 
-      doAsyncWork();
+      doAsyncWork().finally(() => {
+        if (isMounted) {
+          setVotingPowersLoading(false);
+        }
+      });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [proposalVotesData, proposalVotesLoading]);
 
-  return { votes, loading: proposalVotesLoading };
+  return { votes, proposalVotesLoading, votingPowersLoading, updateProposalVotes };
 };
