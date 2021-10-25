@@ -38,7 +38,13 @@ class Connector extends React.Component<any, any> {
   componentDidMount() {
     const self = this;
 
-    if (localStorage.refFinanceMetamask) {
+    // eslint-disable-next-line prefer-destructuring
+    const refFinanceMetamask: undefined | 'true' | 'false' = localStorage.refFinanceMetamask;
+    const hasConnectedWallet = refFinanceMetamask
+      ? (JSON.parse(refFinanceMetamask) as boolean)
+      : false;
+
+    if (hasConnectedWallet) {
       this.connect();
     }
 

@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { gql, LazyQueryHookOptions, QueryTuple, useLazyQuery } from '@apollo/client';
 
 import { getSnapshotContext } from '@/services/apolloClient';
+import { TimestampSeconds } from '@/types';
 
 import { ISnapshotSpace } from './spaces';
 import { ProposalStatus } from './types';
@@ -10,6 +11,7 @@ export interface IProposalPreviewRaw {
   id: string;
   title: string;
   state: ProposalStatus;
+  created: TimestampSeconds;
 }
 export interface IGetProposalsPreviewkResponse {
   proposals: IProposalPreviewRaw[];
@@ -50,6 +52,7 @@ export const GET_PROPOSALS_PREVIEW = gql`
       #   id
       #   name
       # }
+      created
     }
   }
 `;
@@ -95,4 +98,24 @@ export const transformGetProposalsPreview = (
       status: state,
     };
   });
+};
+
+export const groupProposalsPreviewByStatus = (items: IProposalsPreview) => {
+  const map: Record<string, IProposalsPreview> = {};
+  items.forEach((it) => {
+    const { status } = it;
+    if (map[status]) {
+      map[status].push(it);
+    } else {
+      map[status] = [it];
+    }
+  });
+  return { map, keys: Object.keys(map) };
+};
+
+export const sortByCreated = (
+  { created: created1 }: { created: TimestampSeconds },
+  { created: created2 }: { created: TimestampSeconds },
+): number => {
+  return created2 - created1;
 };
