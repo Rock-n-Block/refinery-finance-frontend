@@ -66,12 +66,6 @@ export const useProposalVotes = (
         {},
       );
       const addresses = selectVotersAddresses(proposalVotesData);
-      // console.log(addresses, mapAddressToVoteData);
-      // const addresses = [
-      //   '0x945318935109de2c621C31900Cc22751492f327d',
-      // ];
-      //   '0x5aD5be12B7030689Dc425FdC5b65403C14C4B352',
-      // const block = 27723969;
 
       const doAsyncWork = async () => {
         const ethBlockByDate = new EthDater(metamaskService.web3Provider);

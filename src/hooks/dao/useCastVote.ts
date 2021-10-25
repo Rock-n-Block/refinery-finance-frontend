@@ -1,9 +1,8 @@
 import { useCallback } from 'react';
 
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { SNAPSHOT_SPACE } from '@/config/constants/dao';
 import { useSnapshotService } from '@/services/api/snapshot.org';
-import { ISnapshotSpace } from '@/services/api/snapshot.org/spaces';
-// import { strategies } from '@/services/api/snapshot.org/strategies';
 import { useMst } from '@/store';
 import { clogError } from '@/utils/logger';
 
@@ -38,7 +37,7 @@ export const useCastVote = ({
       onStartTx();
 
       try {
-        await snapshotClient.vote(provider, user.address, ISnapshotSpace.CAKE_ETH_SPACE, msg);
+        await snapshotClient.vote(provider, user.address, SNAPSHOT_SPACE, msg);
         // chosenOption starts from 1, 2, 3... (not from zero)
         onSuccessTx();
         successNotification(`Success', 'Successfully voted for ${choices[chosenOption - 1]}!`);

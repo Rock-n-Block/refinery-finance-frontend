@@ -10,11 +10,11 @@ import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
 import { getMomentMergedDateTime } from '@/components/sections/DaoProposal/helpers';
+import { SNAPSHOT_SPACE } from '@/config/constants/dao';
 import { useGetCurrentBalance } from '@/services/api/refinery-finance-pairs';
 import { useSnapshotService } from '@/services/api/snapshot.org';
-import { ISnapshotSpace } from '@/services/api/snapshot.org/spaces';
-// import { strategies } from '@/services/api/snapshot.org/strategies';
 import { ProposalVotingSystem } from '@/services/api/snapshot.org/types';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 // import { metamaskService } from '@/services/MetamaskConnect';
 import { getBlockNumber } from '@/services/web3/helpers';
 import { useMst } from '@/store';
@@ -64,6 +64,7 @@ const DaoProposal: React.FC = observer(() => {
   const forms = [titleForm, contentForm, choicesForm, actionsForm];
 
   const { user } = useMst();
+  const { connect } = useWalletConnectorContext();
 
   // const [isFormValidated] = useState(false);
   const [editorPlainText, setEditorPlainText] = useState('');
@@ -92,7 +93,7 @@ const DaoProposal: React.FC = observer(() => {
     const proposalCreationResult = (await snapshotClient.proposal(
       provider,
       user.address,
-      ISnapshotSpace.CAKE_ETH_SPACE,
+      SNAPSHOT_SPACE,
       {
         ...partialProposalData,
         snapshot: blockNumber, // 10765072,
@@ -106,7 +107,6 @@ const DaoProposal: React.FC = observer(() => {
       },
     )) as ICreateProposalResult;
 
-    console.info(proposalCreationResult);
     return proposalCreationResult;
   };
 
@@ -174,6 +174,8 @@ const DaoProposal: React.FC = observer(() => {
       getCurrentBalance(user.address);
     }
   }, [getCurrentBalance, user.address]);
+
+  const isAbleToPublish = !pendingTx;
 
   return (
     <DaoWrapper>
@@ -262,15 +264,21 @@ const DaoProposal: React.FC = observer(() => {
               snapshotClassName="actions-section__snapshot"
               snapshotTitleClassName="actions-section__snapshot-title"
             />
-            <Button
-              className="actions-section__submit"
-              // disabled={!isFormValidated}
-              loading={pendingTx}
-              disabled={pendingTx}
-              onClick={onSubmit}
-            >
-              <span className="text-white text-smd text-bold">Publish</span>
-            </Button>
+            {!user.address ? (
+              <Button className="actions-section__submit" onClick={connect}>
+                <span className="text-white text-smd text-bold">Connect Wallet</span>
+              </Button>
+            ) : (
+              <Button
+                className="actions-section__submit"
+                // disabled={!isFormValidated}
+                loading={pendingTx}
+                disabled={!isAbleToPublish}
+                onClick={isAbleToPublish ? onSubmit : undefined}
+              >
+                <span className="text-white text-smd text-bold">Publish</span>
+              </Button>
+            )}
           </DaoSection>
         </div>
       </div>

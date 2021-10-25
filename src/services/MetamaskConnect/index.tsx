@@ -14,6 +14,7 @@ export interface IwalletConnectorContext {
 
 export const metamaskService = new MetamaskService({
   testnet: 'kovan',
+  // isProduction: process.env.NODE_ENV === 'production',
 });
 
 export const walletConnectorContext = createContext<IwalletConnectorContext>({

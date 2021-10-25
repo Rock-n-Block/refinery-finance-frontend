@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { gql, LazyQueryHookOptions, QueryTuple, useLazyQuery } from '@apollo/client';
 
+import { SNAPSHOT_SPACE } from '@/config/constants/dao';
 import { getSnapshotContext } from '@/services/apolloClient';
 import { TimestampSeconds } from '@/types';
 
-import { ISnapshotSpace } from './spaces';
 import { ProposalStatus } from './types';
 
 export interface IProposalPreviewRaw {
@@ -72,7 +72,7 @@ export const useGetProposalsPreview = (
   >(GET_PROPOSALS_PREVIEW, options);
 
   const getProposalsPreview = useCallback(
-    (first = 20, skip = 0, space = ISnapshotSpace.CAKE_ETH_SPACE) => {
+    (first = 20, skip = 0, space = SNAPSHOT_SPACE) => {
       func({
         ...getSnapshotContext(),
         variables: {

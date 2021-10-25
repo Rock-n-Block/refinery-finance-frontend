@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/atoms';
 import { DaoPreview, DaoWrapper } from '@/components/sections/Dao';
 import { DaoListItemsList } from '@/components/sections/DaoList';
+import { SNAPSHOT_SPACE } from '@/config/constants/dao';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import {
   groupProposalsPreviewByStatus,
@@ -11,7 +12,6 @@ import {
   transformGetProposalsPreview,
   useGetProposalsPreview,
 } from '@/services/api/snapshot.org/hooks';
-import { ISnapshotSpace } from '@/services/api/snapshot.org/spaces';
 
 import './DaoList.scss';
 
@@ -48,11 +48,7 @@ const DaoList: React.FC = () => {
 
   useEffect(() => {
     if (loadData) {
-      getProposalsPreview(
-        ITEMS_PER_PAGE + listItems.length,
-        listItems.length,
-        ISnapshotSpace.CAKE_ETH_SPACE,
-      );
+      getProposalsPreview(ITEMS_PER_PAGE + listItems.length, listItems.length, SNAPSHOT_SPACE);
       setLoadData(false);
     }
   }, [loadData, listItems.length, getProposalsPreview]);

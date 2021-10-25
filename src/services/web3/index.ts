@@ -58,18 +58,24 @@ export default class MetamaskService {
     this.usedChain = this.isProduction ? networks.mainnet : networks[this.testnet];
 
     this.chainChangedObs = new Observable((subscriber) => {
+      if (!this.wallet) {
+        return;
+      }
+
       this.wallet.on('chainChanged', () => {
         const currentChain = this.wallet.chainId;
 
         if (currentChain !== this.usedChain) {
           subscriber.next(`Please choose ${this.usedNetwork} network in metamask wallet.`);
-        } else {
-          subscriber.next('');
         }
       });
     });
 
     this.accountChangedObs = new Observable((subscriber) => {
+      if (!this.wallet) {
+        return;
+      }
+
       this.wallet.on('accountsChanged', () => {
         subscriber.next();
       });
@@ -81,6 +87,11 @@ export default class MetamaskService {
   }
 
   public connect() {
+    if (!this.wallet) {
+      return Promise.reject(
+        new Error(`Couldn't find Metamask extension, check if it's installed and enabled.`),
+      );
+    }
     const currentChain = this.wallet.chainId;
 
     return new Promise((resolve, reject) => {
@@ -331,7 +342,7 @@ export default class MetamaskService {
         }
         return await method().call();
       }
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
     return new Error(`contract ${contractName} didn't created`);
@@ -351,7 +362,7 @@ export default class MetamaskService {
         return await method(...data).call();
       }
       return await method().call();
-    } catch (err) {
+    } catch (err: any) {
       throw new Error(err);
     }
   }

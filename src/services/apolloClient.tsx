@@ -7,27 +7,20 @@ import {
   InMemoryCache,
 } from '@apollo/client';
 
+import { SNAPSHOT_API, VOTING_API } from '@/config/constants/dao';
+import { TRADE_API } from '@/config/constants/trade';
+
 export enum ServicesEndpoints {
   rfExchange = 'rf-exchange',
   rfPairs = 'refinery-finance-pairs',
   snapshot = 'snapshot',
 }
 
-const isProduction = false;
-
-const BASE_THE_GRAPH_ROCK_AND_BLOCK_URI = 'https://api.thegraph.com/subgraphs/name/rock-n-block/';
-
 // @see https://github.com/apollographql/apollo-client/issues/84#issuecomment-763833895
 // @see https://www.apollographql.com/docs/react/api/link/introduction/#providing-to-apollo-client
-const rfExchangeGql = new HttpLink({
-  uri: `${BASE_THE_GRAPH_ROCK_AND_BLOCK_URI}${ServicesEndpoints.rfExchange}`,
-});
-const rfPairsGql = new HttpLink({
-  uri: `${BASE_THE_GRAPH_ROCK_AND_BLOCK_URI}${ServicesEndpoints.rfPairs}`,
-});
-const snapshotGql = new HttpLink({
-  uri: `https://${isProduction ? 'hub' : 'testnet'}.${ServicesEndpoints.snapshot}.org/graphql`,
-});
+const rfExchangeGql = new HttpLink({ uri: TRADE_API });
+const rfPairsGql = new HttpLink({ uri: VOTING_API });
+const snapshotGql = new HttpLink({ uri: SNAPSHOT_API });
 
 // TODO: How to handle multi endpoints in the application?
 export const apolloClient = new ApolloClient({

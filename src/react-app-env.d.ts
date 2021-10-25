@@ -6,6 +6,8 @@ declare namespace NodeJS {
   interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production' | 'test';
     readonly PUBLIC_URL: string;
+    readonly REACT_APP_SNAPSHOT_BASE_URL: string;
+    readonly REACT_APP_SNAPSHOT_SPACE: string;
   }
 }
 
