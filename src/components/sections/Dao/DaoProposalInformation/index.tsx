@@ -25,7 +25,14 @@ const getHumanFriendlyVotingSystem = (votingSystem: ProposalVotingSystem) => {
     }
   }
 };
-const getHumanFriendlyDateTime = (timestamp: number) => new Date(timestamp * 1e3).toUTCString();
+const getHumanFriendlyDateTime = (timestamp: number) => {
+  const date = new Date(timestamp * 1e3);
+  const dateAsString = date.toLocaleDateString();
+  const timeAsString = date.toLocaleTimeString();
+  const timeAsArray = timeAsString.split(':');
+  timeAsArray.splice(-1); // get rid of seconds
+  return `${dateAsString}, ${timeAsArray.join(':')}`;
+};
 
 const additionalInformation = [
   // {

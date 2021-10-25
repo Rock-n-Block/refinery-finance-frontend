@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Form as FormAntd, FormInstance } from 'antd';
+import { Form as FormAntd } from 'antd';
 import { observer } from 'mobx-react-lite';
 
 import Button from '@/components/atoms/Button';
-import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
 import { getMomentMergedDateTime } from '@/components/sections/DaoProposal/helpers';
-import { SNAPSHOT_SPACE } from '@/config/constants/dao';
-import { useGetCurrentBalance } from '@/services/api/refinery-finance-pairs';
-import { useSnapshotService } from '@/services/api/snapshot.org';
-import { ProposalVotingSystem } from '@/services/api/snapshot.org/types';
+import { useCreateProposal } from '@/hooks/dao/useCreateProposal';
+import {
+  hasCurrentBalance,
+  requestHasCurrentBalance,
+  useGetCurrentBalance,
+} from '@/services/api/refinery-finance-pairs';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
-// import { metamaskService } from '@/services/MetamaskConnect';
-import { getBlockNumber } from '@/services/web3/helpers';
 import { useMst } from '@/store';
-import { clog, clogData, clogError } from '@/utils/logger';
-import { throttle } from '@/utils/throttle';
+import { debounce } from '@/utils/debounce';
 
 import 'antd/lib/form/style/css';
 import 'antd/lib/time-picker/style/css';
@@ -46,14 +44,14 @@ const extractDataForProposalFromForms = (forms: Array<any>) => {
   };
 };
 
-interface ICreateProposalResult {
-  id: string;
-  ipfsHash: string;
-  relayer: {
-    address: string;
-    receipt: string;
-  };
-}
+const ConnectWalletButton: React.FC = () => {
+  const { connect } = useWalletConnectorContext();
+  return (
+    <Button className="actions-section__submit" onClick={connect}>
+      <span className="text-white text-smd text-bold">Connect Wallet</span>
+    </Button>
+  );
+};
 
 const DaoProposal: React.FC = observer(() => {
   const history = useHistory();
@@ -64,118 +62,106 @@ const DaoProposal: React.FC = observer(() => {
   const forms = [titleForm, contentForm, choicesForm, actionsForm];
 
   const { user } = useMst();
-  const { connect } = useWalletConnectorContext();
 
-  // const [isFormValidated] = useState(false);
+  const [isFormsValidated, setFormsValidated] = useState(false);
   const [editorPlainText, setEditorPlainText] = useState('');
 
-  const throttledEditorValidation = throttle(() => {
-    contentForm.validateFields();
-  }, 1500);
-
   const handleEasyMdeChange = (text: string) => {
-    throttledEditorValidation();
+    validateForms();
     setEditorPlainText(text);
   };
 
-  const { snapshotClient, provider } = useSnapshotService();
-
-  const createProposal = async ({
-    formsData,
-    body,
-  }: {
-    formsData: Array<FormInstance>;
-    body: string;
-  }): Promise<ICreateProposalResult> => {
-    const partialProposalData = extractDataForProposalFromForms(formsData);
-
-    const blockNumber = await getBlockNumber();
-    const proposalCreationResult = (await snapshotClient.proposal(
-      provider,
-      user.address,
-      SNAPSHOT_SPACE,
-      {
-        ...partialProposalData,
-        snapshot: blockNumber, // 10765072,
-        body,
-        // metadata: {
-        //   plugins: {},
-        //   network: metamaskService.usedChain,
-        //   strategies: [strategies.erc20WithBalance],
-        // },
-        type: ProposalVotingSystem.singleChoice,
-      },
-    )) as ICreateProposalResult;
-
-    return proposalCreationResult;
-  };
-
   const [pendingTx, setPendingTx] = useState(false);
-
-  const handleCreateProposal = async (result: any[]) => {
-    setPendingTx(true);
-    try {
-      const { ipfsHash } = await createProposal({
-        formsData: result,
-        body: editorPlainText,
-      });
-
+  const { createProposal } = useCreateProposal({
+    onSuccessTx: ({ ipfsHash }) => {
       // Redirect user to newly created proposal page
       history.push(`/dao/${ipfsHash}`);
+    },
+    onStartTx: () => setPendingTx(true),
+    onEndTx: () => setPendingTx(false),
+  });
 
-      successNotification('Success', 'Created a new proposal!');
-    } catch (error: any) {
-      clogError(error);
-      errorNotification('Error', new Error(error).message);
-    } finally {
-      setPendingTx(false);
+  const onSubmit = async () => {
+    // In case when user entered CORRECT data, and then, makes it WRONG (but function is debounced/throttled)
+    const isFormValid = await validateFormsAsync();
+    if (isFormValid) {
+      const formsValidationResult = forms.map((form) => form.getFieldsValue());
+      const proposalData = {
+        ...extractDataForProposalFromForms(formsValidationResult),
+        body: editorPlainText,
+      };
+      createProposal(proposalData);
+    } else {
+      setFormsValidated(false);
     }
   };
 
-  const onSubmit = async () => {
-    // if (!isFormValidated) return;
-    const validatePromises = Object.values(forms).map((form) => form.validateFields());
-
-    Promise.all(validatePromises)
-      .then(async (result) => {
-        clogData('RESULT', result);
-        clog(result[2].choices[0]);
-
-        handleCreateProposal(result);
-      })
-      .catch((err) => {
-        clogError('ERROR', err);
-      });
+  const getFormsValidationPromises = () => {
+    return Object.values(forms).map((form) => {
+      // validate only fields were touched
+      // contentForm is never touched so, anyway explicitly call its form.validateFields()
+      if (!form.isFieldsTouched() && form !== contentForm) {
+        return Promise.reject(new Error('Form fields are never touched'));
+      }
+      return form.validateFields();
+    });
   };
 
-  // const validateForms = () => {
-
-  // };
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     console.log(titleForm.isFieldsTouched());
-  //     titleForm.validateFields();
-  //     // короче, механизм такой:
-  //     // есть Farms, вкладываем в каждую форму readonly метод validateForms(), который каждая форма дергает сама собой на каждое изменение в форме
-  //     // TODO: добавить провайдер контекста или убрать в MobX (wut?)
-  //   }, 2000);
-  // }, [titleForm]);
+  /**
+   * It is async/await version of validateForms, also with useState, to validate like synchronously.
+   */
+  const validateFormsAsync = async () => {
+    const formsValidationPromises = getFormsValidationPromises();
+    try {
+      await Promise.all(formsValidationPromises);
+      // if form fields are validated without errors, then send requests to check votingPower
+      const currentBalance = await requestHasCurrentBalance(user.address, client);
+      if (!currentBalance) throw new Error('No balance');
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+  const validateForms = debounce(
+    () => {
+      const formsValidationPromises = getFormsValidationPromises();
+      Promise.all(formsValidationPromises)
+        .then(() => {
+          setFormsValidated(true);
+        })
+        .then(() => {
+          // if form fields are validated without errors, then send requests to check votingPower
+          getNewCurrentBalance();
+        })
+        .catch(() => {
+          setFormsValidated(false);
+        });
+    },
+    1500,
+    false,
+  );
 
   const {
     getCurrentBalance,
-    options: [, { error: currentBalanceError, data: currentBalance }],
-  } = useGetCurrentBalance();
+    options: [
+      ,
+      { loading: currentBalanceLoading, error: currentBalanceError, data: currentBalance, client },
+    ],
+  } = useGetCurrentBalance({ fetchPolicy: 'network-only' });
 
-  clog(currentBalance, currentBalanceError);
-
-  useEffect(() => {
+  const getNewCurrentBalance = useCallback(() => {
     if (user.address) {
       getCurrentBalance(user.address);
     }
-  }, [getCurrentBalance, user.address]);
+  }, [user.address, getCurrentBalance]);
 
-  const isAbleToPublish = !pendingTx;
+  useEffect(() => {
+    getNewCurrentBalance();
+  }, [getNewCurrentBalance]);
+
+  const hasBalance = hasCurrentBalance(currentBalanceError, currentBalance);
+  const isAbleToPublish = hasBalance && isFormsValidated && !pendingTx;
+  const isProcessingValidation = currentBalanceLoading || pendingTx;
 
   return (
     <DaoWrapper>
@@ -188,9 +174,9 @@ const DaoProposal: React.FC = observer(() => {
           >
             <TitleForm
               form={titleForm}
+              validateForms={validateForms}
               fieldClassName="title-section__field"
               inputClassName="title-section__input"
-              // onChange={validate}
             />
           </DaoSection>
 
@@ -248,7 +234,7 @@ const DaoProposal: React.FC = observer(() => {
           >
             <ChoicesForm
               form={choicesForm}
-              // validateForms={}
+              validateForms={validateForms}
               inputClassName="choices-section__input"
               inputPostfixClassName="choices-section__input-postfix"
               formErrorsClassName="choices-section__form-errors"
@@ -261,23 +247,26 @@ const DaoProposal: React.FC = observer(() => {
           <DaoSection className="dao-proposal__section" title="Actions">
             <ActionsForm
               form={actionsForm}
+              validateForms={validateForms}
               snapshotClassName="actions-section__snapshot"
               snapshotTitleClassName="actions-section__snapshot-title"
             />
             {!user.address ? (
-              <Button className="actions-section__submit" onClick={connect}>
-                <span className="text-white text-smd text-bold">Connect Wallet</span>
-              </Button>
+              <ConnectWalletButton />
             ) : (
               <Button
                 className="actions-section__submit"
-                // disabled={!isFormValidated}
-                loading={pendingTx}
+                loading={isProcessingValidation}
                 disabled={!isAbleToPublish}
                 onClick={isAbleToPublish ? onSubmit : undefined}
               >
                 <span className="text-white text-smd text-bold">Publish</span>
               </Button>
+            )}
+            {!hasBalance && !currentBalanceLoading && (
+              <div style={{ color: 'red', marginTop: 10 }}>
+                You need voting power to publish a proposal.
+              </div>
             )}
           </DaoSection>
         </div>

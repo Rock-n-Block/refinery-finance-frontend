@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { DaoPreview, DaoWrapper } from '@/components/sections/Dao';
 import DaoWrapperContent from '@/components/sections/Dao/DaoWrapperContent';
 import { useGetProposal } from '@/services/api/snapshot.org/hooks';
-import { clog } from '@/utils/logger';
 
 import './Dao.scss';
 
@@ -14,10 +13,8 @@ const Dao: React.FC = observer(() => {
 
   const {
     getProposal,
-    options: [, { loading: proposalLoading, data: proposalData }],
+    options: [, { data: proposalData }],
   } = useGetProposal();
-
-  clog('useGetProposal', proposalLoading, proposalData);
 
   useEffect(() => {
     if (proposalId) {

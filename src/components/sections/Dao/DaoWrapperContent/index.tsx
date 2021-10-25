@@ -110,7 +110,6 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = observer(({ proposa
           choice,
           votingPower,
           percents: getPercents(votingPower, totalChoicesVotingPower).percentsRounded,
-          // percents: votingPower.div(totalChoicesVotingPower).multipliedBy(100).toFixed(2),
         };
       })
     : [];

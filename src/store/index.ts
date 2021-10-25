@@ -4,7 +4,7 @@ import { Instance, onSnapshot, types } from 'mobx-state-tree';
 import { clogData } from '@/utils/logger';
 
 import { initialState as roiInitialState } from './Models/Modals/RoiModal';
-import { FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
+import { DaoModel, FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
@@ -12,6 +12,7 @@ const RootModel = types.model({
   tokens: TokensModel,
   pools: PoolsModel,
   farms: FarmsModel,
+  dao: DaoModel,
 });
 export const Store = RootModel.create({
   user: {
@@ -62,6 +63,9 @@ export const Store = RootModel.create({
   },
   farms: {
     // data: [],
+  },
+  dao: {
+    blockNumber: '0',
   },
 });
 

@@ -12,7 +12,6 @@ import {
   useGetProposalVotes,
 } from '@/services/api/snapshot.org/hooks';
 import { metamaskService } from '@/services/MetamaskConnect';
-import { clog } from '@/utils/logger';
 
 const selectVotersAddresses = (data: IGetProposalVotesResponse) => {
   return data.votes.map((item) => item.voter);
@@ -32,8 +31,6 @@ export const useProposalVotes = (
   } = useGetProposalVotes({
     fetchPolicy: 'network-only',
   });
-
-  clog('useGetProposalVotes', proposalVotesLoading, proposalVotesData);
 
   const updateProposalVotes = useCallback(() => {
     if (proposalId) {

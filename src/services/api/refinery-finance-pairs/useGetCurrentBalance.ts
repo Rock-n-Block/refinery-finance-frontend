@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { gql, LazyQueryHookOptions, QueryTuple, useLazyQuery } from '@apollo/client';
+import { ApolloClient, gql, LazyQueryHookOptions, QueryTuple, useLazyQuery } from '@apollo/client';
 
 import { getRfPairsContext } from '@/services/apolloClient';
 
@@ -7,7 +7,7 @@ interface IGetCurrentBalanceResponse {
   user: {
     TotalBalance: string;
     // __typename: "User"
-  };
+  } | null;
 }
 
 interface IGetCurrentBalanceVariables {
@@ -49,4 +49,30 @@ export const useGetCurrentBalance = (
   );
 
   return { getCurrentBalance, options: [func, responseData] };
+};
+
+export const selectCurrentBalance = (data: IGetCurrentBalanceResponse): string | null => {
+  if (!data.user) return null;
+  return data.user.TotalBalance;
+};
+
+export const hasCurrentBalance = (error: any, data: any): boolean => {
+  if (error || !data) return false;
+  const balance = selectCurrentBalance(data);
+  if (!balance || balance === '0') return false;
+  return Boolean(balance);
+};
+
+export const requestHasCurrentBalance = async (
+  userAddress: string,
+  client?: ApolloClient<any>,
+): Promise<boolean> => {
+  const result = await client?.query({
+    query: GET_CURRENT_BALANCE,
+    variables: {
+      user_address: userAddress,
+    },
+  });
+  if (!result) return false;
+  return hasCurrentBalance(result.error, result.data);
 };
