@@ -12,6 +12,7 @@ import {
   useGetProposalVotes,
 } from '@/services/api/snapshot.org/hooks';
 import { metamaskService } from '@/services/MetamaskConnect';
+import { clogError } from '@/utils/logger';
 
 const selectVotersAddresses = (data: IGetProposalVotesResponse) => {
   return data.votes.map((item) => item.voter);
@@ -65,14 +66,23 @@ export const useProposalVotes = (
       const addresses = selectVotersAddresses(proposalVotesData);
 
       const doAsyncWork = async () => {
-        const ethBlockByDate = new EthDater(metamaskService.web3Provider);
+        const ethBlockByDate = new EthDater(metamaskService.web3Provider.eth);
         const blocksWhereWereVotesRaw = await Promise.allSettled(
           proposalVotesData.votes.map(({ created }) => {
             return ethBlockByDate.getDate(created * 1e3);
           }),
         );
         const blockWhereWereVotes = blocksWhereWereVotesRaw.map((item) => {
-          return item.status === 'fulfilled' ? item.value.block : null;
+          switch (item.status) {
+            case 'rejected': {
+              clogError('useProposalVotes | Get Block By Date Retrieval', item.reason);
+              return null;
+            }
+            case 'fulfilled':
+            default: {
+              return item.value.block;
+            }
+          }
         });
         const usersBalancesRaw = await fetchUserBalancesByBlock(addresses, blockWhereWereVotes);
         const totalUserBalancesByBlock = selectTotalUserBalancesByBlock(usersBalancesRaw);

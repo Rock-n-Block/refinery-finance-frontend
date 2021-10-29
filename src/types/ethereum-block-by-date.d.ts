@@ -3,10 +3,13 @@
 /* eslint-disable @typescript-eslint/no-useless-constructor */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable */
+
 declare module 'ethereum-block-by-date' {
-  class Library {
-    constructor(Web3): typeof Library {}
-    // eslint-disable-next-line lines-between-class-members
+  import Web3, { Eth } from 'web3';
+
+  export default class EthereumBlockByDate {
+    constructor(web3: Web3 | Eth): typeof EthereumBlockByDate;
+
     async getBoundaries() {}
 
     /**
@@ -43,5 +46,4 @@ declare module 'ethereum-block-by-date' {
 
     async getBlockWrapper(block) {}
   }
-  export default Library;
 }

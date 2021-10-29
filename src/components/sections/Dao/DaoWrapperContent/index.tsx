@@ -88,8 +88,6 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = observer(({ proposa
 
   let totalChoicesVotingPower = BIG_ZERO;
 
-  console.log(votesRaw);
-
   const mapChoiceToTotalVotingPower = votesRaw.reduce(
     (acc, { choice: choiceIndex, votingPower }) => {
       const choice = choices[choiceIndex - 1];
