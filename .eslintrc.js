@@ -7,6 +7,7 @@ module.exports = {
     jest: true,
   },
   extends: [
+    'react-app',
     'airbnb',
     'airbnb/hooks',
     'plugin:import/typescript',

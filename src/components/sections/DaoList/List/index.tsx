@@ -2,14 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
+import { IProposalsPreview } from '@/services/api/snapshot.org/hooks';
+
 import './List.scss';
 
 interface IListProps {
-  items: {
-    id: string;
-    title: string;
-    status: string;
-  }[];
+  items: IProposalsPreview;
 }
 
 const List: React.FC<IListProps> = ({ items }) => {

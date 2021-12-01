@@ -9,4 +9,14 @@
       padding-right: 20px;
     }
   }
+
+  &__list-skeleton-loader {
+    width: 100%;
+
+    border-radius: 20px;
+
+    &:not(:last-child) {
+      margin-bottom: 12px;
+    }
+  }
 }

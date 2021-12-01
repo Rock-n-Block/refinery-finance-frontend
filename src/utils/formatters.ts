@@ -80,3 +80,20 @@ export const loadingDataFormatter = (
   });
   // return getBalanceAmount(BigNumber.isBigNumber(value) ? value : new BigNumber(value));
 };
+
+export const addressShortener = (address: string, charsCountToShow = 10): string => {
+  const startCharsCount = Math.floor(charsCountToShow / 2) + 1;
+  const lastCharsCount = Math.floor(charsCountToShow / 2) - 1;
+
+  const addressAsArray = address.split('');
+  addressAsArray.splice(
+    startCharsCount,
+    address.length - (startCharsCount + lastCharsCount),
+    '...',
+  );
+  return addressAsArray.join('');
+};
+
+export const ipfsShortener = (ipfsHash: string, charsCountToShow = 6): string => {
+  return `#${ipfsHash.slice(0, charsCountToShow)}`;
+};

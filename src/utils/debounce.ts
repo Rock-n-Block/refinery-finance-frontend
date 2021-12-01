@@ -8,9 +8,9 @@ export function debounce(
   func: (...props: any[]) => any,
   wait: number,
   immediate: boolean,
-): (...args: []) => void {
+): (...args: any[]) => void {
   let timeout: any;
-  return function debouncedFunc(...args: []) {
+  return function debouncedFunc(...args: any[]) {
     const context = this as any;
     const later = function later() {
       timeout = null;

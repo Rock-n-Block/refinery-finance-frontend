@@ -5,10 +5,11 @@ import classNames from 'classnames';
 import closeIcon from '@/assets/img/icons/cross.svg';
 import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
-import { throttle } from '@/utils/throttle';
+import { debounce } from '@/utils/debounce';
 
 interface IChoicesFormProps {
   form: FormInstance;
+  validateForms: () => void;
   inputClassName?: string;
   inputPostfixClassName?: string;
   formErrorsClassName?: string;
@@ -17,22 +18,32 @@ interface IChoicesFormProps {
 
 const ChoicesForm: React.FC<IChoicesFormProps> = ({
   form,
+  validateForms,
   inputClassName,
   inputPostfixClassName,
   formErrorsClassName,
   buttonClassName,
 }) => {
   const [choicesFormError, setChoicesFormError] = useState(['']);
-  const throttledUpdateChoicesFormFieldsError = throttle(() => {
-    const formFields = form.getFieldsError();
-    const hasError = formFields.some(({ errors }, index) => {
-      if (errors.length || index === formFields.length - 1) {
-        setChoicesFormError(errors);
-      }
-      return errors.length;
-    });
-    return hasError;
-  }, 1500);
+  const debouncedUpdateChoicesFormFieldsError = debounce(
+    () => {
+      const formFields = form.getFieldsError();
+      formFields.some(({ errors }, index) => {
+        if (errors.length || index === formFields.length - 1) {
+          setChoicesFormError(errors);
+        }
+        return Boolean(errors.length);
+      });
+    },
+    1000,
+    false,
+  );
+
+  const onFormChange = () => {
+    debouncedUpdateChoicesFormFieldsError();
+    validateForms();
+  };
+
   return (
     <FormAntd
       name="choicesForm"
@@ -40,8 +51,7 @@ const ChoicesForm: React.FC<IChoicesFormProps> = ({
       initialValues={{
         choices: [undefined, undefined],
       }}
-      validateTrigger={['onChange', 'onBlur']}
-      onFieldsChange={throttledUpdateChoicesFormFieldsError}
+      onValuesChange={onFormChange}
     >
       <FormAntd.List name="choices">
         {(fields, { add, remove }) => (
@@ -50,12 +60,15 @@ const ChoicesForm: React.FC<IChoicesFormProps> = ({
               <FormAntd.Item key={field.key} required={false} help={<></>}>
                 <FormAntd.Item
                   {...field}
-                  validateTrigger={['onChange', 'onBlur']}
                   rules={[
                     {
                       required: true,
                       whitespace: true,
                       message: 'Choices must not be empty',
+                    },
+                    {
+                      max: 36,
+                      message: 'Character limit exceeded',
                     },
                   ]}
                   noStyle

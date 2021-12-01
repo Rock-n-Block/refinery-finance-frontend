@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js/bignumber';
 import { Transaction } from 'web3-core';
 
+export type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+
 export interface IToken {
   logoURI?: string;
   name: string;
@@ -188,3 +190,5 @@ export enum Precisions {
   shortToken = 4,
   fiat = 2, // 0.3244 USD = 0.32 USD, 100.1222 RUB = 100.12 RUB
 }
+
+export type TimestampSeconds = number;
