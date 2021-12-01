@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CollectiblesPreview, CollectiblesCard } from '../../components/sections/Collectibles';
+import { CollectiblesCard, CollectiblesPreview } from '../../components/sections/Collectibles';
 
 import './Collectibles.scss';
 

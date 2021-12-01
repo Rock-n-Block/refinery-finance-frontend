@@ -1,3 +1,6 @@
+import BigNumber from 'bignumber.js/bignumber';
+import { Transaction } from 'web3-core';
+
 export interface IToken {
   logoURI?: string;
   name: string;
@@ -83,3 +86,105 @@ export enum PoolFarmingMode {
 }
 
 export type IPoolFarmingMode = keyof typeof PoolFarmingMode;
+
+export interface IReceipt extends Transaction {
+  status: boolean;
+}
+
+export interface Address extends Record<string, string> {
+  // [key: string]: string;
+  '42': string;
+}
+export interface Token {
+  symbol: string;
+  address: Address;
+  decimals?: number;
+  projectLink?: string;
+  logoURI?: string;
+  busdPrice?: string;
+}
+
+export interface PoolConfig {
+  id: number;
+  earningToken: Token;
+  stakingToken: Token;
+  contractAddress: Address;
+  tokenPerBlock: string;
+  isFinished?: boolean;
+  enableEmergencyWithdraw?: boolean;
+}
+
+interface PoolUserData {
+  allowance: BigNumber;
+  stakingTokenBalance: BigNumber;
+  stakedBalance: BigNumber;
+  pendingReward: BigNumber;
+}
+
+export interface Pool extends PoolConfig {
+  totalStaked?: BigNumber;
+  stakingLimit?: BigNumber;
+  startBlock?: number;
+  endBlock?: number;
+  apr?: number;
+  stakingTokenPrice?: number;
+  earningTokenPrice?: number;
+  isAutoVault?: boolean;
+  userData?: PoolUserData;
+}
+
+export enum DetailsBadgeType {
+  core = 'core',
+}
+export type IDetailsBadgeType = keyof typeof DetailsBadgeType;
+
+export interface FarmConfig {
+  pid: number;
+  lpSymbol: string;
+  lpAddresses: Address;
+  token: Token;
+  quoteToken: Token;
+  multiplier?: string;
+  categoryType: IDetailsBadgeType;
+  // dual?: {
+  //   rewardPerBlock: number;
+  //   earnLabel: string;
+  //   endBlock: number;
+  // };
+}
+
+export type SerializedBigNumber = string;
+
+interface FarmUserData {
+  allowance: string;
+  tokenBalance: string;
+  stakedBalance: string;
+  earnings: string;
+}
+
+export interface FarmWithoutUserData extends FarmConfig {
+  tokenAmountMc?: SerializedBigNumber;
+  quoteTokenAmountMc?: SerializedBigNumber;
+  tokenAmountTotal?: SerializedBigNumber;
+  quoteTokenAmountTotal?: SerializedBigNumber;
+  lpTotalInQuoteToken?: SerializedBigNumber;
+  lpTotalSupply?: SerializedBigNumber;
+  tokenPriceVsQuote?: SerializedBigNumber;
+  poolWeight?: SerializedBigNumber;
+}
+
+export interface Farm extends FarmWithoutUserData {
+  userData?: FarmUserData;
+}
+
+export interface FarmWithStakedValue extends Farm {
+  apr?: number;
+  lpRewardsApr?: number;
+  liquidity?: BigNumber;
+}
+
+export enum Precisions {
+  token = 10,
+  shortToken = 4,
+  fiat = 2, // 0.3244 USD = 0.32 USD, 100.1222 RUB = 100.12 RUB
+}

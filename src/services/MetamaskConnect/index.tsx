@@ -2,9 +2,9 @@ import React, { createContext, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 
-import rootStore from '../../store';
-import MetamaskService from '../web3';
-import configWeb3 from '../web3/config';
+import { contracts } from '@/config';
+import MetamaskService from '@/services/web3';
+import rootStore from '@/store';
 
 export interface IwalletConnectorContext {
   metamaskService: MetamaskService;
@@ -12,7 +12,7 @@ export interface IwalletConnectorContext {
   disconnect: () => void;
 }
 
-const metamaskService = new MetamaskService({
+export const metamaskService = new MetamaskService({
   testnet: 'kovan',
 });
 
@@ -42,12 +42,8 @@ class Connector extends React.Component<any, any> {
       this.connect();
     }
 
-    this.state.provider.createContract(
-      'FACTORY',
-      configWeb3.FACTORY.ADDRESS,
-      configWeb3.FACTORY.ABI,
-    );
-    this.state.provider.createContract('ROUTER', configWeb3.ROUTER.ADDRESS, configWeb3.ROUTER.ABI);
+    this.state.provider.createContract('FACTORY', contracts.FACTORY.ADDRESS, contracts.FACTORY.ABI);
+    this.state.provider.createContract('ROUTER', contracts.ROUTER.ADDRESS, contracts.ROUTER.ABI);
 
     this.state.provider.chainChangedObs.subscribe({
       next(err: string) {
@@ -68,7 +64,7 @@ class Connector extends React.Component<any, any> {
 
       rootStore.user.setAddress(address);
       localStorage.refFinanceMetamask = true;
-    } catch (err) {
+    } catch (err: any) {
       rootStore.modals.metamaskErr.setErr(err.message);
       this.disconnect();
     }

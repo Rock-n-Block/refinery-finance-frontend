@@ -22,12 +22,18 @@ const EndsIn: React.FC<IEndsInColumnProps> = ({ value, onlyDesktop }) => {
         },
       )}
     >
-      <div className="pools-table-row__text-md">
-        <div>{value}</div> <div>blocks</div>
-      </div>
-      <div className="box">
-        <img className="pools-table-row__item-img-info" src={TimerImg} alt="timer" />
-      </div>
+      {value ? (
+        <>
+          <div className="pools-table-row__text-md">
+            <div>{value}</div> <div>blocks</div>
+          </div>
+          <div className="box">
+            <img className="pools-table-row__item-img-info" src={TimerImg} alt="timer" />
+          </div>
+        </>
+      ) : (
+        '-'
+      )}
     </div>
   );
 };

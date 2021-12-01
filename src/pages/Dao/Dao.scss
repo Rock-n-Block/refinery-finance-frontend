@@ -46,7 +46,8 @@ $section-margin: 60px;
     }
   }
 
-  &__column {}
+  &__column {
+  }
 
   &__text {
     @extend .text-smd;
@@ -102,7 +103,8 @@ $section-margin: 60px;
     margin-top: 10px;
   }
 
-  &__content-col {}
+  &__content-col {
+  }
 
   &__option-name {
     flex: 0 0 35%;
@@ -126,9 +128,11 @@ $section-margin: 60px;
     margin-bottom: 6px;
   }
 
-  &__option {}
+  &__option {
+  }
 
-  &__value {}
+  &__value {
+  }
 
   &__progress-bar {
     height: 6px;
@@ -151,7 +155,7 @@ $section-margin: 60px;
   &__button {
     width: 100%;
     margin-bottom: 20px;
-    border: 3px solid #CECECE;
+    border: 3px solid #cecece;
 
     &_active {
       background-color: $purple;
@@ -182,7 +186,7 @@ $section-margin: 60px;
 
     &:not(:last-child) {
       padding-bottom: 20px;
-      border-bottom: 1px solid #B8B8B8;
+      border-bottom: 1px solid #b8b8b8;
     }
   }
 

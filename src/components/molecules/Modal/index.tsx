@@ -3,9 +3,10 @@ import { Modal as ModalAntd } from 'antd';
 import classNames from 'classnames';
 
 import 'antd/lib/modal/style/css';
-import './Modal.scss';
 
 import { ReactComponent as ClearImg } from '../../../assets/img/icons/cross.svg';
+
+import './Modal.scss';
 
 interface IModal {
   isVisible: boolean;

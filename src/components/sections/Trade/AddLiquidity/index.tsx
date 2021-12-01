@@ -1,13 +1,15 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import BigNumber from 'bignumber.js/bignumber';
+import { observer } from 'mobx-react-lite';
 
-import { TradeBox, ChooseTokens } from '..';
-import { ITokens, ISettings } from '../../../../types';
-import { Button, Popover } from '../../../atoms';
+import { clog, clogError } from '@/utils/logger';
+
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import { useMst } from '../../../../store';
 import MetamaskService from '../../../../services/web3';
+import { useMst } from '../../../../store';
+import { ISettings, ITokens } from '../../../../types';
+import { Button, Popover } from '../../../atoms';
+import { ChooseTokens, TradeBox } from '..';
 
 import './AddLiquidity.scss';
 
@@ -52,7 +54,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
     const [isLoading, setLoading] = React.useState<boolean>(false);
 
     const handleCreatePair = async () => {
-      console.log(settings, 'txDeadlineUtc');
+      clog(settings, 'txDeadlineUtc');
       try {
         if (tokensData.from.token && tokensData.to.token) {
           setLoading(true);
@@ -97,7 +99,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         }
       } catch (err) {
         setLoading(false);
-        console.log(err);
+        clogError(err);
       }
     };
 
@@ -176,7 +178,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
               }
             });
         } catch (err) {
-          console.log(err, 'err');
+          clogError(err);
         }
       } else {
         setExchange(undefined);

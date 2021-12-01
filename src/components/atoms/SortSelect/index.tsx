@@ -12,17 +12,28 @@ import './SortSelect.scss';
 const { Option } = AntdSelect;
 
 interface ISortSelect extends SelectProps<SelectValue> {
+  sortOptions?: string[];
   label?: string;
 }
 
 const SortSelect: React.FC<ISortSelect> = (props) => {
-  const items = ['Hot', 'APR', 'Multiplier', 'Earned', 'Liquidity'];
-  const { className, label, ...otherProps } = props;
-  const [activeValue, setActiveValue] = React.useState<any>(items[0]);
+  const {
+    className,
+    label,
+    sortOptions = ['Hot', 'APR', 'Multiplier', 'Earned', 'Liquidity'],
+    onChange,
+    ...otherProps
+  } = props;
+  const [activeValue, setActiveValue] = React.useState<any>(sortOptions[0]);
   return (
     <AntdSelect
       labelInValue
-      onChange={(value: any) => setActiveValue(value.value)}
+      onChange={(value: any, ...onChangeProps) => {
+        setActiveValue(value.value);
+        if (onChange) {
+          onChange(value, ...onChangeProps);
+        }
+      }}
       suffixIcon={<ArrowImg />}
       value={{
         value: '',
@@ -31,7 +42,7 @@ const SortSelect: React.FC<ISortSelect> = (props) => {
       {...otherProps}
       className={classNames(className, 's-sort')}
     >
-      {items
+      {sortOptions
         .filter((item) => item !== activeValue)
         .map((item) => (
           <Option value={item} key={item}>

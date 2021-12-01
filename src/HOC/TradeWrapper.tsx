@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { walletConnectorContext } from '../services/MetamaskConnect';
-import Web3Config from '../services/web3/config';
-import MetamaskService from '../services/web3';
-import { IToken, ITokens } from '../types';
+import { contracts } from '@/config';
+import { walletConnectorContext } from '@/services/MetamaskConnect';
+import MetamaskService from '@/services/web3';
+import { IToken, ITokens } from '@/types';
+import { clogError } from '@/utils/logger';
 
 interface ITradeWrapper {
   isAllowanceFrom: boolean;
@@ -111,7 +112,7 @@ const TradeWrapper = (
           });
           await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
-            approvedAddress: Web3Config.ROUTER.ADDRESS,
+            approvedAddress: contracts.ROUTER.ADDRESS,
             tokenAddress: this.state.tokensData.from.token.address,
           });
           this.setState({
@@ -121,7 +122,7 @@ const TradeWrapper = (
         if (!this.state.isAllowanceTo && this.state.tokensData.to.token) {
           await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
-            approvedAddress: Web3Config.ROUTER.ADDRESS,
+            approvedAddress: contracts.ROUTER.ADDRESS,
             tokenAddress: this.state.tokensData.to.token.address,
           });
           this.setState({
@@ -137,7 +138,7 @@ const TradeWrapper = (
           isAllowanceTo: false,
           isApproving: false,
         });
-        console.log('err approve tokens', err);
+        clogError('err approve tokens', err);
       }
     }
 
@@ -151,8 +152,8 @@ const TradeWrapper = (
           'FACTORY',
           'getPair',
           [tokens.from.token?.address, tokens.to.token?.address],
-          Web3Config.FACTORY.ADDRESS,
-          Web3Config.FACTORY.ABI,
+          contracts.FACTORY.ADDRESS,
+          contracts.FACTORY.ABI,
         );
 
         if (pairAddr === '0x0000000000000000000000000000000000000000') {
@@ -204,19 +205,19 @@ const TradeWrapper = (
         ) {
           const token0 = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
-            Web3Config.PAIR.ABI,
+            contracts.PAIR.ABI,
             'token0',
           );
 
           const token1 = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
-            Web3Config.PAIR.ABI,
+            contracts.PAIR.ABI,
             'token1',
           );
 
           const resurves = await this.context.metamaskService.callContractMethodFromNewContract(
             pairAddr,
-            Web3Config.PAIR.ABI,
+            contracts.PAIR.ABI,
             'getReserves',
           );
 
@@ -326,7 +327,7 @@ const TradeWrapper = (
         this.setState({
           isLoadingExchange: false,
         });
-        console.log('get pair', err);
+        clogError('get pair', err);
       }
     }
 

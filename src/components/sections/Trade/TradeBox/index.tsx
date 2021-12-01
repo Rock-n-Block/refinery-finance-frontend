@@ -1,15 +1,15 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import cn from 'classnames';
+
+import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
+import InfoImg from '@/assets/img/icons/info.svg';
+import RecentTxImg from '@/assets/img/icons/recent-tx.svg';
+import SettingsImg from '@/assets/img/icons/settings.svg';
 
 import { Popover } from '../../../atoms';
 
 import './TradeBox.scss';
-
-import SettingsImg from '@/assets/img/icons/settings.svg';
-import RecentTxImg from '@/assets/img/icons/recent-tx.svg';
-import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
-import InfoImg from '@/assets/img/icons/info.svg';
 
 interface ITradeBox {
   title: string;
@@ -31,30 +31,22 @@ const TradeBox: React.FC<ITradeBox> = ({
   titleBackLink,
   info,
 }) => {
-  const history = useHistory();
-
-  const handleBack = (): void => {
-    if (titleBackLink) {
-      history.goBack();
-    }
-  };
-
   return (
     <div className={cn('trade-box box-shadow box-white', className)}>
       <div className="trade-box__box-top box-f box-f-jc-sb">
         <div className="">
-          <div
-            className={cn('trade-box__title text-md text-purple text-med box-f-ai-c', {
-              'box-pointer': titleBackLink,
-            })}
-            onClick={handleBack}
-            onKeyDown={handleBack}
-            role="link"
-            tabIndex={0}
-          >
-            {titleBackLink ? <img src={ArrowImg} alt="" className="trade-box__back" /> : ''}
-            <span>{title}</span>
-          </div>
+          {titleBackLink ? (
+            <Link to="/trade/liquidity">
+              <div className={cn('trade-box__title text-md text-purple text-med box-f-ai-c')}>
+                <img src={ArrowImg} alt="" className="trade-box__back" />
+                <span>{title}</span>
+              </div>
+            </Link>
+          ) : (
+            <div className={cn('trade-box__title text-md text-purple text-med box-f-ai-c')}>
+              <span>{title}</span>
+            </div>
+          )}
           {subtitle ? (
             <div className="trade-box__subtitle text-gray box-f-ai-c">
               <span>{subtitle}</span>

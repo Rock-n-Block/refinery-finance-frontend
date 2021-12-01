@@ -1,16 +1,16 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { Modal } from '../../../molecules';
-import { Switch, Button } from '../../../atoms';
-import { IToken } from '../../../../types';
-import { useMst } from '../../../../store';
-
-import './ImportTokensModal.scss';
-
 import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
 import InfoRImg from '@/assets/img/icons/info-r.svg';
 import LinkImg from '@/assets/img/icons/open-link.svg';
+
+import { useMst } from '../../../../store';
+import { IToken } from '../../../../types';
+import { Button, Switch } from '../../../atoms';
+import { Modal } from '../../../molecules';
+
+import './ImportTokensModal.scss';
 
 interface IImportTokensModal {
   isVisible?: boolean;

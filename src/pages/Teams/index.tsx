@@ -1,10 +1,9 @@
 import React from 'react';
 
-import { TeamsPreview, TeamCard } from '../../components/sections/Teams';
+import TeamImg from '../../assets/img/sections/teams/team-1.svg';
+import { TeamCard, TeamsPreview } from '../../components/sections/Teams';
 
 import './Teams.scss';
-
-import TeamImg from '../../assets/img/sections/teams/team-1.svg';
 
 const Teams: React.FC = () => {
   const teams = [

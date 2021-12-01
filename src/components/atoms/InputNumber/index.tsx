@@ -4,6 +4,7 @@ import { InputNumberProps } from 'antd/lib/input-number';
 import cn from 'classnames';
 
 import 'antd/lib/input-number/style/css';
+
 import './InputNumber.scss';
 
 interface IInputNumberProps extends InputNumberProps {

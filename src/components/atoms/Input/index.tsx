@@ -4,6 +4,7 @@ import { InputProps } from 'antd/lib/input';
 import cn from 'classnames';
 
 import 'antd/lib/input/style/css';
+
 import './Input.scss';
 
 interface IInput extends InputProps {

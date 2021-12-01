@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './NotFound.scss';
-
 import { ReactComponent as LupaImg } from '../../../../assets/img/icons/lupa.svg';
+
+import './NotFound.scss';
 
 const NotFound: React.FC = () => {
   return (

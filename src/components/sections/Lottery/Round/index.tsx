@@ -1,14 +1,13 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import nextId from 'react-id-generator';
-
-import { WinNumber, Button } from '../../../atoms';
-import { useMst } from '../../../../store';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-
-import './Round.scss';
+import { observer } from 'mobx-react-lite';
 
 import LogoImg from '../../../../assets/img/icons/logo.svg';
+import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
+import { useMst } from '../../../../store';
+import { Button, WinNumber } from '../../../atoms';
+
+import './Round.scss';
 
 interface IRound {
   index: number;

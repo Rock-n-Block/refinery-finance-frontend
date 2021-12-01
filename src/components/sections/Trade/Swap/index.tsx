@@ -1,14 +1,14 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import moment from 'moment';
-import { useLazyQuery, gql } from '@apollo/client';
+import { Route, Switch } from 'react-router-dom';
+import { gql, useLazyQuery } from '@apollo/client';
 import { observer } from 'mobx-react-lite';
+import moment from 'moment';
 
-import { ExchangeSettings, RecentTxs } from '..';
-import { ISettings, IRecentTx } from '../../../../types';
 import TradeWrapper from '../../../../HOC/TradeWrapper';
 import { useMst } from '../../../../store';
+import { IRecentTx, ISettings } from '../../../../types';
 import Exchange from '../Exchange';
+import { ExchangeSettings, RecentTxs } from '..';
 
 const GET_USER_TRX = gql`
   query Swap($address: String!) {

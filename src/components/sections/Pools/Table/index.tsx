@@ -1,7 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { IPoolCard } from '@/components/sections/Pools/PoolCard';
+import { getFarmMode } from '@/store/pools/helpers';
+import { Pool } from '@/types';
 
 import { PoolTableRow } from '..';
 
@@ -15,7 +16,7 @@ enum ColumnStyle {
 type IColumnStyle = keyof typeof ColumnStyle;
 
 interface ITableProps {
-  data: IPoolCard[];
+  data: Pool[];
 }
 
 interface IColumn {
@@ -23,10 +24,14 @@ interface IColumn {
   name: string;
 }
 
+const mockData = {
+  profitTokenSymbol: 'RP1',
+};
+
 const columns: IColumn[] = [
   {
     style: 'disabled',
-    name: `Recent CAKE profit`,
+    name: `Recent ${mockData.profitTokenSymbol} profit`,
   },
   {
     name: 'APR',
@@ -56,13 +61,18 @@ const Table: React.FC<ITableProps> = React.memo(({ data }) => {
           </div>
         ))}
       </div>
-      {data.map((rowData) => (
-        <PoolTableRow
-          key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
-          data={rowData}
-          columns={columns}
-        />
-      ))}
+      {data.map((pool) => {
+        const farmMode = getFarmMode(pool);
+        return (
+          <PoolTableRow
+            // key={`${rowData.tokenEarn?.address}${rowData.tokenStake.address}`}
+            key={pool.isAutoVault ? 'auto-pool' : pool.id}
+            farmMode={farmMode}
+            pool={pool}
+            columns={columns}
+          />
+        );
+      })}
     </div>
   );
 });

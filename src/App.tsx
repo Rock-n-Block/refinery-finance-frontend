@@ -2,19 +2,19 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
-import { Header } from './components/sections';
 import { MetamaskErrModal, RoiModal } from './components/molecules';
+import { Header } from './components/sections';
 import {
-  TradePage,
-  LotteryPage,
-  FarmsPage,
-  PoolsPage,
   CollectiblesPage,
-  TeamsPage,
-  TeamPage,
   DaoListPage,
   DaoPage,
   DaoProposalPage,
+  FarmsPage,
+  LotteryPage,
+  PoolsPage,
+  TeamPage,
+  TeamsPage,
+  TradePage,
 } from './pages';
 import { useMst } from './store';
 
@@ -47,6 +47,7 @@ const App: React.FC = observer(() => {
             '/trade/liquidity/history',
             '/trade/liquidity/find',
             '/trade/liquidity/add',
+            '/trade/liquidity/add/:currencyIdA/:currencyIdB',
             '/trade/liquidity/remove',
             '/trade/liquidity/receive',
           ]}

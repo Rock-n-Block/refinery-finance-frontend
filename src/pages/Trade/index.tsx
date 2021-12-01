@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TradeNavbar, Swap, Liquidity } from '../../components/sections/Trade';
+import { Liquidity, Swap, TradeNavbar } from '../../components/sections/Trade';
 
 import './Trade.scss';
 

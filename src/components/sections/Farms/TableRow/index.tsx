@@ -1,83 +1,129 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
+import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
-import BnbImg from '@/assets/img/currency/bnb.svg';
+// import BnbImg from '@/assets/img/currency/bnb.svg';
 import ArrowPurple from '@/assets/img/icons/arrow-btn.svg';
 import CalcImg from '@/assets/img/icons/calc.svg';
-import CheckImg from '@/assets/img/icons/check.svg';
-import InfoImg from '@/assets/img/icons/info.svg';
-import OpenLinkImg from '@/assets/img/icons/open-link.svg';
-import { Button, InputNumber, Popover } from '@/components/atoms';
+import { Button } from '@/components/atoms';
+import { tokens } from '@/config/tokens';
+import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
+import { FarmWithStakedValue, Precisions, Token } from '@/types';
+import { getBalanceAmount, numberWithCommas } from '@/utils/formatters';
+import { clog } from '@/utils/logger';
+
+import { LiquidityPopover, MultiplierPopover } from '../Popovers';
+
+import DetailsActionsSection from './DetailsActionsSection';
+import DetailsEarnedSection from './DetailsEarnedSection';
+import DetailsLinks from './DetailsLinks';
+import { EARNING_TOKEN_SYMBOL } from './utils';
 
 import './TableRow.scss';
 
-const TableRow: React.FC = observer(() => {
-  const { user, modals } = useMst();
+interface ITableRowProps {
+  farm: FarmWithStakedValue;
+}
+
+interface ITokensPairProps {
+  lpSymbol: string;
+  token: Token;
+  quoteToken: Token;
+}
+
+const TokensPair: React.FC<ITokensPairProps> = ({ lpSymbol, token, quoteToken }) => {
+  return (
+    <div className="farms-table-row__currencies box-f-ai-c t-box-b">
+      <div className="farms-table-row__currencies-pair box-f">
+        <img
+          className="farms-table-row__currencies-pair-item"
+          src={quoteToken.logoURI}
+          alt="currency"
+        />
+        <img className="farms-table-row__currencies-pair-item" src={token.logoURI} alt="currency" />
+      </div>
+      <div className="text-upper text-smd">{lpSymbol}</div>
+    </div>
+  );
+};
+
+const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
+  const { modals } = useMst();
   const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
 
-  const handleChangeDetails = (value: boolean): void => {
-    setOpenDetails(value);
-  };
-
-  const handleToggleDetails = (): void => {
+  const toggleDetails = () => {
     setOpenDetails((isOpen) => !isOpen);
   };
+  const handleToggleDetailsClick = () => {
+    toggleDetails();
+  };
+  const handleToggleDetailsKeyDown = (e: React.KeyboardEvent): void => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (e.repeat) return;
+    if (e.key === 'Enter') {
+      toggleDetails();
+    }
+  };
+
+  const { lpSymbol } = farm;
+  const [lpSymbolWithoutLPString] = lpSymbol.split(' ');
+
+  const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
+  const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
+  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(
+    Precisions.shortToken,
+  );
+
+  const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
+  const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
+  clog(earningTokenPrice, stakingTokenPriceAsBN.toString());
+  const stakingTokenBalance = new BigNumber(stakedBalance)
+    .plus(new BigNumber(tokenBalance))
+    .toString();
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
-    modals.roi.open([
-      {
-        timeframe: '1D',
-        roi: 0.19,
-        rf: 0.12,
-      },
-      {
-        timeframe: '7D',
-        roi: 1.43,
-        rf: 0.88,
-      },
-    ]);
+    modals.roi.open({
+      isFarmPage: true,
+      autoCompoundFrequency: 0, // is not used for farms
+      performanceFee: 0, // is not used for farms
+      apr,
+      earningTokenSymbol: tokens.rp1.symbol,
+      earningTokenPrice,
+      stakingTokenSymbol: lpSymbol,
+      stakingTokenPrice: stakingTokenPriceAsBN.toNumber(),
+      stakingTokenBalance,
+    });
   };
 
-  const renderPopover = () => (
-    <Popover
-      content={
-        <span className="text-med text text-purple">Total amount of NAME staked in this pool</span>
-      }
-      overlayInnerStyle={{ borderRadius: '20px' }}
-    >
-      <img src={InfoImg} alt="info" className="farms-table-row__item-img-info" />
-    </Popover>
-  );
+  const liquidityToDisplay = numberWithCommas(Number(liquidity?.toFixed(Precisions.fiat)) || 0);
 
   return (
     <div className="farms-table-row">
       <div
         className="farms-table-row__content"
-        onClick={handleToggleDetails}
-        onKeyDown={handleToggleDetails}
+        onClick={handleToggleDetailsClick}
+        onKeyDown={handleToggleDetailsKeyDown}
         role="button"
         tabIndex={0}
       >
-        <div className="farms-table-row__currencies box-f-ai-c t-box-b">
-          <div className="box">
-            <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
-            <img src={BnbImg} alt="currency" className="farms-table-row__currencies-item" />
-          </div>
-          <div className="text-upper text-smd">BTC-BNB</div>
-        </div>
+        <TokensPair lpSymbol={lpSymbolWithoutLPString} token={token} quoteToken={quoteToken} />
         <div className="farms-table-row__earned text-gray-l-2 text-smd ">
-          <div className="text-gray text-ssm farms-table-row__extra-text t-box-b">Earned</div>
-          <span>0</span>
+          <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">Earned</div>
+          <span>{earningsToDisplay}</span>
         </div>
         <div className="farms-table-row__apr box-f-ai-c text-smd farms-table-row__item t-box-b">
-          <div className="text-gray text-ssm farms-table-row__extra-text t-box-b">APR</div>
-          <span className="farms-table-row__text-md">73.77%</span>
+          <div className="farms-table-row__extra-text text-gray text-ssm t-box-b">APR</div>
+          <span className="farms-table-row__text-md">
+            {Number(apr).toFixed(2).replace('.', ',')}%
+          </span>
           <div
-            className="farms-table-row__apr_button"
+            className="farms-table-row__apr-button"
             onClick={handleOpenRoiModal}
             onKeyDown={handleOpenRoiModal}
             role="button"
@@ -86,13 +132,13 @@ const TableRow: React.FC = observer(() => {
             <img src={CalcImg} alt="calc" />
           </div>
         </div>
-        <div className="farms-table-row__liquidity box-f-ai-c text-smd farms-table-row__item t-box-none">
-          <span className="farms-table-row__text text-med text-purple">$1,662,947,888</span>
-          {renderPopover()}
+        <div className="farms-table-row__liquidity farms-table-row__item box-f-ai-c text-smd t-box-none">
+          <span className="farms-table-row__text text-med text-purple">${liquidityToDisplay}</span>
+          <LiquidityPopover />
         </div>
-        <div className="farms-table-row__multiplier box-f-ai-c text-smd farms-table-row__item t-box-none">
-          <span className="farms-table-row__text-md text-med text-purple">1x</span>
-          {renderPopover()}
+        <div className="farms-table-row__multiplier farms-table-row__item box-f-ai-c text-smd t-box-none">
+          <span className="farms-table-row__text-md text-med text-purple">{multiplier}</span>
+          <MultiplierPopover symbol={EARNING_TOKEN_SYMBOL} />
         </div>
         <div className="farms-table-row__item box-f-jc-e box-f">
           <div
@@ -109,7 +155,7 @@ const TableRow: React.FC = observer(() => {
               arrow
               toggle
               isActive={isOpenDetails}
-              onToggle={handleChangeDetails}
+              onToggle={handleToggleDetailsClick}
             >
               <span>Details</span>
             </Button>
@@ -126,62 +172,10 @@ const TableRow: React.FC = observer(() => {
         classNames="show"
       >
         <div className="farms-table-row__details box-purple-l">
-          <div className="farms-table-row__details-links">
-            <a
-              href="/"
-              className="farms-table-row__details-links-item text-ssm text-purple box-f-ai-c"
-            >
-              <span>Get HAKKA-BUSD LP</span>
-              <img src={OpenLinkImg} alt="" />
-            </a>
-            <a
-              href="/"
-              className="farms-table-row__details-links-item text-ssm text-purple box-f-ai-c"
-            >
-              <span>View Contract</span>
-              <img src={OpenLinkImg} alt="" />
-            </a>
-            <a
-              href="/"
-              className="farms-table-row__details-links-item text-ssm text-purple box-f-ai-c"
-            >
-              <span>See Pair Info</span>
-              <img src={OpenLinkImg} alt="" />
-            </a>
-            <div className="farms-table-row__details-check box-f-ai-c">
-              <img src={CheckImg} alt="" />
-              <span className="text-purple text-ssmd">Core</span>
-            </div>
-          </div>
+          <DetailsLinks farm={farm} />
           <div className="farms-table-row__buttons box-f-ai-c t-box-b">
-            <div className="farms-table-row__details-box">
-              <div className="farms-table-row__details-title text-purple text-ssm text-med text-upper">
-                CAKE EARNED
-              </div>
-              <InputNumber
-                colorScheme="white"
-                placeholder="0.0"
-                inputPrefix={
-                  <Button colorScheme="purple" size="ssm">
-                    <span className="text-white text-ssmd text-med">Harvest</span>
-                  </Button>
-                }
-              />
-            </div>
-            <div className="farms-table-row__details-box">
-              <div className="farms-table-row__details-title text-purple text-ssm text-med text-upper">
-                start farming
-              </div>
-              {user.address ? (
-                <Button size="lg">
-                  <span className="text-smd text-white text-bold">Enable</span>
-                </Button>
-              ) : (
-                <Button size="lg">
-                  <span className="text-smd text-white text-bold">Unlock Wallet</span>
-                </Button>
-              )}
-            </div>
+            <DetailsEarnedSection farm={farm} />
+            <DetailsActionsSection farm={farm} />
           </div>
         </div>
       </CSSTransition>

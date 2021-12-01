@@ -1,19 +1,20 @@
 import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
+import UnkNownImg from '@/assets/img/currency/unknown.svg';
+import { Button, Slider } from '@/components/atoms';
+import { contracts } from '@/config';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import MetamaskService from '@/services/web3';
+import { useMst } from '@/store';
+import { ILiquidityInfo } from '@/types';
+import { clogError } from '@/utils/logger';
+
 import { TradeBox } from '..';
-import { Slider, Button } from '../../../atoms';
-import { ILiquidityInfo } from '../../../../types';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import Web3Config from '../../../../services/web3/config';
-import MetamaskService from '../../../../services/web3';
-import { useMst } from '../../../../store';
 
 import './RemoveLiquidity.scss';
-
-import UnkNownImg from '@/assets/img/currency/unknown.svg';
 
 const RemoveLiquidity: React.FC = observer(() => {
   const { user } = useMst();
@@ -39,7 +40,7 @@ const RemoveLiquidity: React.FC = observer(() => {
       if (liquidityInfo && user.address) {
         const balance = await metamaskService.callContractMethodFromNewContract(
           liquidityInfo?.address,
-          Web3Config.PAIR.ABI,
+          contracts.PAIR.ABI,
           'balanceOf',
           [user.address],
         );
@@ -48,7 +49,7 @@ const RemoveLiquidity: React.FC = observer(() => {
 
         const result = await metamaskService.checkTokenAllowance({
           contractName: 'PAIR',
-          approvedAddress: Web3Config.ROUTER.ADDRESS,
+          approvedAddress: contracts.ROUTER.ADDRESS,
           tokenAddress: liquidityInfo?.address,
           approveSum: +MetamaskService.amountFromGwei(balance, 18),
         });
@@ -56,7 +57,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         setTokensApprove(result);
       }
     } catch (err) {
-      console.log('check lp approve');
+      clogError('check lp approve', err);
       setTokensApprove(false);
     }
   }, [liquidityInfo, metamaskService, user.address]);
@@ -67,7 +68,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         setTokensApproving(true);
         await metamaskService.approveToken({
           contractName: 'PAIR',
-          approvedAddress: Web3Config.ROUTER.ADDRESS,
+          approvedAddress: contracts.ROUTER.ADDRESS,
           tokenAddress: liquidityInfo?.address,
         });
 
@@ -75,7 +76,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         setTokensApprove(true);
       }
     } catch (err) {
-      console.log('approve lp', err);
+      clogError('approve lp', err);
       setTokensApproving(false);
       setTokensApprove(false);
     }

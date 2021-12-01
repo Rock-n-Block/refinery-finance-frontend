@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Form as FormAntd } from 'antd';
 
-import 'antd/lib/form/style/css';
-import 'antd/lib/time-picker/style/css';
-import 'antd/lib/date-picker/style/css';
-
-import './DaoProposal.scss';
-
 import Button from '@/components/atoms/Button';
 import ReactMarkdown from '@/components/molecules/ReactMarkdown';
 import EasyMde from '@/components/organisms/EasyMde';
 import { DaoSection, DaoWrapper } from '@/components/sections/Dao';
 import { ActionsForm, ChoicesForm, TitleForm } from '@/components/sections/DaoProposal';
-import throttle from '@/utils/Throttle';
+import { clog, clogData, clogError } from '@/utils/logger';
+import { throttle } from '@/utils/throttle';
+
+import 'antd/lib/form/style/css';
+import 'antd/lib/time-picker/style/css';
+import 'antd/lib/date-picker/style/css';
+
+import './DaoProposal.scss';
 
 const DaoProposal: React.FC = () => {
   const [titleForm] = FormAntd.useForm();
@@ -35,11 +36,11 @@ const DaoProposal: React.FC = () => {
     const validatePromises = forms.map((form) => form.validateFields());
     Promise.all(validatePromises)
       .then((result) => {
-        console.log('RESULT', result);
-        console.log(result[2].choices[0]);
+        clogData('RESULT', result);
+        clog(result[2].choices[0]);
       })
       .catch((err) => {
-        console.log('ERROR', err);
+        clogError('ERROR', err);
       });
   };
 

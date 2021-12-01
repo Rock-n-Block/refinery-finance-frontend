@@ -1,13 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { Skeleton } from '@/components/atoms';
+
 import { IColumn } from '../types';
 
 interface ITotalStakedColumnProps extends IColumn {
   value: string;
+  currencySymbol: string;
 }
 
-const TotalStaked: React.FC<ITotalStakedColumnProps> = ({ value, onlyDesktop = false }) => {
+const TotalStaked: React.FC<ITotalStakedColumnProps> = ({
+  value,
+  currencySymbol,
+  onlyDesktop = false,
+}) => {
+  const isLoading = Number.isNaN(Number(value));
   return (
     <div
       className={classNames(
@@ -20,7 +28,13 @@ const TotalStaked: React.FC<ITotalStakedColumnProps> = ({ value, onlyDesktop = f
         },
       )}
     >
-      <span className="text-med text-purple">${value}</span>
+      {isLoading ? (
+        <Skeleton.Input style={{ width: 120 }} size="small" active />
+      ) : (
+        <span className="text-med text-purple">
+          {value} {currencySymbol}
+        </span>
+      )}
     </div>
   );
 };

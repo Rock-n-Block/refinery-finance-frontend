@@ -1,10 +1,16 @@
 import React from 'react';
 
+import { Farm } from '@/types';
+
 import { FarmsTableRow } from '..';
 
 import './Table.scss';
 
-const Table: React.FC = React.memo(() => {
+interface ITableProps {
+  data: Farm[];
+}
+
+const Table: React.FC<ITableProps> = React.memo(({ data }) => {
   return (
     <div className="farms-table box-shadow box-white box-overflow-v">
       <div className="farms-table__head t-box-none">
@@ -14,9 +20,10 @@ const Table: React.FC = React.memo(() => {
         <div className="text-bold text-purple farms-table--liquidity">Liquidity</div>
         <div className="text-bold text-purple farms-table--multiplier">Multiplier</div>
       </div>
-      <FarmsTableRow />
-      <FarmsTableRow />
-      <FarmsTableRow />
+
+      {data.map((farm) => {
+        return <FarmsTableRow key={farm.pid} farm={farm} />;
+      })}
     </div>
   );
 });

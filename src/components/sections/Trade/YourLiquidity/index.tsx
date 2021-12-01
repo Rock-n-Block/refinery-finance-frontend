@@ -1,18 +1,19 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { useLazyQuery, gql } from '@apollo/client';
 import { Scrollbar } from 'react-scrollbars-custom';
-
-import { TradeBox, LiquidityInfoModal } from '..';
-import { Button } from '../../../atoms';
-import { useMst } from '../../../../store';
-import { ILiquidityInfo } from '../../../../types';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import Web3Config from '../../../../services/web3/config';
-
-import './YourLiquidity.scss';
+import { gql, useLazyQuery } from '@apollo/client';
+import { observer } from 'mobx-react-lite';
 
 import UnknownImg from '@/assets/img/currency/unknown.svg';
+import { Button } from '@/components/atoms';
+import { contracts } from '@/config';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { useMst } from '@/store';
+import { ILiquidityInfo } from '@/types';
+import { clogError } from '@/utils/logger';
+
+import { LiquidityInfoModal, TradeBox } from '..';
+
+import './YourLiquidity.scss';
 
 const USER_PAIRS = gql`
   query User($address: String!) {
@@ -66,7 +67,7 @@ const YourLiquidity: React.FC = observer(() => {
           metamaskService
             .callContractMethodFromNewContract(
               data.user.liquidityPositions[i].pair.id,
-              Web3Config.PAIR.ABI,
+              contracts.PAIR.ABI,
               'balanceOf',
               [user.address],
             )
@@ -76,7 +77,7 @@ const YourLiquidity: React.FC = observer(() => {
               }
             })
             .catch((err) => {
-              console.log('check lp balance', err);
+              clogError('check lp balance', err);
             });
         }
       }

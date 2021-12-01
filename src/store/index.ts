@@ -1,12 +1,17 @@
 import { createContext, useContext } from 'react';
 import { Instance, onSnapshot, types } from 'mobx-state-tree';
 
-import { UserModel, ModalsModel, TokensModel } from './Models';
+import { clogData } from '@/utils/logger';
+
+import { initialState as roiInitialState } from './Models/Modals/RoiModal';
+import { FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
 
 const RootModel = types.model({
   user: UserModel,
   modals: ModalsModel,
   tokens: TokensModel,
+  pools: PoolsModel,
+  farms: FarmsModel,
 });
 export const Store = RootModel.create({
   user: {
@@ -17,11 +22,25 @@ export const Store = RootModel.create({
       errMsg: '',
     },
     roi: {
-      items: [],
+      state: roiInitialState,
     },
     stakeUnstake: {
       isOpen: false,
       isStaking: true,
+      isAutoVault: false,
+      poolId: 0,
+    },
+    poolsCollect: {
+      isOpen: false,
+    },
+    farmsStakeUnstake: {
+      isOpen: false,
+      farmId: 0,
+      isStaking: false,
+      maxValue: '',
+      lpPrice: '',
+      tokenSymbol: '',
+      addLiquidityUrl: '',
     },
   },
   tokens: {
@@ -30,12 +49,26 @@ export const Store = RootModel.create({
     extended: [],
     imported: [],
   },
+  pools: {
+    userData: {
+      isLoading: true,
+    },
+    fees: {
+      performanceFee: null,
+      callFee: null,
+      withdrawalFee: null,
+      withdrawalFeePeriod: null,
+    },
+  },
+  farms: {
+    // data: [],
+  },
 });
 
 const rootStore = Store;
 
 onSnapshot(rootStore, (snapshot) => {
-  console.log('Snapshot: ', snapshot);
+  clogData('Snapshot: ', snapshot);
 });
 
 export type RootInstance = Instance<typeof RootModel>;
@@ -43,7 +76,7 @@ const RootStoreContext = createContext<null | RootInstance>(null);
 
 export const { Provider } = RootStoreContext;
 
-export function useMst() {
+export function useMst(): RootInstance {
   const store = useContext(RootStoreContext);
   if (store === null) {
     throw new Error('Store cannot be null, please add a context provider');

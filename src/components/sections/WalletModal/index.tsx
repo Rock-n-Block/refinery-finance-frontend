@@ -1,16 +1,15 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-
-import { Modal } from '../../molecules';
-import { Button } from '../../atoms';
-import { useMst } from '../../../store';
-import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
-
-import './WalletModal.scss';
+import { observer } from 'mobx-react-lite';
 
 import CopyImg from '../../../assets/img/icons/copy.svg';
 import LogoutImg from '../../../assets/img/icons/logout.svg';
+import { useWalletConnectorContext } from '../../../services/MetamaskConnect';
+import { useMst } from '../../../store';
+import { Button } from '../../atoms';
+import { Modal } from '../../molecules';
+
+import './WalletModal.scss';
 
 interface IImportTokensModal {
   isVisible?: boolean;

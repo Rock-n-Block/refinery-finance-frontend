@@ -4,6 +4,7 @@ import { SwitchProps } from 'antd/lib/switch';
 import cn from 'classnames';
 
 import 'antd/lib/switch/style/css';
+
 import './Switch.scss';
 
 interface ISwitch extends SwitchProps {

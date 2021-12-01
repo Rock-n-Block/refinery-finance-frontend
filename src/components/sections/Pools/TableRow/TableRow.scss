@@ -1,13 +1,12 @@
 @import 'src/styles/vars';
 @import 'src/styles/mixins/media';
 
-$columns: 1fr 1fr 0.5fr 1fr 1fr .1fr;
-$columns-tablet: 1fr 1fr 1fr .1fr;
+@import '../styles';
 
 .pools-table-row {
   position: relative;
 
-  &+& {
+  & + & {
     &::after {
       content: '';
       position: absolute;
@@ -153,7 +152,7 @@ $columns-tablet: 1fr 1fr 1fr .1fr;
       border-radius: 12px;
       background: #f8f5fe;
 
-      &+& {
+      & + & {
         margin-left: 10px;
       }
 
@@ -168,7 +167,7 @@ $columns-tablet: 1fr 1fr 1fr .1fr;
         text-align: center;
         padding: 20px 10px;
 
-        &+& {
+        & + & {
           margin: 10px 0;
         }
       }

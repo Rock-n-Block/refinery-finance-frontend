@@ -1,12 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { TradeBox, ChooseTokens } from '..';
-import { Button } from '../../../atoms';
-import { ITokens, ISettings } from '../../../../types';
+import { clogError } from '@/utils/logger';
+
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import { useMst } from '../../../../store';
 import MetamaskService from '../../../../services/web3';
+import { useMst } from '../../../../store';
+import { ISettings, ITokens } from '../../../../types';
+import { Button } from '../../../atoms';
+import { ChooseTokens, TradeBox } from '..';
 
 import './Exchange.scss';
 
@@ -77,7 +79,7 @@ const Exchange: React.FC<IExchange> = observer(
             },
           });
         } catch (err) {
-          console.log('swap err', err);
+          clogError('swap err', err);
         }
       }
     };

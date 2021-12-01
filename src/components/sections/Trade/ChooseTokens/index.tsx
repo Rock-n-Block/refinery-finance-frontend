@@ -1,19 +1,20 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { InputNumber, Button } from '../../../atoms';
+import UnknownImg from '@/assets/img/currency/unknown.svg';
+import ArrowCImg from '@/assets/img/icons/arrow-circle.svg';
+import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
+import { Button, InputNumber } from '@/components/atoms';
+import { contracts } from '@/config';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import MetamaskService from '@/services/web3';
+import { useMst } from '@/store';
+import { IToken, ITokens } from '@/types';
+import { clog, clogError } from '@/utils/logger';
+
 import { SelectTokenModal } from '..';
-import { ITokens, IToken } from '../../../../types';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import MetamaskService from '../../../../services/web3';
-import Web3Config from '../../../../services/web3/config';
-import { useMst } from '../../../../store';
 
 import './ChooseTokens.scss';
-
-import ArrowImg from '@/assets/img/icons/arrow-cur.svg';
-import ArrowCImg from '@/assets/img/icons/arrow-circle.svg';
-import UnknownImg from '@/assets/img/currency/unknown.svg';
 
 export interface IChooseTokens {
   handleChangeTokens: (tokens: ITokens, type?: 'from' | 'to') => void;
@@ -184,7 +185,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
             promises.push(
               metamaskService.checkTokenAllowance({
                 contractName: 'ERC20',
-                approvedAddress: Web3Config.ROUTER.ADDRESS,
+                approvedAddress: contracts.ROUTER.ADDRESS,
                 tokenAddress: tokenFrom?.address,
                 approveSum: inputValue ? +inputValue : +initialTokenData.from.amount,
               }),
@@ -194,7 +195,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
             promises.push(
               metamaskService.checkTokenAllowance({
                 contractName: 'ERC20',
-                approvedAddress: Web3Config.ROUTER.ADDRESS,
+                approvedAddress: contracts.ROUTER.ADDRESS,
                 tokenAddress: tokenTo?.address,
                 approveSum: inputValue ? +inputValue : +initialTokenData.to.amount,
               }),
@@ -210,7 +211,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
           }
           return result;
         } catch (err) {
-          console.log(err, 'err check token allowance');
+          clogError(err, 'err check token allowance');
 
           if (changeTokenFromAllowance) {
             changeTokenFromAllowance(false);
@@ -327,7 +328,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
           if (initialTokenData[type] && initialTokenData[type].token && user.address) {
             let balance = await metamaskService.callContractMethodFromNewContract(
               initialTokenData[type].token?.address || '',
-              Web3Config.ERC20.ABI,
+              contracts.ERC20.ABI,
               'balanceOf',
               [user.address],
             );
@@ -344,7 +345,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
             }
           }
         } catch (err) {
-          console.log(`get balance ${type}`, err);
+          clogError(`get balance ${type}`, err);
         }
       },
       [initialTokenData, metamaskService, user.address],
@@ -430,7 +431,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
               className="box-circle box-f-c"
               onClick={handleSwapPositions}
               onKeyDown={() => {
-                console.log(1);
+                clog(1);
               }}
               role="button"
               tabIndex={-1}

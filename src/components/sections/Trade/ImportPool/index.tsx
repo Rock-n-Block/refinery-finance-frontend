@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { TradeBox, ChooseTokens } from '..';
+import BnbImg from '@/assets/img/currency/bnb.svg';
+
 import { ITokens } from '../../../../types';
+import { ChooseTokens, TradeBox } from '..';
 
 import './ImportPool.scss';
-
-import BnbImg from '@/assets/img/currency/bnb.svg';
 
 const ImportPool: React.FC = () => {
   const [tokensData, setTokensData] = React.useState<ITokens>({

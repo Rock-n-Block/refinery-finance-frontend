@@ -4,22 +4,22 @@ import { Scrollbar } from 'react-scrollbars-custom';
 // import cn from 'classnames';
 import { observer } from 'mobx-react-lite';
 
-import { Modal } from '../../../molecules';
-import { Input, Button } from '../../../atoms';
-// import { RadioGroup, Input, Switch, Button } from '../../../atoms';
-import { IToken } from '../../../../types';
-import { ImportTokensModal } from '..';
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import { useMst } from '../../../../store';
-import contractsConfig from '../../../../services/web3/config';
-
-import './ManageTokensModal.scss';
-
-import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
 // import LogoMiniImg from '@/assets/img/icons/logo-m.svg';
 import UnknownImg from '@/assets/img/currency/unknown.svg';
+import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
 import CrossImg from '@/assets/img/icons/cross.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import { Button, Input } from '@/components/atoms';
+import { Modal } from '@/components/molecules';
+import { contracts } from '@/config';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import { useMst } from '@/store';
+// import { RadioGroup, Input, Switch, Button } from '../../../atoms';
+import { IToken } from '@/types';
+
+import { ImportTokensModal } from '..';
+
+import './ManageTokensModal.scss';
 
 interface IManageTokensModal {
   isVisible?: boolean;
@@ -76,7 +76,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
       if (target.value) {
         try {
           setLoading(true);
-          const token = await metamaskService.getTokenInfo(target.value, contractsConfig.ERC20.ABI);
+          const token = await metamaskService.getTokenInfo(target.value, contracts.ERC20.ABI);
           setUnknowToken({
             ...token,
             logoURI: UnknownImg,

@@ -1,9 +1,9 @@
 import React from 'react';
-import Scrollbar from 'react-scrollbars-custom';
 import nextId from 'react-id-generator';
+import Scrollbar from 'react-scrollbars-custom';
 
+import { Button, WinNumber } from '../../../atoms';
 import { Modal } from '../../../molecules';
-import { WinNumber, Button } from '../../../atoms';
 
 import './WinningTicketsModal.scss';
 

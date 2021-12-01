@@ -1,10 +1,10 @@
 import React from 'react';
 
+import CardImg from '@/assets/img/sections/collectibles/card.svg';
+
 import { Button } from '../../../atoms';
 
 import './Card.scss';
-
-import CardImg from '@/assets/img/sections/collectibles/card.svg';
 
 const Card: React.FC = () => {
   const [isDetailsOpen, setDetailsOpen] = React.useState<boolean>(false);

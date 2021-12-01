@@ -1,14 +1,14 @@
 import React from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
+import { Button, Search } from '../../components/atoms';
 import {
-  LotteryPreview,
+  BuyTicketsModal,
   LotteryNotFound,
+  LotteryPreview,
   LotteryRound,
   WinningTicketsModal,
-  BuyTicketsModal,
 } from '../../components/sections/Lottery';
-import { Search, Button } from '../../components/atoms';
 
 import './Lottery.scss';
 

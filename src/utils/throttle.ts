@@ -1,4 +1,4 @@
-function throttle(func: () => any, ms: number): (...args: any) => any {
+export function throttle(func: (...props: any) => any, ms: number): (...args: any) => any {
   let isThrottled = false;
   let savedArgs: any;
   let savedThis: any;
@@ -26,5 +26,3 @@ function throttle(func: () => any, ms: number): (...args: any) => any {
 
   return wrapper;
 }
-
-export default throttle;

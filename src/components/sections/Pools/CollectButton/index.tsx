@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Button } from '@/components/atoms';
+import { IPoolFarmingMode, PoolFarmingMode } from '@/types';
 
 interface ICollectButtonProps {
+  farmMode: IPoolFarmingMode;
   value: number;
   collectHandler: () => void;
 }
 
-const CollectButton: React.FC<ICollectButtonProps> = ({ value, collectHandler }) => {
+const CollectButton: React.FC<ICollectButtonProps> = ({ farmMode, value, collectHandler }) => {
+  const buttonText = useMemo(() => {
+    if (farmMode === PoolFarmingMode.manual) return 'Collect';
+    return 'Harvest';
+  }, [farmMode]);
   return (
     <Button
       colorScheme="yellow"
@@ -21,7 +27,7 @@ const CollectButton: React.FC<ICollectButtonProps> = ({ value, collectHandler })
             }
       }
     >
-      <span className="text-white text-ssmd text-bold">Collect</span>
+      <span className="text-white text-ssmd text-bold">{buttonText}</span>
     </Button>
   );
 };
