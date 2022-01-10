@@ -44,7 +44,6 @@ module.exports = {
       files: '*.js',
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'off',
       },
     },
     {
@@ -56,6 +55,8 @@ module.exports = {
   ],
   rules: {
     'global-require': 0,
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-this-alias': [
       'error',
       {
@@ -91,7 +92,7 @@ module.exports = {
       },
     ],
     'import/order': 'off',
-    'import/no-cycle': 'warn',
+    'import/no-cycle': 'off',
     'no-debugger': 'off',
     'import/first': 'error',
     'import/newline-after-import': 'error',
