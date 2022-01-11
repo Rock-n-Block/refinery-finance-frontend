@@ -53,6 +53,11 @@ const WalletModal: React.FC<IImportTokensModal> = observer(({ isVisible, handleC
             </div>
           </CopyToClipboard>
         </div>
+        <div className="m-wallet-profile box-f-c">
+          <Button className="m-wallet-profile__btn" link="/profile" onClick={handleClose}>
+            Make a Profile
+          </Button>
+        </div>
         <Button
           className="m-wallet__btn"
           colorScheme="outline-purple"

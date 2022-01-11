@@ -23,9 +23,24 @@
     }
   }
   &__btn {
-    margin: 0 auto;
+    margin: 20px auto 0;
     span {
       margin-left: 10px;
+    }
+  }
+  &-profile {
+    margin: 0 auto;
+    border-bottom: 1px solid rgba(black, 0.1);
+    &__btn {
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 1);
+      font-size: 18px;
+      font-weight: 600;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #3c079d;
+      }
     }
   }
 }

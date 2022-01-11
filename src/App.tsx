@@ -12,6 +12,7 @@ import {
   FarmsPage,
   LotteryPage,
   PoolsPage,
+  ProfilePage,
   TeamPage,
   TeamsPage,
   TradePage,
@@ -62,6 +63,7 @@ const App: React.FC = observer(() => {
         <Route exact path="/dao" component={DaoListPage} />
         <Route strict exact path="/dao/:id" component={DaoPage} />
         <Route exact path="/dao/proposal/create" component={DaoProposalPage} />
+        <Route path="/profile" component={ProfilePage} />
       </Switch>
       <MetamaskErrModal />
       <RoiModal />

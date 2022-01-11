@@ -1,0 +1,43 @@
+@import '../../../../styles/vars';
+@import '../../../../styles/mixins/media.scss';
+
+.profile-preview {
+  border-radius: 40px;
+  overflow: hidden;
+  &__box {
+    padding: 38px 40px;
+    max-height: 220px !important;
+    background-color: $purple-d;
+    border-radius: 0px 0 40px 40px;
+    background-image: url(../../../../assets/img/sections/profile/bg-1.svg);
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: auto;
+
+    @include b(mobile) {
+      background-image: url(../../../../assets/img/sections/profile/bg-1.svg);
+      padding: 40px 10px 20px 40px;
+    }
+
+    &--info {
+      @include b(mobile) {
+        button {
+          margin-top: 15px;
+        }
+      }
+    }
+  }
+  &__title {
+    margin-bottom: 10px;
+    @include b(mobile) {
+      font-size: 40px !important;
+    }
+  }
+  &__subtitle {
+    span {
+      &:not(:first-child) {
+        margin-top: 16px;
+      }
+    }
+  }
+}
