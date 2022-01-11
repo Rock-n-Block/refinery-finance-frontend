@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Radio, RadioGroupProps } from 'antd';
 import cn from 'classnames';
 
@@ -7,7 +7,7 @@ import 'antd/lib/radio/style/css';
 import './RadioGroup.scss';
 
 interface IRadioGroupItem {
-  text: string;
+  text: string | ReactElement;
   value: string | number;
 }
 
