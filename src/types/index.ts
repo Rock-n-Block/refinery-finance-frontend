@@ -194,11 +194,12 @@ export enum Precisions {
 
 export type TimestampSeconds = number;
 
-export interface IStepsCardsData {
+export interface IstepsDataConfig {
   id: number;
   mainTitle: string | ReactElement;
   mainSubtitle: string | ReactElement;
   secondTitle: string | ReactElement;
   secondSubtitle: string | ReactElement;
-  children: ReactElement;
 }
+
+export type StrOrUnd = string | undefined;

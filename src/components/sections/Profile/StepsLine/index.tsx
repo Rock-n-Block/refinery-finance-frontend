@@ -7,14 +7,14 @@ import { RadioGroup } from '@/components/atoms';
 
 import CheckImg from '../../../../assets/img/sections/profile/checkImg.svg';
 
-import './StepsRadio.scss';
+import './StepsLine.scss';
 
-interface IStepsRadio {
+interface IStepsLine {
   activeStep: number;
   onChange: (event: RadioChangeEvent) => void;
 }
 
-const StepsRadio: FC<IStepsRadio> = memo(({ activeStep, onChange }) => {
+const StepsLine: FC<IStepsLine> = memo(({ activeStep, onChange }) => {
   const itemsData = [
     { text: 'Get Starter Collectible', value: 1 },
     { text: 'Set Profile Picture', value: 2 },
@@ -27,24 +27,24 @@ const StepsRadio: FC<IStepsRadio> = memo(({ activeStep, onChange }) => {
       text: (
         <div
           key={item.value}
-          className={cn('stepsRadio__item box-f-fd-c', {
-            'stepsRadio__item-last': item.value === 4,
+          className={cn('stepsLine__item box-f-fd-c', {
+            'stepsLine__item-last': item.value === 4,
           })}
         >
           <div
             className={cn(
-              'stepsRadio__item-num',
+              'stepsLine__item-num',
               {
-                'stepsRadio__item-num-active': item.value === activeStep,
+                'stepsLine__item-num-active': item.value === activeStep,
               },
               {
-                'stepsRadio__item-num-checked': activeStep < item.value,
+                'stepsLine__item-num-checked': activeStep < item.value,
               },
             )}
           >
             {activeStep <= item.value ? `${item.value}.` : <img src={CheckImg} alt="checkImg" />}
           </div>
-          <div className="stepsRadio__item-text">{item.text}</div>
+          <div className="stepsLine__item-text">{item.text}</div>
         </div>
       ),
       value: item.value,
@@ -56,9 +56,9 @@ const StepsRadio: FC<IStepsRadio> = memo(({ activeStep, onChange }) => {
       items={radioItemsArr}
       value={activeStep}
       onChange={onChange}
-      className="stepsRadio"
+      className="stepsLine"
     />
   );
 });
 
-export default StepsRadio;
+export default StepsLine;

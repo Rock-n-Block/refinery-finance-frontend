@@ -1,4 +1,15 @@
+@import '../../../../styles/vars';
 .stepsForm {
   &__steps {
+    &__third {
+      &-radio {
+        color: $purple;
+        font-weight: 700;
+        span {
+          color: $black !important;
+          font-weight: 400;
+        }
+      }
+    }
   }
 }

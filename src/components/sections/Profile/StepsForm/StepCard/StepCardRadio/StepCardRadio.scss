@@ -1,0 +1,53 @@
+@import '../../../../../../styles/vars';
+
+.stepRadio {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  &-row {
+    padding: 9px 18px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: $bg-stepCard;
+    border-radius: 20px;
+    color: $black;
+    font-size: 16px;
+    font-weight: 400;
+    transition: all 0.2s ease-in-out;
+    &__circle {
+      margin-right: 10px;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: $white;
+      &-checked {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: rgba(255, 162, 55, 1);
+      }
+    }
+    &:hover {
+      background: $bg-stepCard-hover;
+    }
+    &-postfix {
+      span {
+        margin-left: 10px;
+        font-size: 12px;
+      }
+    }
+  }
+  .r-group__btn {
+    width: 100%;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

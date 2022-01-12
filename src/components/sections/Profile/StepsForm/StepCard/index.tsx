@@ -1,11 +1,11 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { FC } from 'react';
 
-import { IStepsCardsData } from '@/types';
+import { IstepsDataConfig } from '@/types';
 
 import './StepCard.scss';
 
-const StepCard: FC<IStepsCardsData> = ({
+const StepCard: FC<IstepsDataConfig> = ({
   id,
   mainTitle,
   mainSubtitle,
@@ -21,7 +21,7 @@ const StepCard: FC<IStepsCardsData> = ({
       <div className="stepCard-body">
         <div className="stepCard-body__title">{secondTitle}</div>
         <div className="stepCard-body__subtitle">{secondSubtitle}</div>
-        <div className="stepCard-body__content">{children}</div>
+        {children}
       </div>
     </div>
   );
