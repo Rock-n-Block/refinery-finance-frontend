@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { FC, memo } from 'react';
-import { RadioChangeEvent } from 'antd';
+// import { RadioChangeEvent } from 'antd';
 import cn from 'classnames';
 
 import { RadioGroup } from '@/components/atoms';
@@ -11,10 +11,10 @@ import './StepsLine.scss';
 
 interface IStepsLine {
   activeStep: number;
-  onChange: (event: RadioChangeEvent) => void;
+  // onChange: (event: RadioChangeEvent) => void;
 }
 
-const StepsLine: FC<IStepsLine> = memo(({ activeStep, onChange }) => {
+const StepsLine: FC<IStepsLine> = memo(({ activeStep }) => {
   const itemsData = [
     { text: 'Get Starter Collectible', value: 1 },
     { text: 'Set Profile Picture', value: 2 },
@@ -55,7 +55,7 @@ const StepsLine: FC<IStepsLine> = memo(({ activeStep, onChange }) => {
     <RadioGroup
       items={radioItemsArr}
       value={activeStep}
-      onChange={onChange}
+      // onChange={onChange}
       className="stepsLine"
     />
   );
