@@ -21,13 +21,11 @@ import './StepsForm.scss';
 const StepsForm: FC = () => {
   const stepsFormData = useFormik({
     initialValues: {
-      activeStep: 1,
       nikName: '',
       picture: '',
       team: '',
       userName: '',
       isAgree: false,
-      isBtnDisabled: true,
     } as IFormProps,
     validateOnChange: true,
     validationSchema,
@@ -37,6 +35,9 @@ const StepsForm: FC = () => {
     },
   });
 
+  const [activeStep, setActiveStep] = useState(1);
+  const [isSubmitDisabled, setSubmitDisabled] = useState(true);
+
   const [isNikNameApprove, setNikNameApprove] = useState(false);
   const [isPictureApprove, setPictureApprove] = useState(false);
 
@@ -45,16 +46,16 @@ const StepsForm: FC = () => {
   };
 
   const handleSetNextStep = () => {
-    if (stepsFormData.values.activeStep !== 4) {
-      handleSetFormValue('activeStep', stepsFormData.values.activeStep + 1);
-      handleSetFormValue('isBtnDisabled', true);
+    if (activeStep !== 4) {
+      setActiveStep(activeStep + 1);
+      setSubmitDisabled(true);
     } else {
       stepsFormData.handleSubmit();
     }
   };
 
   const handleChangeTeam = (event: RadioChangeEvent) => {
-    handleSetFormValue('isBtnDisabled', false);
+    setSubmitDisabled(false);
     stepsFormData.handleChange(event);
   };
 
@@ -65,14 +66,14 @@ const StepsForm: FC = () => {
         break;
       case 'picture':
         setPictureApprove(true);
-        handleSetFormValue('isBtnDisabled', false);
+        setSubmitDisabled(false);
         break;
       case 'userName':
-        handleSetFormValue('isBtnDisabled', false);
+        setSubmitDisabled(false);
         break;
 
       default:
-        handleSetFormValue('isBtnDisabled', true);
+        setSubmitDisabled(false);
         // eslint-disable-next-line no-console
         console.log('reject approve');
     }
@@ -80,17 +81,17 @@ const StepsForm: FC = () => {
 
   const handleConfirmNikName = () => {
     // TODO  confirm
-    handleSetFormValue('isBtnDisabled', false);
+    setSubmitDisabled(false);
   };
 
   return (
     <div className="stepsForm box-f-fd-c">
-      <StepsLine activeStep={stepsFormData.values.activeStep} />
+      <StepsLine activeStep={activeStep} />
       <div className="stepsForm__steps">
         {stepsDataConfig.map((step) => {
           return (
             <Fragment key={step.id}>
-              {stepsFormData.values.activeStep === step.id && (
+              {activeStep === step.id && (
                 <StepCard
                   id={step.id}
                   mainTitle={step.mainTitle}
@@ -213,12 +214,8 @@ const StepsForm: FC = () => {
           );
         })}
       </div>
-      <Button
-        onClick={handleSetNextStep}
-        className="stepsForm__btn"
-        disabled={stepsFormData.values.isBtnDisabled}
-      >
-        {stepsFormData.values.activeStep === 4 ? (
+      <Button onClick={handleSetNextStep} className="stepsForm__btn" disabled={isSubmitDisabled}>
+        {activeStep === 4 ? (
           'Complete profile'
         ) : (
           <>
