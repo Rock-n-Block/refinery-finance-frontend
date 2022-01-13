@@ -15,14 +15,15 @@ interface IRadioGroup extends RadioGroupProps {
   items: IRadioGroupItem[];
   className?: string;
   buttonClassName?: string;
+  name?: string;
 }
 
 const { Group, Button } = Radio;
 
 const RadioGroup: React.FC<IRadioGroup> = React.memo(
-  ({ items, className, buttonClassName, ...other }) => {
+  ({ items, className, buttonClassName, name, ...other }) => {
     return (
-      <Group {...other} className={cn('r-group', className)}>
+      <Group {...other} className={cn('r-group', className)} name={name}>
         {items.map((item) => (
           <Button
             key={item.value}

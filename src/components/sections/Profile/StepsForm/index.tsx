@@ -1,5 +1,5 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { ChangeEvent, FC, Fragment, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 import { useFormik } from 'formik';
 
@@ -8,12 +8,12 @@ import BlueArrow from '@/assets/img/sections/profile/blue-arrow.svg';
 import CheckImg from '@/assets/img/sections/profile/checkImg.svg';
 import TeamImg from '@/assets/img/sections/profile/teamImg.svg';
 import { Button, Input, Switch } from '@/components/atoms';
-import { StrOrUnd } from '@/types';
+import { IFormProps } from '@/types';
 
 import StepsLine from '../StepsLine';
 
 import StepCardRadio from './StepCard/StepCardRadio/index';
-import { firstStepItems, stepsDataConfig, thirdStepItems } from './helpers';
+import { firstStepItems, stepsDataConfig, thirdStepItems, validationSchema } from './helpers';
 import StepCard from './StepCard';
 
 import './StepsForm.scss';
@@ -21,103 +21,76 @@ import './StepsForm.scss';
 const StepsForm: FC = () => {
   const stepsFormData = useFormik({
     initialValues: {
+      activeStep: 1,
       nikName: '',
       picture: '',
       team: '',
       userName: '',
-    },
+      isAgree: false,
+      isBtnDisabled: true,
+    } as IFormProps,
+    validateOnChange: true,
+    validationSchema,
     onSubmit: (values: any) => {
       // eslint-disable-next-line no-console
       console.log(values);
     },
   });
 
-  const [activeStep, setActiveStep] = useState(1);
-  const [canComplite, setCanComplite] = useState(false);
-  const [isAgree, setAgree] = useState(false);
-  const [canJumpNextStep, setCanJumpNextStep] = useState(false);
-  const [nikName, setNikName] = useState<StrOrUnd>('');
-  const [team, setTeam] = useState<StrOrUnd>('');
-  const [, setPicture] = useState<StrOrUnd>('');
-  const [userName, setUserName] = useState<StrOrUnd>('');
-
   const [isNikNameApprove, setNikNameApprove] = useState(false);
   const [isPictureApprove, setPictureApprove] = useState(false);
 
+  const handleSetFormValue = (keyName: string, value: string | number | boolean) => {
+    stepsFormData.setFieldValue(keyName, value);
+  };
+
   const handleSetNextStep = () => {
-    if (activeStep !== 4) {
-      setActiveStep(activeStep + 1);
-      setCanJumpNextStep(false);
+    if (stepsFormData.values.activeStep !== 4) {
+      handleSetFormValue('activeStep', stepsFormData.values.activeStep + 1);
+      handleSetFormValue('isBtnDisabled', true);
     } else {
       stepsFormData.handleSubmit();
     }
   };
 
-  const handleChangeNikName = (event: RadioChangeEvent) => {
-    const { value } = event.target;
-    stepsFormData.values.nikName = value;
-    stepsFormData.handleChange(value);
-    setNikName(value);
-  };
-  const handleChangePicture = (event: RadioChangeEvent) => {
-    const { value } = event.target;
-    stepsFormData.values.picture = value;
-    stepsFormData.handleChange(value);
-    setPicture(value);
+  const handleChangeTeam = (event: RadioChangeEvent) => {
+    handleSetFormValue('isBtnDisabled', false);
+    stepsFormData.handleChange(event);
   };
 
-  const handleChangeTeam = (event: RadioChangeEvent) => {
-    const { value } = event.target;
-    stepsFormData.values.team = value;
-    stepsFormData.handleChange(value);
-    setTeam(value);
-    setCanJumpNextStep(true);
-  };
-  const handleChangeUserName = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setUserName(value);
-    if (value.length >= 3 && value.length <= 15) {
-      stepsFormData.values.userName = value;
-      stepsFormData.handleChange(value);
-    } else {
-      stepsFormData.values.userName = '';
-      stepsFormData.handleChange('');
+  const handleApprove = (type: 'nikName' | 'picture' | 'userName') => {
+    switch (type) {
+      case 'nikName':
+        setNikNameApprove(true);
+        break;
+      case 'picture':
+        setPictureApprove(true);
+        handleSetFormValue('isBtnDisabled', false);
+        break;
+      case 'userName':
+        handleSetFormValue('isBtnDisabled', false);
+        break;
+
+      default:
+        handleSetFormValue('isBtnDisabled', true);
+        // eslint-disable-next-line no-console
+        console.log('reject approve');
     }
   };
 
-  const handleChangeAgree = () => {
-    setAgree(!isAgree);
-  };
-
-  const handleApproveNikName = () => {
-    // TODO add approve contract method
-    setNikNameApprove(true);
-  };
-
-  const handleApprovePicture = () => {
-    // TODO add approve contract method
-    setPictureApprove(true);
-    setCanJumpNextStep(true);
-  };
-
   const handleConfirmNikName = () => {
-    // TODO add confirm contract method
-    setCanJumpNextStep(true);
-  };
-
-  const handleApproveUserName = () => {
-    // TODO add confirm contract method
-    setCanComplite(true);
+    // TODO  confirm
+    handleSetFormValue('isBtnDisabled', false);
   };
 
   return (
     <div className="stepsForm box-f-fd-c">
-      <StepsLine activeStep={activeStep} />
+      <StepsLine activeStep={stepsFormData.values.activeStep} />
       <div className="stepsForm__steps">
         {stepsDataConfig.map((step) => {
           return (
             <Fragment key={step.id}>
-              {activeStep === step.id && (
+              {stepsFormData.values.activeStep === step.id && (
                 <StepCard
                   id={step.id}
                   mainTitle={step.mainTitle}
@@ -130,16 +103,16 @@ const StepsForm: FC = () => {
                       <>
                         <StepCardRadio
                           items={firstStepItems}
-                          name={nikName}
+                          keyName="nikName"
                           formDataValue={stepsFormData.values.nikName}
-                          onCnange={handleChangeNikName}
+                          onCnange={stepsFormData.handleChange}
                         />
                         <div className="stepsForm__steps__one box-f-c">
                           <Button
                             colorScheme="purple"
                             className="stepsForm__steps__one-btn"
                             disabled={!stepsFormData.values.nikName || isNikNameApprove}
-                            onClick={handleApproveNikName}
+                            onClick={() => handleApprove('nikName')}
                           >
                             Enable
                           </Button>
@@ -147,7 +120,7 @@ const StepsForm: FC = () => {
                           <Button
                             colorScheme="purple"
                             className="stepsForm__steps__one-btn"
-                            disabled={!isNikNameApprove || canJumpNextStep}
+                            disabled={!isNikNameApprove}
                             onClick={handleConfirmNikName}
                           >
                             Confirm
@@ -158,10 +131,10 @@ const StepsForm: FC = () => {
                     {step.id === 2 && (
                       <div className="stepsForm__steps__two">
                         <StepCardRadio
-                          items={[nikName || 'collectible']}
-                          name={stepsFormData.values.picture}
+                          items={[stepsFormData.values.nikName || 'collectible']}
+                          keyName="picture"
                           formDataValue={stepsFormData.values.picture}
-                          onCnange={handleChangePicture}
+                          onCnange={stepsFormData.handleChange}
                         />
                         <div className="stepsForm__steps__two-title">
                           Allow collectible to be locked
@@ -175,7 +148,7 @@ const StepsForm: FC = () => {
                           colorScheme="purple"
                           className="stepsForm__steps__two-btn"
                           disabled={!stepsFormData.values.picture || isPictureApprove}
-                          onClick={handleApprovePicture}
+                          onClick={() => handleApprove('picture')}
                         >
                           Enable
                         </Button>
@@ -184,7 +157,7 @@ const StepsForm: FC = () => {
                     {step.id === 3 && (
                       <StepCardRadio
                         items={thirdStepItems}
-                        name={team}
+                        keyName="team"
                         formDataValue={stepsFormData.values.team}
                         onCnange={handleChangeTeam}
                         postfixImg={TeamImg}
@@ -194,9 +167,11 @@ const StepsForm: FC = () => {
                     )}
                     {step.id === 4 && (
                       <div className="stepsForm__steps__four">
+                        <div className="stepsForm__error">{stepsFormData.errors.userName}</div>
                         <Input
-                          value={userName}
-                          onChange={handleChangeUserName}
+                          name="userName"
+                          value={stepsFormData.values.userName}
+                          onChange={stepsFormData.handleChange}
                           className="stepsForm__steps__four-input"
                           prefix={
                             stepsFormData.values.userName ? (
@@ -210,8 +185,10 @@ const StepsForm: FC = () => {
                         />
                         <div className="stepsForm__steps__four-switch">
                           <Switch
-                            checked={isAgree}
-                            onChange={handleChangeAgree}
+                            checked={stepsFormData.values.isAgree}
+                            onChange={(value) => {
+                              handleSetFormValue('isAgree', value);
+                            }}
                             colorScheme="white"
                             switchSize="sm"
                           />
@@ -222,8 +199,8 @@ const StepsForm: FC = () => {
                         <Button
                           colorScheme="purple"
                           size="md"
-                          disabled={!isAgree || !stepsFormData.values.userName || canComplite}
-                          onClick={handleApproveUserName}
+                          disabled={!stepsFormData.values.isAgree || !stepsFormData.values.userName}
+                          onClick={() => handleApprove('userName')}
                         >
                           Confirm Profile
                         </Button>
@@ -239,10 +216,15 @@ const StepsForm: FC = () => {
       <Button
         onClick={handleSetNextStep}
         className="stepsForm__btn"
-        disabled={!canJumpNextStep && !canComplite}
+        disabled={stepsFormData.values.isBtnDisabled}
       >
-        {canComplite ? 'Complete profile' : 'Next Step'}
-        <ArrowRight className="stepsForm__btn-arrow" />
+        {stepsFormData.values.activeStep === 4 ? (
+          'Complete profile'
+        ) : (
+          <>
+            Next Step <ArrowRight className="stepsForm__btn-arrow" />
+          </>
+        )}
       </Button>
     </div>
   );

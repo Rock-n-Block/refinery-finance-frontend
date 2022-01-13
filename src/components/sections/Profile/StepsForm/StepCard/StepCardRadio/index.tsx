@@ -10,18 +10,18 @@ import RadioAvatar from '../../../../../../assets/img/sections/profile/radio-ava
 import './StepCardRadio.scss';
 
 interface IStepCardRadio {
-  name: string | undefined;
   formDataValue: string | undefined;
-  onCnange: (event: RadioChangeEvent) => void;
   items: string[];
+  keyName: string;
   postfixImg?: string;
   postfixValue?: number;
   className?: string;
+  onCnange: (event: RadioChangeEvent) => void;
 }
 
 const StepCardRadio: FC<IStepCardRadio> = ({
   items,
-  name,
+  keyName,
   formDataValue,
   onCnange,
   postfixImg,
@@ -38,7 +38,7 @@ const StepCardRadio: FC<IStepCardRadio> = ({
                 <div className="stepRadio-row__circle box-f-c">
                   <div
                     className={cn({
-                      'stepRadio-row__circle-checked': name === itemName,
+                      'stepRadio-row__circle-checked': formDataValue === itemName,
                     })}
                   />
                 </div>
@@ -61,6 +61,7 @@ const StepCardRadio: FC<IStepCardRadio> = ({
       value={formDataValue}
       onChange={onCnange}
       className="stepRadio"
+      name={keyName}
     />
   );
 };

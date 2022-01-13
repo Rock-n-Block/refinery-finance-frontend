@@ -194,6 +194,16 @@ export enum Precisions {
 
 export type TimestampSeconds = number;
 
+export interface IFormProps {
+  activeStep: number;
+  nikName: string;
+  picture: string;
+  team: string;
+  userName: string;
+  isAgree: boolean;
+  isBtnDisabled: boolean;
+}
+
 export interface IstepsDataConfig {
   id: number;
   mainTitle: string | ReactElement;

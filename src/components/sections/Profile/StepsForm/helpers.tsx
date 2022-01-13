@@ -1,4 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
+import * as Yup from 'yup';
+
 import { IstepsDataConfig } from '@/types';
 
 import './StepCard/StepCard.scss';
@@ -44,3 +46,7 @@ export const stepsDataConfig: IstepsDataConfig[] = [
       'Your name must be at least 3 and at most 15 standard letters and numbers long. You can’t change this once you click Confirm.',
   },
 ];
+
+export const validationSchema = Yup.object().shape({
+  userName: Yup.string().min(3, 'Invalid name').max(15, 'Invalid name').required('*Required'),
+});
