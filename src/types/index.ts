@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { Transaction } from 'web3-core';
 
@@ -192,3 +193,21 @@ export enum Precisions {
 }
 
 export type TimestampSeconds = number;
+
+export interface IFormProps {
+  nikName: string;
+  picture: string;
+  team: string;
+  userName: string;
+  isAgree: boolean;
+}
+
+export interface IstepsDataConfig {
+  id: number;
+  mainTitle: string | ReactElement;
+  mainSubtitle: string | ReactElement;
+  secondTitle: string | ReactElement;
+  secondSubtitle: string | ReactElement;
+}
+
+export type StrOrUnd = string | undefined;

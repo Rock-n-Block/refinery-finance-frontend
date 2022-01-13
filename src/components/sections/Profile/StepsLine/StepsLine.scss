@@ -1,0 +1,66 @@
+.stepsLine {
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 40px;
+  background: transparent !important;
+  border: none;
+
+  &__item {
+    position: relative;
+    width: 120px;
+    &-num {
+      padding: 8px;
+      margin: 0 auto;
+      width: 42px;
+      height: 42px;
+      border: 2px solid rgba(60, 7, 157, 1);
+      font-size: 18px;
+      color: rgba(60, 7, 157, 1);
+      border-radius: 50%;
+      cursor: default !important;
+      // transition: all 0.2s ease-in-out;
+      &-active {
+        color: rgba(255, 255, 255, 1);
+        background: rgba(60, 7, 157, 1) !important;
+        box-shadow: none !important;
+      }
+      &-checked {
+        background: transparent !important;
+      }
+      // &:hover {
+      //   background: rgba(60, 7, 157, 0.151);
+      //   box-shadow: inset 0 0 10px 2px rgba(0, 0, 0, 0.438);
+      // }
+    }
+    &-text {
+      margin-top: 10px;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 1) !important;
+      font-weight: 400 !important;
+      white-space: nowrap;
+      cursor: default !important;
+    }
+    &:after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -105px;
+      width: 139px;
+      height: 2px;
+      background: rgba(201, 195, 212, 1);
+      cursor: default !important;
+    }
+    &-last {
+      &:after {
+        display: none;
+      }
+    }
+  }
+  .r-group__btn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    cursor: default !important;
+  }
+}

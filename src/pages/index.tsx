@@ -8,3 +8,4 @@ export { default as TeamPage } from './Team';
 export { default as DaoListPage } from './DaoList';
 export { default as DaoPage } from './Dao';
 export { default as DaoProposalPage } from './DaoProposal';
+export { default as ProfilePage } from './Profile';
