@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 import { RadioGroup } from '@/components/atoms';
 
-import RadioAvatar from '../../../../../../assets/img/sections/profile/radio-avatar.svg';
+import RadioAvatar from '../../../../../../assets/img/sections/createProfile/radio-avatar.svg';
 
 import './StepCardRadio.scss';
 

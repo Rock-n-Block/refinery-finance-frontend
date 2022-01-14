@@ -3,12 +3,12 @@ import { FC, Fragment, useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 import { useFormik } from 'formik';
 
-import { ReactComponent as ArrowRight } from '@/assets/img/sections/profile/arrow-right.svg';
-import BlueArrow from '@/assets/img/sections/profile/blue-arrow.svg';
-import CheckImg from '@/assets/img/sections/profile/checkImg.svg';
-import OneImg from '@/assets/img/sections/profile/one-img.svg';
-import TeamImg from '@/assets/img/sections/profile/teamImg.svg';
-import TwoImg from '@/assets/img/sections/profile/two-img.svg';
+import { ReactComponent as ArrowRight } from '@/assets/img/sections/createProfile/arrow-right.svg';
+import BlueArrow from '@/assets/img/sections/createProfile/blue-arrow.svg';
+import CheckImg from '@/assets/img/sections/createProfile/checkImg.svg';
+import OneImg from '@/assets/img/sections/createProfile/one-img.svg';
+import TeamImg from '@/assets/img/sections/createProfile/teamImg.svg';
+import TwoImg from '@/assets/img/sections/createProfile/two-img.svg';
 import { Button, Input, Switch } from '@/components/atoms';
 import { CompliteProfileModal } from '@/components/organisms';
 import { IFormProps } from '@/types';

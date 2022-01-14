@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 import { RadioGroup } from '@/components/atoms';
 
-import CheckImg from '../../../../assets/img/sections/profile/checkImg.svg';
+import CheckImg from '../../../../assets/img/sections/createProfile/checkImg.svg';
 
 import './StepsLine.scss';
 

@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { FC } from 'react';
 
-import ArrowImg from '@/assets/img/sections/profile/blue-arrow.svg';
+import ArrowImg from '@/assets/img/sections/createProfile/blue-arrow.svg';
 import { Button } from '@/components/atoms/index';
 import { Modal } from '@/components/molecules';
 
