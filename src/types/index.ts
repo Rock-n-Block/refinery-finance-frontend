@@ -211,3 +211,10 @@ export interface IstepsDataConfig {
 }
 
 export type StrOrUnd = string | undefined;
+
+export interface IProfileCard {
+  title: string;
+  name: string;
+  value: number;
+  tokenIcon?: string;
+}

@@ -3,15 +3,9 @@ import { FC } from 'react';
 
 import CardAvatar from '@/assets/img/sections/profile/card-avatar.svg';
 import Img from '@/assets/img/sections/profile/token-icon.svg';
+import { IProfileCard } from '@/types';
 
 import './Card.scss';
-
-interface IProfileCard {
-  title: string;
-  name: string;
-  value: number;
-  tokenIcon?: string;
-}
 
 const ProfileCard: FC<IProfileCard> = ({ title, name, value, tokenIcon }) => {
   return (
