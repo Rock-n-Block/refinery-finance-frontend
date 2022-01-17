@@ -3,11 +3,14 @@ import { FC, Fragment, useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 import { useFormik } from 'formik';
 
-import { ReactComponent as ArrowRight } from '@/assets/img/sections/profile/arrow-right.svg';
-import BlueArrow from '@/assets/img/sections/profile/blue-arrow.svg';
-import CheckImg from '@/assets/img/sections/profile/checkImg.svg';
-import TeamImg from '@/assets/img/sections/profile/teamImg.svg';
+import { ReactComponent as ArrowRight } from '@/assets/img/sections/createProfile/arrow-right.svg';
+import BlueArrow from '@/assets/img/sections/createProfile/blue-arrow.svg';
+import CheckImg from '@/assets/img/sections/createProfile/checkImg.svg';
+import OneImg from '@/assets/img/sections/createProfile/one-img.svg';
+import TeamImg from '@/assets/img/sections/createProfile/teamImg.svg';
+import TwoImg from '@/assets/img/sections/createProfile/two-img.svg';
 import { Button, Input, Switch } from '@/components/atoms';
+import { CompliteProfileModal } from '@/components/organisms';
 import { IFormProps } from '@/types';
 
 import StepsLine from '../StepsLine';
@@ -30,6 +33,7 @@ const StepsForm: FC = () => {
     validateOnChange: true,
     validationSchema,
     onSubmit: (values: any) => {
+      setCompliteModalVisible(true);
       // eslint-disable-next-line no-console
       console.log(values);
     },
@@ -39,7 +43,12 @@ const StepsForm: FC = () => {
   const [isSubmitDisabled, setSubmitDisabled] = useState(true);
 
   const [isNikNameApprove, setNikNameApprove] = useState(false);
+  const [isConfirmNikName, setConfirmNikName] = useState(false);
   const [isPictureApprove, setPictureApprove] = useState(false);
+  const [isConfirmUserName, setConfirmUserName] = useState(false);
+
+  const [isCompliteModalVisible, setCompliteModalVisible] = useState(false);
+  const [isCompliteApprove, setCompliteApprove] = useState(false);
 
   const handleSetFormValue = (keyName: string, value: string | number | boolean) => {
     stepsFormData.setFieldValue(keyName, value);
@@ -81,7 +90,13 @@ const StepsForm: FC = () => {
 
   const handleConfirmNikName = () => {
     // TODO  confirm
+    setConfirmNikName(true);
     setSubmitDisabled(false);
+  };
+
+  const handleConfirmUserName = () => {
+    handleApprove('userName');
+    setConfirmUserName(true);
   };
 
   return (
@@ -107,11 +122,13 @@ const StepsForm: FC = () => {
                           keyName="nikName"
                           formDataValue={stepsFormData.values.nikName}
                           onCnange={stepsFormData.handleChange}
+                          disabled={isConfirmNikName}
                         />
                         <div className="stepsForm__steps__one box-f-c">
                           <Button
                             colorScheme="purple"
                             className="stepsForm__steps__one-btn"
+                            icon={OneImg}
                             disabled={!stepsFormData.values.nikName || isNikNameApprove}
                             onClick={() => handleApprove('nikName')}
                           >
@@ -121,7 +138,8 @@ const StepsForm: FC = () => {
                           <Button
                             colorScheme="purple"
                             className="stepsForm__steps__one-btn"
-                            disabled={!isNikNameApprove}
+                            icon={TwoImg}
+                            disabled={!isNikNameApprove || isConfirmNikName}
                             onClick={handleConfirmNikName}
                           >
                             Confirm
@@ -136,6 +154,7 @@ const StepsForm: FC = () => {
                           keyName="picture"
                           formDataValue={stepsFormData.values.picture}
                           onCnange={stepsFormData.handleChange}
+                          disabled={isPictureApprove}
                         />
                         <div className="stepsForm__steps__two-title">
                           Allow collectible to be locked
@@ -174,8 +193,9 @@ const StepsForm: FC = () => {
                           value={stepsFormData.values.userName}
                           onChange={stepsFormData.handleChange}
                           className="stepsForm__steps__four-input"
+                          disabled={isConfirmUserName}
                           prefix={
-                            stepsFormData.values.userName ? (
+                            !stepsFormData.errors.userName ? (
                               <div className="stepsForm__steps__four-input-prefix">
                                 <img src={CheckImg} alt="chekImg" />
                               </div>
@@ -192,6 +212,7 @@ const StepsForm: FC = () => {
                             }}
                             colorScheme="white"
                             switchSize="sm"
+                            disabled={isConfirmUserName}
                           />
                           <span>
                             I understand that people can view my wallet if they know my username.
@@ -200,8 +221,13 @@ const StepsForm: FC = () => {
                         <Button
                           colorScheme="purple"
                           size="md"
-                          disabled={!stepsFormData.values.isAgree || !stepsFormData.values.userName}
-                          onClick={() => handleApprove('userName')}
+                          className="stepsForm__steps__four-btn"
+                          disabled={
+                            !stepsFormData.values.isAgree ||
+                            !stepsFormData.values.userName ||
+                            isConfirmUserName
+                          }
+                          onClick={handleConfirmUserName}
                         >
                           Confirm Profile
                         </Button>
@@ -223,6 +249,14 @@ const StepsForm: FC = () => {
           </>
         )}
       </Button>
+      {isCompliteModalVisible && (
+        <CompliteProfileModal
+          isVisible={isCompliteModalVisible}
+          isCompliteApprove={isCompliteApprove}
+          handleClose={() => setCompliteModalVisible(false)}
+          handleChangeApprove={() => setCompliteApprove(!isCompliteApprove)}
+        />
+      )}
     </div>
   );
 };

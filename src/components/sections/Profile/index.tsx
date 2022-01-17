@@ -1,2 +1,3 @@
 export { default as Preview } from './Preview';
-export { default as StepsForm } from './StepsForm';
+export { default as Content } from './Content';
+export { default as Card } from './Card';

@@ -75,10 +75,15 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
       img: CollectiblesImg,
     },
     {
-      text: 'Teams & Profile',
-      link: '/teams',
+      text: ' Profile',
+      link: '/profile',
       img: TeamsImg,
     },
+    // {
+    //   text: 'Teams & Profile',
+    //   link: '/teams',
+    //   img: TeamsImg,
+    // },
     {
       text: 'DAO',
       link: '/dao',

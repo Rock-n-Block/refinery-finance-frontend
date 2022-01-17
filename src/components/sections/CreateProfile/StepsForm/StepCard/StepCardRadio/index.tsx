@@ -5,7 +5,7 @@ import cn from 'classnames';
 
 import { RadioGroup } from '@/components/atoms';
 
-import RadioAvatar from '../../../../../../assets/img/sections/profile/radio-avatar.svg';
+import RadioAvatar from '../../../../../../assets/img/sections/createProfile/radio-avatar.svg';
 
 import './StepCardRadio.scss';
 
@@ -16,6 +16,7 @@ interface IStepCardRadio {
   postfixImg?: string;
   postfixValue?: number;
   className?: string;
+  disabled?: boolean;
   onCnange: (event: RadioChangeEvent) => void;
 }
 
@@ -27,6 +28,7 @@ const StepCardRadio: FC<IStepCardRadio> = ({
   postfixImg,
   postfixValue,
   className,
+  disabled,
 }) => {
   return (
     <RadioGroup
@@ -62,6 +64,7 @@ const StepCardRadio: FC<IStepCardRadio> = ({
       onChange={onCnange}
       className="stepRadio"
       name={keyName}
+      disabled={disabled}
     />
   );
 };

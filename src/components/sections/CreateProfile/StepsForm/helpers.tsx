@@ -5,7 +5,7 @@ import { IstepsDataConfig } from '@/types';
 
 import './StepCard/StepCard.scss';
 
-export const firstStepItems: string[] = ['Sunny', 'Dollop', 'Yellow', 'Garry'];
+export const firstStepItems: string[] = ['Sleepy', 'Dollop', 'Twinkle', 'Churro', 'Sunny'];
 export const thirdStepItems: string[] = ['OneTeam', 'TwoTeam', 'ThreeTeam'];
 
 export const stepsDataConfig: IstepsDataConfig[] = [
