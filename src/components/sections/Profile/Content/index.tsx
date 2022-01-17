@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 
 import TokenIcon from '@/assets/img/sections/profile/token-icon.svg';
-import { RadioGroup } from '@/components/atoms';
+import { RadioGroup, SortSelect } from '@/components/atoms';
 import { IProfileCard } from '@/types';
 
 /* eslint-disable react/react-in-jsx-scope */
@@ -24,20 +24,22 @@ const ACTIVITY: IProfileCard[] = Array(5)
   }));
 
 const PAGES = [
-  { text: 'NFTs', value: 1 },
-  { text: 'Achivements', value: 2 },
+  { text: 'NFTs', value: 'nft' },
+  { text: 'Achivements', value: 'achivs' },
 ];
 
 const MODES = [
-  { text: 'Items', value: 1 },
-  { text: 'Activity', value: 2 },
+  { text: 'Items', value: 'items' },
+  { text: 'Activity', value: 'activity' },
 ];
+
+const SORT_OPT = ['Hot', 'Ne hot', 'Ochen hot'];
 
 const Content: FC = () => {
   const [NftData, setNftData] = useState<IProfileCard[]>(ITEMS);
   const [achiveData] = useState<string>('Lorem ipsum'); // TODO setAchiveData
-  const [contentPage, setContentPage] = useState(1);
-  const [nftMode, setNftMode] = useState(1);
+  const [contentPage, setContentPage] = useState('nft');
+  const [nftMode, setNftMode] = useState('items');
 
   const handleChangeContentPage = (event: RadioChangeEvent) => {
     const { value } = event.target;
@@ -50,7 +52,7 @@ const Content: FC = () => {
   };
 
   const handleChangeNftData = useCallback(() => {
-    setNftData(nftMode === 1 ? ITEMS : ACTIVITY);
+    setNftData(nftMode === 'items' ? ITEMS : ACTIVITY);
   }, [nftMode]);
 
   useEffect(() => {
@@ -68,14 +70,17 @@ const Content: FC = () => {
         />
       </div>
       <div className="profile-content__body">
-        {contentPage === 1 ? (
+        {contentPage === 'nft' && (
           <>
-            <RadioGroup
-              items={MODES}
-              value={nftMode}
-              onChange={handleChangeMode}
-              className="profile-content__body__mode"
-            />
+            <div className="profile-content__body__controls">
+              <RadioGroup
+                items={MODES}
+                value={nftMode}
+                onChange={handleChangeMode}
+                className="profile-content__body__controls__mode"
+              />
+              <SortSelect label="Sort by" sortOptions={SORT_OPT} />
+            </div>
             <div className="profile-content__body__grid">
               {NftData.map(({ title, name, value, tokenIcon }) => {
                 return (
@@ -90,7 +95,8 @@ const Content: FC = () => {
               })}
             </div>
           </>
-        ) : (
+        )}
+        {contentPage === 'achivs' && (
           <div className="profile-content__body__grid">{achiveData}</div>
         )}
       </div>
