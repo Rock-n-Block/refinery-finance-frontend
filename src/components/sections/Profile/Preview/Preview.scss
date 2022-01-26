@@ -4,16 +4,18 @@
 .profile-preview {
   border-radius: 40px;
   overflow: hidden;
-  height: 420px;
   background: rgba(241, 235, 253, 1);
   &__back {
     position: relative;
-    height: 240px !important;
     border-radius: 0px 0 40px 40px;
     background-image: url(../../../../assets/img/sections/profile/bg-1.svg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 47px 30px;
 
     @include b(mobile) {
       background-image: url(../../../../assets/img/sections/profile/bg-1.svg);
@@ -27,29 +29,52 @@
         }
       }
     }
-    &-avatar {
-      position: absolute;
-      bottom: -40px;
-      left: 60px;
-    }
   }
   &__content {
-    padding: 0 20px 0 60px;
-    width: 100%;
-    height: 200px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    position: relative;
+    flex-direction: column;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 30px;
+    margin-top: -100px;
+    &-img {
+      cursor: pointer;
+      position: relative;
+      width: 143px;
+      border-radius: 50%;
+      height: 143px;
+      overflow: hidden;
+      img {
+        max-width: 100%;
+      }
+      &:hover &-hover {
+        opacity: 1;
+      }
+      &-hover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        top: 0;
+        opacity: 0;
+        transition: 0.3s;
+        left: 0;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.3);
+        justify-content: center;
+      }
+    }
     &-address {
-      padding-top: 40px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      max-width: 224px;
-      font-size: 36px;
-      font-weight: 700;
+      font-weight: bold;
+      font-size: 30px;
+      line-height: 36px;
       color: $purple;
       &-btn {
         margin: 20px 0;
@@ -64,23 +89,12 @@
     }
     &-params {
       padding-top: 20px;
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      &__values {
-        padding: 15px 25px;
-        background: $white;
-        box-shadow: 0px 12px 40px 0px rgba(85, 32, 142, 0.25);
-        border-radius: 25px;
-
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 20px;
-        text-transform: uppercase;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 500;
-      }
+      padding: 21px 25px;
+      background: $white;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0px 12px 40px 0px rgba(85, 32, 142, 0.25);
+      border-radius: 25px;
     }
   }
 }

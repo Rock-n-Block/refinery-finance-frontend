@@ -84,10 +84,12 @@
           color: white !important;
         }
         svg {
-          transform: rotate(-180deg);
           path {
             stroke: #fff;
           }
+        }
+        .btn__arrow {
+          transform: rotate(-180deg);
         }
       }
       &.noclick {

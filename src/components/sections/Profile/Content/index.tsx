@@ -1,63 +1,54 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 
-import TokenIcon from '@/assets/img/sections/profile/token-icon.svg';
-import { RadioGroup, SortSelect } from '@/components/atoms';
-import { IProfileCard } from '@/types';
-
-/* eslint-disable react/react-in-jsx-scope */
-import { Card } from '../index';
+import { RadioGroup, Button } from '@/components/atoms';
 
 import './Content.scss';
 
-const ITEMS: IProfileCard[] = Array(20)
-  .fill('')
-  .map(() => ({ title: 'Pancake Bunnies', name: 'Mixie v1', value: 0.0712, tokenIcon: TokenIcon }));
+import BnbImg from '@/assets/img/currency/bnb.svg';
+import TumerImg from '@/assets/img/icons/tumer.svg';
+import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import EmptyImg from '@/assets/img/sections/profile/empty.svg';
 
-const ACTIVITY: IProfileCard[] = Array(5)
-  .fill('')
-  .map(() => ({
-    title: 'Sushiswap Bunnies',
-    name: 'Boobly v1',
-    value: 12.1423,
-    tokenIcon: TokenIcon,
-  }));
+const PAGES = [{ text: 'Transactions', value: 'trx' }];
 
-const PAGES = [
-  { text: 'NFTs', value: 'nft' },
-  { text: 'Achivements', value: 'achivs' },
+const trxs = [
+  {
+    method: 'Swap',
+    from: {
+      amount: 951.5,
+      usd: 0,
+    },
+    to: {
+      amount: 951.5,
+      usd: 0,
+    },
+    text: 'text',
+    data: '2022-07-06',
+  },
+  {
+    method: 'Swap',
+    from: {
+      amount: 951.5,
+      usd: 0,
+    },
+    to: {
+      amount: 951.5,
+      usd: 0,
+    },
+    text: 'text',
+    data: '2022-07-06',
+  },
 ];
+// const trxs: any = [];
 
-const MODES = [
-  { text: 'Items', value: 'items' },
-  { text: 'Activity', value: 'activity' },
-];
-
-const SORT_OPT = ['Hot', 'Ne hot', 'Ochen hot'];
-
-const Content: FC = () => {
-  const [NftData, setNftData] = useState<IProfileCard[]>(ITEMS);
-  const [achiveData] = useState<string>('Lorem ipsum'); // TODO setAchiveData
-  const [contentPage, setContentPage] = useState('nft');
-  const [nftMode, setNftMode] = useState('items');
+const Content: React.FC = () => {
+  const [contentPage, setContentPage] = useState(PAGES[0].value);
 
   const handleChangeContentPage = (event: RadioChangeEvent) => {
     const { value } = event.target;
     setContentPage(value);
   };
-
-  const handleChangeMode = (event: RadioChangeEvent) => {
-    const { value } = event.target;
-    setNftMode(value);
-  };
-
-  const handleChangeNftData = useCallback(() => {
-    setNftData(nftMode === 'items' ? ITEMS : ACTIVITY);
-  }, [nftMode]);
-
-  useEffect(() => {
-    handleChangeNftData();
-  }, [handleChangeNftData]);
 
   return (
     <div className="profile-content">
@@ -70,34 +61,56 @@ const Content: FC = () => {
         />
       </div>
       <div className="profile-content__body">
-        {contentPage === 'nft' && (
-          <>
-            <div className="profile-content__body__controls">
-              <RadioGroup
-                items={MODES}
-                value={nftMode}
-                onChange={handleChangeMode}
-                className="profile-content__body__controls__mode"
-              />
-              <SortSelect label="Sort by" sortOptions={SORT_OPT} />
+        {trxs.length ? (
+          <div className="profile-content__table">
+            <div className="profile-content__table__head profile-content__table__row text-purple text-bold text-smd">
+              <div className="profile-content__table__head__item" />
+              <div className="profile-content__table__head__item">Head</div>
+              <div className="profile-content__table__head__item">Head</div>
+              <div className="profile-content__table__head__item">Head</div>
+              <div className="profile-content__table__head__item">Data</div>
+              <div className="profile-content__table__head__item" />
             </div>
-            <div className="profile-content__body__grid">
-              {NftData.map(({ title, name, value, tokenIcon }) => {
-                return (
-                  <Card
-                    key={Math.random()}
-                    title={title}
-                    name={name}
-                    value={value}
-                    tokenIcon={tokenIcon}
-                  />
-                );
-              })}
-            </div>
-          </>
-        )}
-        {contentPage === 'achivs' && (
-          <div className="profile-content__body__grid">{achiveData}</div>
+            {trxs.map((trx: any) => (
+              <div className="profile-content__table__row">
+                <div className="profile-content__table__content__item text-smd">{trx.method}</div>
+                <div className="profile-content__table__content__item">
+                  <img src={BnbImg} alt="" />
+                  <div className="">
+                    <div className="text-smd">{trx.from.amount}</div>
+                    <div className="text-gray text-ssm">{trx.from.usd} USD</div>
+                  </div>
+                </div>
+                <div className="profile-content__table__content__item">
+                  <img src={BnbImg} alt="" />
+                  <div className="">
+                    <div className="text-smd">{trx.to.amount}</div>
+                    <div className="text-gray text-ssm">{trx.to.usd} USD</div>
+                  </div>
+                </div>
+                <div className="profile-content__table__content__item text-smd text-purple text-500">
+                  {trx.text}
+                </div>
+                <div className="profile-content__table__content__item text-smd">
+                  <div className="">{trx.data}</div>
+                  <img src={TumerImg} alt="" />
+                </div>
+                <Button
+                  colorScheme="outline-purple"
+                  size="smd"
+                  className="profile-content__table__content__item__btn"
+                >
+                  <span>Details</span>
+                  <img src={OpenLinkImg} alt="" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="profile-content__empty">
+            <img src={EmptyImg} alt="" />
+            <div className="text-ssmd text-500">No recent transactions</div>
+          </div>
         )}
       </div>
     </div>
