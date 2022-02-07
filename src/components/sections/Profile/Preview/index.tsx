@@ -1,16 +1,41 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { VFC } from 'react';
-import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useState, VFC } from 'react';
 import { Upload } from 'antd';
+import { observer } from 'mobx-react-lite';
 
-import Avatar from '@/assets/img/sections/profile/avatar.svg';
 import ChangeImg from '@/assets/img/icons/change_img.svg';
+import Avatar from '@/assets/img/sections/profile/avatar.svg';
+import { fetchAvatar } from '@/services/api/avatars';
 import { useMst } from '@/store';
 
 import './Preview.scss';
 
 const Preview: VFC = observer(() => {
   const { user } = useMst();
+  const [avatar, setAvatar] = useState(Avatar);
+
+  const handleGetAvatar = useCallback(async () => {
+    if (user.address.length) {
+      const link = await fetchAvatar('get', user.address);
+      setAvatar(link);
+    }
+  }, [user.address]);
+
+  const handleUploadAvatar = (data: any) => {
+    if (data.type.includes('png') || data.type.includes('jpeg')) {
+      if (data.size < 5000000) {
+        console.log(data.size);
+
+        return `https://refinery.rocknblock.io/api/v1/image/${user.address}/`;
+      }
+    }
+    return '';
+  };
+
+  useEffect(() => {
+    handleGetAvatar();
+  }, [handleGetAvatar]);
+
   return (
     <div className="profile-preview box-purple-l">
       <div className="profile-preview__back">
@@ -21,14 +46,23 @@ const Preview: VFC = observer(() => {
         </div>
       </div>
       <div className="profile-preview__content">
-        <Upload>
-          <div className="profile-preview__content-img">
-            <img src={Avatar} alt="avatar" className="" />
-            <div className="profile-preview__content-img-hover">
-              <img src={ChangeImg} alt="" />
+        {user.address && (
+          <Upload
+            name="avatar"
+            listType="picture-card"
+            showUploadList={false}
+            action={handleUploadAvatar}
+            onChange={handleGetAvatar}
+          >
+            <div className="profile-preview__content-img">
+              <img src={avatar} alt="avatar" className="profile-preview__content-img-avatar" />
+              <div className="profile-preview__content-img-hover">
+                <img src={ChangeImg} alt="" />
+              </div>
             </div>
-          </div>
-        </Upload>
+          </Upload>
+        )}
+
         <div className="profile-preview__content-address">
           <span>
             {user.address &&
