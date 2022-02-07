@@ -23,9 +23,7 @@ const Preview: VFC = observer(() => {
 
   const handleUploadAvatar = (data: any) => {
     if (data.type.includes('png') || data.type.includes('jpeg')) {
-      if (data.size < 5000000) {
-        console.log(data.size);
-
+      if (data.size < 5 * 1000 * 1000) {
         return `https://refinery.rocknblock.io/api/v1/image/${user.address}/`;
       }
     }

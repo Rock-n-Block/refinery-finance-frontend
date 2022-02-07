@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 
-import { RadioGroup, Button } from '@/components/atoms';
+import BnbImg from '@/assets/img/currency/bnb.svg';
+import OpenLinkImg from '@/assets/img/icons/open-link.svg';
+import TumerImg from '@/assets/img/icons/tumer.svg';
+import EmptyImg from '@/assets/img/sections/profile/empty.svg';
+import { Button, RadioGroup } from '@/components/atoms';
 
 import './Content.scss';
-
-import BnbImg from '@/assets/img/currency/bnb.svg';
-import TumerImg from '@/assets/img/icons/tumer.svg';
-import OpenLinkImg from '@/assets/img/icons/open-link.svg';
-import EmptyImg from '@/assets/img/sections/profile/empty.svg';
 
 const PAGES = [{ text: 'Transactions', value: 'trx' }];
 
