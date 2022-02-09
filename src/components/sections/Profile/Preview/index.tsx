@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 
 import ChangeImg from '@/assets/img/icons/change_img.svg';
 import Avatar from '@/assets/img/sections/profile/avatar.svg';
-import { fetchAvatar } from '@/services/api/avatars';
+import { onGetAvatar, onSetAvatar } from '@/services/api/avatars';
 import { useMst } from '@/store';
 
 import './Preview.scss';
@@ -16,18 +16,13 @@ const Preview: VFC = observer(() => {
 
   const handleGetAvatar = useCallback(async () => {
     if (user.address.length) {
-      const link = await fetchAvatar('get', user.address);
+      const link = await onGetAvatar(user.address);
       setAvatar(link);
     }
   }, [user.address]);
 
   const handleUploadAvatar = (data: any) => {
-    if (data.type.includes('png') || data.type.includes('jpeg')) {
-      if (data.size < 5 * 1000 * 1000) {
-        return `https://refinery.rocknblock.io/api/v1/image/${user.address}/`;
-      }
-    }
-    return '';
+    return onSetAvatar(user.address, data);
   };
 
   useEffect(() => {
