@@ -29,7 +29,6 @@ const Content: React.FC = observer(() => {
     if (user.address) {
       const result = await onGetGraphSwaps(user.address);
       setTrxs(result);
-      // console.log(result);
     }
   }, [user.address]);
 
