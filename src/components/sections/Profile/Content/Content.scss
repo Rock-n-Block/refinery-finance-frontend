@@ -81,7 +81,7 @@
   &__table {
     &__row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 0.8fr 120px;
+      grid-template-columns: 1fr 1fr 1fr 0.8fr 120px;
       padding: 25px 0;
       grid-column-gap: 10px;
       & + & {
