@@ -11,7 +11,7 @@ import CrossImg from '@/assets/img/icons/cross.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
 import { Button, Input } from '@/components/atoms';
 import { Modal } from '@/components/molecules';
-import { contracts } from '@/config';
+import { contracts, IS_PRODUCTION } from '@/config';
 import { useWalletConnectorContext } from '@/services/MetamaskConnect';
 import { useMst } from '@/store';
 // import { RadioGroup, Input, Switch, Button } from '../../../atoms';
@@ -105,6 +105,13 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
     const handleCloseModal = (): void => {
       handleClose();
       setUnknowToken(undefined);
+      setSearchedValue('');
+    };
+
+    const handleGoBack = () => {
+      handleBack();
+      setSearchedValue('');
+      setUnknowToken(undefined);
     };
 
     return (
@@ -120,8 +127,8 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
           <div className="m-manage-tokens__content">
             <div
               className="m-manage-tokens__title box-f-ai-c box-pointer"
-              onClick={handleBack}
-              onKeyDown={handleBack}
+              onClick={handleGoBack}
+              onKeyDown={handleGoBack}
               role="button"
               tabIndex={0}
             >
@@ -261,7 +268,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                 className="m-select-token__scroll"
                 style={{
                   width: '100%',
-                  height: tokens.imported.length > 8 ? '55vh' : `${tokens.imported.length * 55}px`,
+                  height: tokens.imported.length > 8 ? '30vh' : `${tokens.imported.length * 55}px`,
                 }}
               >
                 {tokens.imported.map((token: IToken) => (
@@ -290,7 +297,16 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                       >
                         <img src={CrossImg} alt={token.name} />
                       </div>
-                      <a href="/" className="m-manage-tokens__token-open">
+                      <a
+                        href={
+                          IS_PRODUCTION
+                            ? `https://etherscan.io/token/${token.address}`
+                            : `https://kovan.etherscan.io/token/${token.address}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="m-manage-tokens__token-open"
+                      >
                         <img src={OpenLinkImg} alt="" />
                       </a>
                     </div>

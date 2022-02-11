@@ -100,9 +100,9 @@ const RemoveLiquidity: React.FC = observer(() => {
       <Slider
         tooltipVisible={false}
         onChange={handlePercentChange}
-        defaultValue={25}
+        defaultValue={0}
         value={percent}
-        min={25}
+        min={0}
       />
       <div className="r-liquidity__percent-btns box-f-ai-c box-f-jc-sb">
         {btns.map((btn) => (
@@ -189,7 +189,7 @@ const RemoveLiquidity: React.FC = observer(() => {
         liquidityInfo.token0.deposited &&
         liquidityInfo.token1.deposited ? (
           <Button
-            disabled={!isTokensApprove}
+            disabled={!isTokensApprove || percent === 0}
             link={{
               pathname: '/liquidity/receive',
               state: {
