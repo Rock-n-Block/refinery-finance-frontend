@@ -111,13 +111,13 @@ const Swap: React.FC = observer(() => {
 
   return (
     <Switch>
-      <Route exact path="/trade/swap" render={() => <ExchangeComp settings={settings} />} />
+      <Route exact path="/" render={() => <ExchangeComp settings={settings} />} />
       <Route
         exact
-        path="/trade/swap/settings"
+        path="/settings"
         render={() => <ExchangeSettings savedSettings={settings} handleSave={handleSaveSettings} />}
       />
-      <Route exact path="/trade/swap/history" render={() => <RecentTxs items={trx} />} />
+      <Route exact path="/history" render={() => <RecentTxs items={trx} />} />
     </Switch>
   );
 });

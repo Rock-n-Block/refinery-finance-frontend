@@ -86,7 +86,7 @@ const RemoveLiquidity: React.FC = observer(() => {
     if (location.state) {
       setLiquidityInfo(location.state);
     } else {
-      history.push('/trade/liquidity');
+      history.push('/liquidity');
     }
   }, [location, history]);
 
@@ -191,7 +191,7 @@ const RemoveLiquidity: React.FC = observer(() => {
           <Button
             disabled={!isTokensApprove}
             link={{
-              pathname: '/trade/liquidity/receive',
+              pathname: '/liquidity/receive',
               state: {
                 address: liquidityInfo?.address,
                 lpTokens: new BigNumber(lpBalance)

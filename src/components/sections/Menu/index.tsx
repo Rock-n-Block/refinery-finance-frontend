@@ -1,16 +1,16 @@
 import React from 'react';
 import nextId from 'react-id-generator';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
 import DaoImg from '@/assets/img/icons/dao.svg';
 import LogoImg from '@/assets/img/icons/logo.svg';
 
-import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
+// import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
 import FarmsImg from '../../../assets/img/icons/farms.svg';
-import HomeImg from '../../../assets/img/icons/home.svg';
+// import HomeImg from '../../../assets/img/icons/home.svg';
 import LogoMiniImg from '../../../assets/img/icons/logo-m.svg';
-import LotteryImg from '../../../assets/img/icons/lottery.svg';
+// import LotteryImg from '../../../assets/img/icons/lottery.svg';
 import PoolsImg from '../../../assets/img/icons/pools.svg';
 import TeamsImg from '../../../assets/img/icons/teams.svg';
 import { ReactComponent as TgImg } from '../../../assets/img/icons/tg.svg';
@@ -31,49 +31,67 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
   const { connect } = useWalletConnectorContext();
   const { user } = useMst();
   const navItems = [
-    {
-      text: 'Home',
-      link: '/',
-      img: HomeImg,
-    },
+    // {
+    //   text: 'Home',
+    //   link: '/',
+    //   img: HomeImg,
+    // },
     {
       text: 'Trade',
-      link: '/trade/swap',
+      link: '/',
       activePaths: [
-        '/trade/swap',
-        '/trade/liquidity',
-        '/trade/liquidity/settings',
-        '/trade/liquidity/history',
-        '/trade/liquidity/find',
-        '/trade/liquidity/add',
-        '/trade/liquidity/remove',
-        '/trade/liquidity/receive',
-        '/trade/bridge',
-        '/trade/swap/settings',
-        '/trade/swap/history',
+        '/',
+        '/liquidity',
+        '/liquidity/settings',
+        '/liquidity/history',
+        '/liquidity/find',
+        '/liquidity/add',
+        '/liquidity/remove',
+        '/liquidity/receive',
+        '/bridge',
+        '/settings',
+        '/history',
       ],
       img: TradeImg,
     },
+    // {
+    //   text: 'Trade',
+    //   link: '/trade/swap',
+    //   activePaths: [
+    //     '/trade/swap',
+    //     '/trade/liquidity',
+    //     '/trade/liquidity/settings',
+    //     '/trade/liquidity/history',
+    //     '/trade/liquidity/find',
+    //     '/trade/liquidity/add',
+    //     '/trade/liquidity/remove',
+    //     '/trade/liquidity/receive',
+    //     '/trade/bridge',
+    //     '/trade/swap/settings',
+    //     '/trade/swap/history',
+    //   ],
+    //   img: TradeImg,
+    // },
     {
       text: 'Farms',
       link: '/farms',
       img: FarmsImg,
     },
-    {
-      text: 'Lottery',
-      link: '/lottery',
-      img: LotteryImg,
-    },
+    // {
+    //   text: 'Lottery',
+    //   link: '/lottery',
+    //   img: LotteryImg,
+    // },
     {
       text: 'Pools',
       link: '/pools',
       img: PoolsImg,
     },
-    {
-      text: 'Collectibles',
-      link: '/collectibles',
-      img: CollectiblesImg,
-    },
+    // {
+    //   text: 'Collectibles',
+    //   link: '/collectibles',
+    //   img: CollectiblesImg,
+    // },
     {
       text: ' Profile',
       link: '/profile',
@@ -96,7 +114,9 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
   return (
     <>
       <div className="menu box-f-fd-c">
-        <img src={LogoImg} alt="refinery finance" className="menu__logo" />
+        <Link to="/">
+          <img src={LogoImg} alt="refinery finance" className="menu__logo" />
+        </Link>
         <div className="menu__nav">
           {navItems.map((item) => (
             <NavLink

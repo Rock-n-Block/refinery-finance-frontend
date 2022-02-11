@@ -34,8 +34,8 @@ const ImportPool: React.FC = () => {
       className="import-pool"
       title="Import Pool"
       subtitle="Import an existing pool"
-      settingsLink="/trade/liquidity/settings"
-      recentTxLink="/trade/liquidity/history"
+      settingsLink="/liquidity/settings"
+      recentTxLink="/liquidity/history"
       titleBackLink
     >
       <ChooseTokens handleChangeTokens={handleSetTokens} initialTokenData={tokensData} />

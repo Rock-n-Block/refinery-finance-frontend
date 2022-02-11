@@ -36,7 +36,7 @@ const TradeBox: React.FC<ITradeBox> = ({
       <div className="trade-box__box-top box-f box-f-jc-sb">
         <div className="">
           {titleBackLink ? (
-            <Link to="/trade/liquidity">
+            <Link to="/liquidity">
               <div className={cn('trade-box__title text-md text-purple text-med box-f-ai-c')}>
                 <img src={ArrowImg} alt="" className="trade-box__back" />
                 <span>{title}</span>

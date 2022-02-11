@@ -7,5 +7,5 @@ export const getBaseScannerUrl = (chainId: number | string): string => {
 };
 
 export const getAddLiquidityUrl = (quoteToken: Token, token: Token): string => {
-  return `/trade/liquidity/add/${getAddress(quoteToken.address)}/${getAddress(token.address)}`;
+  return `/liquidity/add/${getAddress(quoteToken.address)}/${getAddress(token.address)}`;
 };

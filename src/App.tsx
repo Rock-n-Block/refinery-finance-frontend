@@ -5,8 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { MetamaskErrModal, RoiModal } from './components/molecules';
 import { Header } from './components/sections';
 import {
-  CollectiblesPage,
-  CreateProfilePage,
+  // CollectiblesPage,
+  // CreateProfilePage,
   DaoListPage,
   DaoPage,
   DaoProposalPage,
@@ -39,32 +39,31 @@ const App: React.FC = observer(() => {
         <Route
           exact
           path={[
-            '/trade',
-            '/trade/swap',
-            '/trade/liquidity',
-            '/trade/bridge',
-            '/trade/swap/settings',
-            '/trade/swap/history',
-            '/trade/liquidity/settings',
-            '/trade/liquidity/history',
-            '/trade/liquidity/find',
-            '/trade/liquidity/add',
-            '/trade/liquidity/add/:currencyIdA/:currencyIdB',
-            '/trade/liquidity/remove',
-            '/trade/liquidity/receive',
+            '/',
+            '/liquidity',
+            '/bridge',
+            '/settings',
+            '/history',
+            '/liquidity/settings',
+            '/liquidity/history',
+            '/liquidity/find',
+            '/liquidity/add',
+            '/liquidity/add/:currencyIdA/:currencyIdB',
+            '/liquidity/remove',
+            '/liquidity/receive',
           ]}
           component={TradePage}
         />
         <Route exact path={['/lottery/:id', '/lottery']} component={LotteryPage} />
         <Route exact path="/farms" component={FarmsPage} />
         <Route exact path="/pools" component={PoolsPage} />
-        <Route exact path="/collectibles" component={CollectiblesPage} />
+        {/* <Route exact path="/collectibles" component={CollectiblesPage} /> */}
         <Route exact path="/teams" component={TeamsPage} />
         <Route exact path="/team/:id" component={TeamPage} />
         <Route exact path="/dao" component={DaoListPage} />
         <Route strict exact path="/dao/:id" component={DaoPage} />
         <Route exact path="/dao/proposal/create" component={DaoProposalPage} />
-        <Route path="/create-profile" component={CreateProfilePage} />
+        {/* <Route path="/create-profile" component={CreateProfilePage} /> */}
         <Route path="/profile" component={ProfilePage} />
       </Switch>
       <MetamaskErrModal />

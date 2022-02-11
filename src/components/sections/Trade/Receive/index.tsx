@@ -46,7 +46,7 @@ const Receive: React.FC = observer(() => {
             moment.utc().add(20, 'm').valueOf(),
           ],
         });
-        history.push('/trade/liquidity');
+        history.push('/liquidity');
       }
     } catch (err) {
       setIsActiveTx(false);
@@ -58,7 +58,7 @@ const Receive: React.FC = observer(() => {
     if (location.state) {
       setLiquidityInfo(location.state);
     } else {
-      history.push('/trade/liquidity');
+      history.push('/liquidity');
     }
   }, [location, history]);
 
