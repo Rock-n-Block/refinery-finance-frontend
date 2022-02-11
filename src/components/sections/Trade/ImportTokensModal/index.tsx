@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
 import InfoRImg from '@/assets/img/icons/info-r.svg';
 import LinkImg from '@/assets/img/icons/open-link.svg';
+import { IS_PRODUCTION } from '@/config';
 
 import { useMst } from '../../../../store';
 import { IToken } from '../../../../types';
@@ -11,7 +12,6 @@ import { Button, Switch } from '../../../atoms';
 import { Modal } from '../../../molecules';
 
 import './ImportTokensModal.scss';
-import { IS_PRODUCTION } from '@/config';
 
 interface IImportTokensModal {
   isVisible?: boolean;
