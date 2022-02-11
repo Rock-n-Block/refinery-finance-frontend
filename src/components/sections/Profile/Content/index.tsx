@@ -47,7 +47,7 @@ const Content: React.FC = observer(() => {
         />
       </div>
       <div className="profile-content__body">
-        {trxs ? (
+        {trxs && trxs.swaps.length ? (
           <div className="profile-content__table">
             <div className="profile-content__table__head profile-content__table__row text-purple text-bold text-smd">
               <div className="profile-content__table__head__item">Swap</div>

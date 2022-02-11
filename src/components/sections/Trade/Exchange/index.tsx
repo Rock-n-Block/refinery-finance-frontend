@@ -89,8 +89,8 @@ const Exchange: React.FC<IExchange> = observer(
         <TradeBox
           title="Exchange"
           subtitle="Trade tokens in an instant"
-          settingsLink="/trade/swap/settings"
-          recentTxLink="/trade/swap/history"
+          settingsLink="/settings"
+          recentTxLink="/history"
         >
           <ChooseTokens
             handleChangeTokens={setTokensData}

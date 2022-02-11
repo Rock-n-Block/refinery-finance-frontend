@@ -162,7 +162,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
             size="smd"
             className="liquidity-info__btn"
             link={{
-              pathname: '/trade/liquidity/remove',
+              pathname: '/liquidity/remove',
               state: {
                 address: info.address,
                 token0: {

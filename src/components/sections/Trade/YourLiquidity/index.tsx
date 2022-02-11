@@ -107,10 +107,10 @@ const YourLiquidity: React.FC = observer(() => {
         className="y-liquidity"
         title="Liquidity"
         subtitle="Add liquidity to receive LP tokens"
-        settingsLink="/trade/liquidity/settings"
-        recentTxLink="/trade/liquidity/history"
+        settingsLink="/liquidity/settings"
+        recentTxLink="/liquidity/history"
       >
-        <Button className="y-liquidity__btn" link="/trade/liquidity/add">
+        <Button className="y-liquidity__btn" link="/liquidity/add">
           <span className="text-md text-white text-bold">Add liquidity</span>
         </Button>
         <div className="y-liquidity__title text-purple text-med text-md">Your Liquidity</div>

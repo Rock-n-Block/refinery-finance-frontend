@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import ArrowImg from '@/assets/img/icons/arrow-btn.svg';
 import InfoRImg from '@/assets/img/icons/info-r.svg';
 import LinkImg from '@/assets/img/icons/open-link.svg';
+import { IS_PRODUCTION } from '@/config';
 
 import { useMst } from '../../../../store';
 import { IToken } from '../../../../types';
@@ -67,9 +68,9 @@ const ImportTokensModal: React.FC<IImportTokensModal> = observer(
           </div>
           <div className="m-import-tokens__text text-smd">
             <p>
-              Anyone can create a BEP20 token on BSC with any name, including creating fake versions
-              of existing tokens and tokens that claim to represent projects that do not have a
-              token.
+              Anyone can create a BEP20 token on Ethereum with any name, including creating fake
+              versions of existing tokens and tokens that claim to represent projects that do not
+              have a token.
             </p>
             <p>If you purchase an arbitrary token, you may be unable to sell it back.</p>
           </div>
@@ -85,8 +86,17 @@ const ImportTokensModal: React.FC<IImportTokensModal> = observer(
                   {token.address}
                 </div>
               </div>
-              <a href="/" className="m-import-tokens__token-link text-purple text-ssm box-f-ai-c">
-                <span>View BscScan</span>
+              <a
+                href={
+                  IS_PRODUCTION
+                    ? `https://etherscan.io/token/${token.address}`
+                    : `https://kovan.etherscan.io/token/${token.address}`
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="m-import-tokens__token-link text-purple text-ssm box-f-ai-c"
+              >
+                <span>View Etherscan</span>
                 <img src={LinkImg} alt="" />
               </a>
             </div>

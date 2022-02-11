@@ -197,8 +197,8 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         className="add-liquidity"
         title="Add Liquidity"
         subtitle="Add liquidity to receive LP tokens"
-        settingsLink="/trade/liquidity/settings"
-        recentTxLink="/trade/liquidity/history"
+        settingsLink="/liquidity/settings"
+        recentTxLink="/liquidity/history"
         info="Liquidity providers earn a 0.17% trading fee on all trades made for that token pair, proportional to their share of the liquidity pool."
         titleBackLink
       >

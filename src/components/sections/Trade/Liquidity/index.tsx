@@ -142,23 +142,19 @@ const Liquidity: React.FC = observer(() => {
 
   return (
     <Switch>
-      <Route exact path="/trade/liquidity" component={YourLiquidity} />
-      <Route exact path="/trade/liquidity/find" component={ImportPool} />
+      <Route exact path="/liquidity" component={YourLiquidity} />
+      <Route exact path="/liquidity/find" component={ImportPool} />
+      <Route exact path="/liquidity/add" render={() => <AddLiquidityComp settings={settings} />} />
       <Route
         exact
-        path="/trade/liquidity/add"
+        path="/liquidity/add/:currencyIdA/:currencyIdB"
         render={() => <AddLiquidityComp settings={settings} />}
       />
+      <Route exact path="/liquidity/remove" component={RemoveLiquidity} />
+      <Route exact path="/liquidity/receive" component={Receive} />
       <Route
         exact
-        path="/trade/liquidity/add/:currencyIdA/:currencyIdB"
-        render={() => <AddLiquidityComp settings={settings} />}
-      />
-      <Route exact path="/trade/liquidity/remove" component={RemoveLiquidity} />
-      <Route exact path="/trade/liquidity/receive" component={Receive} />
-      <Route
-        exact
-        path="/trade/liquidity/settings"
+        path="/liquidity/settings"
         render={() => (
           <ExchangeSettings
             savedSettings={settings}
@@ -167,7 +163,7 @@ const Liquidity: React.FC = observer(() => {
           />
         )}
       />
-      <Route exact path="/trade/liquidity/history" render={() => <RecentTxs items={trx} />} />
+      <Route exact path="/liquidity/history" render={() => <RecentTxs items={trx} />} />
     </Switch>
   );
 });

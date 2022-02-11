@@ -258,7 +258,7 @@ const StakeUnstakeModal: React.FC = observer(() => {
           <Button
             className="stake-unstake-modal__btn stake-unstake-modal__btn-get-currency"
             colorScheme="outline-purple"
-            link="/trade/swap"
+            link="/"
           >
             <span className="text-bold text-smd">Get RP1</span>
           </Button>
