@@ -45,7 +45,7 @@ enum SortOptions {
 const FarmsContent: React.FC<IFarmsContent> = ({ content }) => {
   return (
     <div className="farms__content">
-      <FarmsTable data={content} />
+      {content.length ? <FarmsTable data={content} /> : <div>No result</div>}
     </div>
   );
 };
