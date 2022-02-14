@@ -6,7 +6,7 @@ import './Trade.scss';
 
 const Trade: React.FC = React.memo(() => {
   return (
-    <main className="trade box-f box-f-jc-c">
+    <main className="trade">
       <div className="trade__content">
         <TradeNavbar />
         <Swap />
