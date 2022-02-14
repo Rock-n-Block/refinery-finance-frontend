@@ -5,7 +5,8 @@ export const onCheckCondition = (pathname: string, activePath: string) => {
     pathname === '/liquidity/settings' ||
     pathname === '/liquidity/history' ||
     pathname === '/liquidity/add' ||
-    pathname === '/liquidity/remove';
+    pathname === '/liquidity/remove' ||
+    pathname === '/liquidity/receive';
 
   const condition = activePath === '/' ? isHomeSwap : isLiquidity;
   return condition;

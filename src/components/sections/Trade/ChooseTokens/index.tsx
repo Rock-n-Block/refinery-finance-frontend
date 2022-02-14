@@ -404,7 +404,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     }
                   />
                   {balanceFrom ? (
-                    <div className="choose-tokens__balance text-sm text-gray text-med text-address">{`Balance: ${balanceFrom}`}</div>
+                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${balanceFrom}`}</div>
                   ) : (
                     ''
                   )}
@@ -468,7 +468,7 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     max={maxTo && maxTo < balanceTo ? maxTo : balanceTo}
                   />
                   {balanceTo ? (
-                    <div className="choose-tokens__balance text-sm text-gray text-med text-address">{`Balance: ${balanceTo}`}</div>
+                    <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${balanceTo}`}</div>
                   ) : (
                     ''
                   )}
