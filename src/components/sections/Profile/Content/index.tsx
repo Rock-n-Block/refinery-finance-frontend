@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { RadioChangeEvent } from 'antd';
 import { observer } from 'mobx-react-lite';
+import moment from 'moment';
 
 // import BnbImg from '@/assets/img/currency/bnb.svg';
 import OpenLinkImg from '@/assets/img/icons/open-link.svg';
@@ -12,7 +13,6 @@ import { onGetGraphSwaps } from '@/services/api/swaps';
 import { useMst } from '@/store';
 
 import './Content.scss';
-import moment from 'moment';
 
 const PAGES = [{ text: 'Transactions', value: 'trx' }];
 
