@@ -124,7 +124,8 @@ const SelectTokenModal: React.FC<ISelectTokenModal> = observer(
                 className="m-select-token__scroll"
                 style={{
                   width: '100%',
-                  height: tokens.length > 5 ? '30vh' : `${tokens.length * 65}px`,
+                  height: tokens.length > 5 ? '30vh' : '150px',
+                  // height: tokens.length > 5 ? '30vh' : `${tokens.length * 65}px`,
                 }}
               >
                 {[...tokens].map((token: IToken) => (

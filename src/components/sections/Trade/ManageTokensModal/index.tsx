@@ -268,7 +268,8 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
                 className="m-select-token__scroll"
                 style={{
                   width: '100%',
-                  height: tokens.imported.length > 8 ? '30vh' : `${tokens.imported.length * 55}px`,
+                  height: tokens.imported.length > 8 ? '30vh' : '150px',
+                  // height: tokens.imported.length > 8 ? '30vh' : `${tokens.imported.length * 55}px`,
                 }}
               >
                 {tokens.imported.map((token: IToken) => (

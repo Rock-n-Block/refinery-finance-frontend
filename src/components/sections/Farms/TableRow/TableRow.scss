@@ -141,8 +141,16 @@
     }
 
     &-links {
+      @include b(tablet) {
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+      }
       &-item {
-        width: fit-content;
+        width: 100%;
+        // width: fit-content;
         margin-bottom: 15px;
 
         span {
@@ -165,6 +173,9 @@
 
       & + & {
         margin-left: 10px;
+      }
+      .input-number__prefix {
+        margin-right: 10px;
       }
 
       @include b(tablet) {
