@@ -5,6 +5,14 @@
   border-radius: 40px;
   overflow: hidden;
   background: rgba(241, 235, 253, 1);
+  @include b(tablet) {
+    padding-top: 50px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+  }
   &__back {
     position: relative;
     border-radius: 0px 0 40px 40px;
@@ -17,9 +25,13 @@
     justify-content: flex-end;
     padding: 47px 30px;
 
+    @include b(tablet) {
+      padding: 10px;
+      width: 100%;
+    }
+
     @include b(mobile) {
       background-image: url(../../../../assets/img/sections/profile/bg-1.svg);
-      padding: 40px 10px 20px 40px;
     }
 
     &--info {
@@ -29,8 +41,30 @@
         }
       }
     }
+    &-params {
+      padding-top: 20px;
+      padding: 21px 25px;
+      background: $white;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0px 12px 40px 0px rgba(85, 32, 142, 0.25);
+      border-radius: 25px;
+      @include b(tablet) {
+        max-width: 100%;
+      }
+      div {
+        @include b(tablet) {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 150px;
+        }
+      }
+    }
   }
   &__content {
+    position: relative;
     display: flex;
     position: relative;
     flex-direction: column;
@@ -39,6 +73,12 @@
     justify-content: center;
     padding-bottom: 30px;
     margin-top: -100px;
+    @include b(tablet) {
+      position: absolute;
+      top: 170px;
+      right: 50px;
+      z-index: 0;
+    }
     &-img {
       cursor: pointer;
       position: relative;
@@ -46,6 +86,10 @@
       border-radius: 50%;
       height: 143px;
       overflow: hidden;
+      @include b(tablet) {
+        height: 85px;
+        width: 85px;
+      }
       img {
         max-width: 100%;
       }
@@ -76,6 +120,12 @@
       font-size: 30px;
       line-height: 36px;
       color: $purple;
+      @include b(tablet) {
+        position: absolute;
+        bottom: 10px;
+        margin: 0;
+        font-size: 20px;
+      }
       &-btn {
         margin: 20px 0;
         color: $white;
@@ -86,15 +136,6 @@
           color: $purple;
         }
       }
-    }
-    &-params {
-      padding-top: 20px;
-      padding: 21px 25px;
-      background: $white;
-      width: 100%;
-      max-width: 300px;
-      box-shadow: 0px 12px 40px 0px rgba(85, 32, 142, 0.25);
-      border-radius: 25px;
     }
   }
 }
