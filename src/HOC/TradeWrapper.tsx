@@ -5,6 +5,7 @@ import { walletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { IToken, ITokens } from '@/types';
 import { clogError } from '@/utils/logger';
+import { pathFinder } from '@/utils/pathFinder';
 
 interface ITradeWrapper {
   isAllowanceFrom: boolean;
@@ -243,6 +244,29 @@ const TradeWrapper = (
               maxFrom: MetamaskService.amountFromGwei(resurve1, +tokens.from.token.decimals),
               maxTo: MetamaskService.amountFromGwei(resurve2, +tokens.to.token.decimals),
             });
+
+            const optimalPath = await pathFinder(
+              tokens.from.token.address,
+              tokens.to.token.address,
+            );
+
+            let lowestSwapValue: any;
+
+            if (optimalPath.length) {
+              const amountPromisses = optimalPath.map(async (path) => {
+                const thisPathAmount = await this.context.metamaskService.callContractMethod(
+                  'ROUTER',
+                  'getAmountsOut',
+                  [path],
+                );
+                return thisPathAmount;
+              });
+
+              const allVariantAmounts: number[] = await Promise.all(amountPromisses);
+              // eslint-disable-next-line prefer-destructuring
+              lowestSwapValue = allVariantAmounts.sort((a, b) => b - a)[0];
+            }
+            console.log(lowestSwapValue);
 
             const quote = await this.context.metamaskService.callContractMethod(
               'ROUTER',
