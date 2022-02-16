@@ -5,6 +5,7 @@ import { walletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
 import { IToken, ITokens } from '@/types';
 import { clogError } from '@/utils/logger';
+import { pathFinder } from '@/utils/pathFinder';
 
 interface ITradeWrapper {
   isAllowanceFrom: boolean;
@@ -102,6 +103,30 @@ const TradeWrapper = (
       if (this.state.resurvesInterval) {
         clearInterval(this.state.resurvesInterval);
       }
+    }
+
+    async handleGetBestSwapValue(amount: string | number, tokenFrom: IToken, tokenTo: IToken) {
+      if (!tokenFrom || !tokenTo) return '0';
+
+      let lowestSwapValue = '0';
+      const tokenFromDec = +tokenFrom.decimals;
+      const pathVariants = await pathFinder(tokenFrom.address, tokenTo.address);
+
+      if (pathVariants.length) {
+        const amountPromisses = pathVariants.map(async (path) => {
+          const pathValues = await this.context.metamaskService.callContractMethod(
+            'ROUTER',
+            'getAmountsOut',
+            [MetamaskService.calcTransactionAmount(+amount, tokenFromDec), path],
+          );
+          return pathValues[pathValues.length - 1];
+        });
+
+        const allPossibleValues: string[] = await Promise.all(amountPromisses);
+        // eslint-disable-next-line prefer-destructuring
+        lowestSwapValue = allPossibleValues.sort((a, b) => Number(b) - Number(a))[0];
+      }
+      return lowestSwapValue;
     }
 
     async handleApproveTokens() {
@@ -203,60 +228,15 @@ const TradeWrapper = (
           (tokens.from.amount || tokens.to.amount) &&
           pairAddr
         ) {
-          const token0 = await this.context.metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            contracts.PAIR.ABI,
-            'token0',
-          );
-
-          const token1 = await this.context.metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            contracts.PAIR.ABI,
-            'token1',
-          );
-
-          const resurves = await this.context.metamaskService.callContractMethodFromNewContract(
-            pairAddr,
-            contracts.PAIR.ABI,
-            'getReserves',
-          );
-
-          this.setState({
-            tokensResurves: resurves,
-          });
-
           if (
             (type === 'from' && tokens.from.amount) ||
             (tokens.from.token && tokens.from.amount && !tokens.to.amount)
           ) {
-            let resurve1: number;
-            let resurve2: number;
-            if (tokens.from.token.address.toLowerCase() === token0.toLowerCase()) {
-              resurve1 = resurves['0'];
-              resurve2 = resurves['1'];
-            } else {
-              resurve1 = resurves['1'];
-              resurve2 = resurves['0'];
-            }
-
-            this.setState({
-              maxFrom: MetamaskService.amountFromGwei(resurve1, +tokens.from.token.decimals),
-              maxTo: MetamaskService.amountFromGwei(resurve2, +tokens.to.token.decimals),
-            });
-
-            const quote = await this.context.metamaskService.callContractMethod(
-              'ROUTER',
-              getExchangeMethod,
-              [
-                MetamaskService.calcTransactionAmount(
-                  tokens.from.amount,
-                  +tokens.from.token.decimals,
-                ),
-                resurve1,
-                resurve2,
-              ],
+            const amount = await this.handleGetBestSwapValue(
+              tokens.from.amount,
+              tokens.from.token,
+              tokens.to.token,
             );
-
             this.setState({
               tokensData: {
                 from: {
@@ -265,7 +245,7 @@ const TradeWrapper = (
                 },
                 to: {
                   token: tokens.to.token,
-                  amount: MetamaskService.amountFromGwei(quote, +tokens.to.token.decimals),
+                  amount: MetamaskService.amountFromGwei(amount, +tokens.to.token.decimals),
                 },
               },
             });
@@ -273,36 +253,16 @@ const TradeWrapper = (
             (type === 'to' && tokens.to.amount) ||
             (tokens.to.token && tokens.to.amount && !tokens.from.amount)
           ) {
-            let resurve1: number;
-            let resurve2: number;
-            if (tokens.to.token.address.toLowerCase() === token1.toLowerCase()) {
-              resurve1 = resurves['1'];
-              resurve2 = resurves['0'];
-            } else {
-              resurve1 = resurves['0'];
-              resurve2 = resurves['1'];
-            }
-
-            this.setState({
-              maxFrom: MetamaskService.amountFromGwei(resurve2, +tokens.from.token.decimals),
-              maxTo: MetamaskService.amountFromGwei(resurve1, +tokens.to.token.decimals),
-            });
-
-            const quote = await this.context.metamaskService.callContractMethod(
-              'ROUTER',
-              getExchangeMethod,
-              [
-                MetamaskService.calcTransactionAmount(tokens.to.amount, +tokens.to.token.decimals),
-                resurve1,
-                resurve2,
-              ],
+            const amount = await this.handleGetBestSwapValue(
+              tokens.to.amount,
+              tokens.to.token,
+              tokens.from.token,
             );
-
             this.setState({
               tokensData: {
                 from: {
                   token: tokens.from.token,
-                  amount: MetamaskService.amountFromGwei(quote, +tokens.from.token.decimals),
+                  amount: MetamaskService.amountFromGwei(amount, +tokens.from.token.decimals),
                 },
                 to: {
                   token: tokens.to.token,

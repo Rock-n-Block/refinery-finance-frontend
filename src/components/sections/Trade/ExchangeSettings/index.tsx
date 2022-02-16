@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import CrossImg from '../../../../assets/img/icons/cross.svg';
 import { ISettings } from '../../../../types';
-import { Button, InputNumber, Switch } from '../../../atoms';
+import { Button, InputNumber } from '../../../atoms';
 
 import './ExchangeSettings.scss';
 
@@ -143,8 +143,8 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
           </div>
         </div>
         <div className="exch-settings__section">
-          <div className="exch-settings__section-title text-med text-purple">Audio</div>
-          <Switch colorScheme="purple" switchSize="bg" />
+          {/* <div className="exch-settings__section-title text-med text-purple">Audio</div> */}
+          {/* <Switch colorScheme="purple" switchSize="bg" /> */}
         </div>
         <Button className="exch-settings__btn" onClick={handleSaveSettings}>
           <span className="text-smd text-white">Save and close</span>

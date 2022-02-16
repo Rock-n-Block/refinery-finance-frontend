@@ -41,3 +41,27 @@ export const onGetGraphSwaps = async (userAddress: string): Promise<any> => {
     return error;
   }
 };
+
+export const getAllPairs = async () => {
+  try {
+    const { data } = await axios.post(TRADE_API, {
+      query: `
+      {
+        pairs {
+          name
+          id
+         token0 {
+           id
+          }
+         token1 {
+           id
+          }
+        }
+      }
+      `,
+    });
+    return data.data;
+  } catch (error) {
+    return error;
+  }
+};

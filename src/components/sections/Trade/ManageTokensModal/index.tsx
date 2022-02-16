@@ -60,6 +60,7 @@ const ManageTokensModal: React.FC<IManageTokensModal> = observer(
     const handleOpenImportTokensModal = (token: IToken): void => {
       handleClose();
       setSelectedToken(token);
+      setSearchedValue('');
     };
 
     const handleCloseImportTokensModal = (): void => {
