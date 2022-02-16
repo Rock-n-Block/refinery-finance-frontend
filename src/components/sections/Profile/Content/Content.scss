@@ -1,4 +1,5 @@
 @import '../../../../styles/vars';
+@import '../../../../styles/mixins/media.scss';
 .profile-content {
   margin-top: 40px;
   width: 100%;
@@ -40,6 +41,9 @@
   }
   &__body {
     padding: 38px 30px 30px;
+    @include b(tablet) {
+      padding: 38px 25px 25px;
+    }
     display: flex;
     flex-direction: column;
     background: $white;
@@ -84,6 +88,11 @@
       grid-template-columns: 1fr 1fr 1fr 0.8fr 120px;
       padding: 25px 0;
       grid-column-gap: 10px;
+      @include b(tablet) {
+        grid-template-columns: repeat(2, 1fr);
+        grid-row-gap: 20px;
+        grid-column-gap: 10px;
+      }
       & + & {
         border-top: 1px solid rgba(#b8b8b8, 0.3);
       }
@@ -95,6 +104,12 @@
       &__item {
         display: flex;
         align-items: center;
+        @include b(tablet) {
+          flex-flow: column nowrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          // width: 45%;
+        }
         img {
           max-width: 24px;
         }

@@ -32,7 +32,7 @@ const Preview: VFC = observer(() => {
   return (
     <div className="profile-preview box-purple-l">
       <div className="profile-preview__back">
-        <div className="profile-preview__content-params">
+        <div className="profile-preview__back-params">
           <div className="text-ssm text-purple text-500">RF Balance</div>
           <div className="text-lg">0.0</div>
           <div className="text-ssmd text-gray">0.0 USD</div>
