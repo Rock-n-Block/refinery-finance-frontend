@@ -152,7 +152,9 @@
         width: 100%;
         // width: fit-content;
         margin-bottom: 15px;
-
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
         span {
           margin-right: 7px;
         }
@@ -203,6 +205,14 @@
 
     &-staked-value {
       margin-bottom: 5px;
+    }
+    &-badge {
+      @include b(tablet) {
+        width: 100% !important;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+      }
     }
   }
 
