@@ -48,14 +48,16 @@ export const getAllPairs = async () => {
       query: `
       {
         pairs {
+          name
+          id
          token0 {
            id
-         }
+          }
          token1 {
            id
-         }
-       }
-       }
+          }
+        }
+      }
       `,
     });
     return data.data;

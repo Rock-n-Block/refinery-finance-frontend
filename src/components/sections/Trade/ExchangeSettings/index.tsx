@@ -143,7 +143,7 @@ const ExchangeSettings: React.FC<IExchangeSettings> = React.memo(
           </div>
         </div>
         <div className="exch-settings__section">
-          <div className="exch-settings__section-title text-med text-purple">Audio</div>
+          {/* <div className="exch-settings__section-title text-med text-purple">Audio</div> */}
           {/* <Switch colorScheme="purple" switchSize="bg" /> */}
         </div>
         <Button className="exch-settings__btn" onClick={handleSaveSettings}>
