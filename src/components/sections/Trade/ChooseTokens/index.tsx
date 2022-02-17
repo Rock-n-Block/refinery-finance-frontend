@@ -25,10 +25,12 @@ export interface IChooseTokens {
   changeTokenToAllowance?: (value: boolean) => void;
   maxFrom?: number | string;
   maxTo?: number | string;
+  handleChangePath?: (path: string[]) => void;
 }
 
 const ChooseTokens: React.FC<IChooseTokens> = observer(
   ({
+    handleChangePath,
     handleChangeTokens,
     initialTokenData,
     textFrom,
@@ -73,6 +75,10 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
     };
 
     const handleChangeTokenFrom = async (token: IToken | undefined) => {
+      if (handleChangePath) {
+        handleChangePath([]);
+      }
+
       if (token) {
         if (tokenTo && token.address === tokenTo.address) {
           setTokenTo(tokenFrom);

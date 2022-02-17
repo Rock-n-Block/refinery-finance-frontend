@@ -1,8 +1,7 @@
 import { createContext, useContext } from 'react';
-import { Instance, onSnapshot, types } from 'mobx-state-tree';
+import { Instance, types } from 'mobx-state-tree';
 
-import { clogData } from '@/utils/logger';
-
+// import { clogData } from '@/utils/logger';
 import { initialState as roiInitialState } from './Models/Modals/RoiModal';
 import { DaoModel, FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
 
@@ -71,9 +70,9 @@ export const Store = RootModel.create({
 
 const rootStore = Store;
 
-onSnapshot(rootStore, (snapshot) => {
-  clogData('Snapshot: ', snapshot);
-});
+// onSnapshot(rootStore, (snapshot) => {
+//   clogData('Snapshot: ', snapshot);
+// });
 
 export type RootInstance = Instance<typeof RootModel>;
 const RootStoreContext = createContext<null | RootInstance>(null);

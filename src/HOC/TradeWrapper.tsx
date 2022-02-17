@@ -3,6 +3,7 @@ import React from 'react';
 import { contracts } from '@/config';
 import { walletConnectorContext } from '@/services/MetamaskConnect';
 import MetamaskService from '@/services/web3';
+import rootStore from '@/store';
 import { IToken, ITokens } from '@/types';
 import { clogError } from '@/utils/logger';
 import { pathFinder } from '@/utils/pathFinder';
@@ -27,6 +28,7 @@ interface ITradeWrapper {
   maxTo: number | string;
   isLoadingExchange: boolean;
   isApproving: boolean;
+  transactionPath: string[];
 }
 
 const TradeWrapper = (
@@ -45,17 +47,19 @@ const TradeWrapper = (
       super(props);
 
       this.state = {
-        tokensData: (localStorage[`refinery-finance-${getExchangeMethod}`] &&
-          JSON.parse(localStorage[`refinery-finance-${getExchangeMethod}`])) || {
-          from: {
-            token: undefined,
-            amount: NaN,
+        tokensData:
+          // (localStorage[`refinery-finance-${getExchangeMethod}`] &&
+          //   JSON.parse(localStorage[`refinery-finance-${getExchangeMethod}`])) ||
+          {
+            from: {
+              token: undefined,
+              amount: NaN,
+            },
+            to: {
+              token: undefined,
+              amount: NaN,
+            },
           },
-          to: {
-            token: undefined,
-            amount: NaN,
-          },
-        },
         isAllowanceFrom: true,
         isAllowanceTo: true,
         tokensResurves: undefined,
@@ -65,6 +69,7 @@ const TradeWrapper = (
         maxTo: '',
         isLoadingExchange: false,
         isApproving: false,
+        transactionPath: [],
       };
 
       this.handleChangeTokensData = this.handleChangeTokensData.bind(this);
@@ -105,26 +110,36 @@ const TradeWrapper = (
       }
     }
 
-    async handleGetBestSwapValue(amount: string | number, tokenFrom: IToken, tokenTo: IToken) {
+    async handleGetBestSwapValue(
+      amount: string | number,
+      tokenFrom: IToken,
+      tokenTo: IToken,
+    ): Promise<string> {
       if (!tokenFrom || !tokenTo) return '0';
 
-      let lowestSwapValue = '0';
       const tokenFromDec = +tokenFrom.decimals;
       const pathVariants = await pathFinder(tokenFrom.address, tokenTo.address);
+      let lowestSwapValue = '0';
 
       if (pathVariants.length) {
-        const amountPromisses = pathVariants.map(async (path) => {
-          const pathValues = await this.context.metamaskService.callContractMethod(
+        const promisses = pathVariants.map(async (path) => {
+          const value = await this.context.metamaskService.callContractMethod(
             'ROUTER',
             'getAmountsOut',
             [MetamaskService.calcTransactionAmount(+amount, tokenFromDec), path],
           );
-          return pathValues[pathValues.length - 1];
+          return {
+            path,
+            value: value[value.length - 1],
+          };
         });
+        const pathsWithValue: { path: string[]; value: string }[] = await Promise.all(promisses);
+        const bestPath = pathsWithValue.sort((a, b) => Number(b.value) - Number(a.value))[0];
 
-        const allPossibleValues: string[] = await Promise.all(amountPromisses);
-        // eslint-disable-next-line prefer-destructuring
-        lowestSwapValue = allPossibleValues.sort((a, b) => Number(b) - Number(a))[0];
+        lowestSwapValue = bestPath.value;
+        this.setState({
+          transactionPath: bestPath.path,
+        });
       }
       return lowestSwapValue;
     }
@@ -172,6 +187,7 @@ const TradeWrapper = (
         this.setState({
           isLoadingExchange: true,
         });
+        if (!rootStore.user.address) return;
 
         const pairAddr = await this.context.metamaskService.callContractMethod(
           'FACTORY',
@@ -326,6 +342,12 @@ const TradeWrapper = (
       }
     }
 
+    handleChangePath(path: string[]) {
+      this.setState({
+        transactionPath: path,
+      });
+    }
+
     render() {
       return (
         <Component
@@ -343,6 +365,8 @@ const TradeWrapper = (
           maxTo={this.state.maxTo}
           isLoadingExchange={this.state.isLoadingExchange}
           isApproving={this.state.isApproving}
+          transactionPath={this.state.transactionPath}
+          setPath={this.handleChangePath}
         />
       );
     }

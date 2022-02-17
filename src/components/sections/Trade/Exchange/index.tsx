@@ -26,6 +26,8 @@ interface IExchange {
   maxTo: '';
   isLoadingExchange: boolean;
   isApproving: boolean;
+  transactionPath: string[];
+  setPath: (path: string[]) => void;
 }
 
 const Exchange: React.FC<IExchange> = observer(
@@ -43,6 +45,8 @@ const Exchange: React.FC<IExchange> = observer(
     tokensResurves,
     isLoadingExchange,
     isApproving,
+    transactionPath,
+    setPath,
   }) => {
     const { connect, metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
@@ -62,7 +66,8 @@ const Exchange: React.FC<IExchange> = observer(
                 tokensData.to.amount,
                 +tokensData.to.token?.decimals,
               ),
-              [tokensData.from.token.address, tokensData.to.token.address],
+              transactionPath,
+              // [tokensData.from.token.address, tokensData.to.token.address],
               user.address,
               settings.txDeadlineUtc,
             ],
@@ -78,6 +83,7 @@ const Exchange: React.FC<IExchange> = observer(
               amount: NaN,
             },
           });
+          setPath([]);
         } catch (err) {
           clogError('swap err', err);
         }
@@ -93,6 +99,7 @@ const Exchange: React.FC<IExchange> = observer(
           recentTxLink="/history"
         >
           <ChooseTokens
+            handleChangePath={setPath}
             handleChangeTokens={setTokensData}
             initialTokenData={tokensData}
             textFrom="From"
