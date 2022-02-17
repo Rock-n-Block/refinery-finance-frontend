@@ -271,6 +271,35 @@ export default class MetamaskService {
     }
   }
 
+  async getRemoveAmout(addressToken1: string, addressToken2: string): Promise<number[]> {
+    const balanceToken1 = await this.callContractMethodFromNewContract(
+      addressToken1,
+      contracts.ERC20.ABI,
+      'balanceOf',
+      [this.walletAddress],
+    );
+    const totalToken1 = await this.callContractMethodFromNewContract(
+      addressToken1,
+      contracts.ERC20.ABI,
+      'totalSupply',
+    );
+    const balanceToken2 = await this.callContractMethodFromNewContract(
+      addressToken2,
+      contracts.ERC20.ABI,
+      'balanceOf',
+      [this.walletAddress],
+    );
+    const totalToken2 = await this.callContractMethodFromNewContract(
+      addressToken2,
+      contracts.ERC20.ABI,
+      'totalSupply',
+    );
+
+    const removeAmount1 = balanceToken1 / totalToken1;
+    const removeAmount2 = balanceToken2 / totalToken2;
+    return [removeAmount1, removeAmount2];
+  }
+
   static calcTransactionAmount(amount: number | string, tokenDecimal: number) {
     return new BigNumber(amount).times(new BigNumber(10).pow(tokenDecimal)).toString(10);
   }

@@ -77,6 +77,7 @@ const TradeWrapper = (
       this.handleChangeAllowanceFrom = this.handleChangeAllowanceFrom.bind(this);
       this.handleChangeAllowanceTo = this.handleChangeAllowanceTo.bind(this);
       this.handleGetExchange = this.handleGetExchange.bind(this);
+      this.handleChangePath = this.handleChangePath.bind(this);
     }
 
     componentDidMount() {
