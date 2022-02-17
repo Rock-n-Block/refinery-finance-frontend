@@ -33,6 +33,10 @@ const Receive: React.FC = observer(() => {
     try {
       if (liquidityInfo && liquidityInfo?.token0.receive && liquidityInfo?.token1.receive) {
         setIsActiveTx(true);
+        const [amount1, amount2] = await metamaskService.getRemoveAmout(
+          liquidityInfo?.token0.address,
+          liquidityInfo?.token1.address,
+        );
         await metamaskService.createTransaction({
           method: 'removeLiquidity',
           contractName: 'ROUTER',
@@ -40,8 +44,8 @@ const Receive: React.FC = observer(() => {
             liquidityInfo?.token0.address,
             liquidityInfo?.token1.address,
             liquidityInfo.lpTokens,
-            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(0.99).toFixed(0),
-            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(0.99).toFixed(0),
+            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(amount1).toFixed(0),
+            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(amount2).toFixed(0),
             user.address,
             moment.utc().add(20, 'm').valueOf(),
           ],
