@@ -161,6 +161,9 @@ const TradeWrapper = (
           });
         }
         if (!this.state.isAllowanceTo && this.state.tokensData.to.token) {
+          this.setState({
+            isApproving: true,
+          });
           await this.context.metamaskService.approveToken({
             contractName: 'ERC20',
             approvedAddress: contracts.ROUTER.ADDRESS,

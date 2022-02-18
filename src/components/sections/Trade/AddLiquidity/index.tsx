@@ -321,6 +321,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             className="add-liquidity__btn"
             onClick={handleApproveTokens}
             loading={isApproving}
+            loadingText={isApproving ? 'Approving...' : ''}
           >
             <span className="text-white text-bold text-smd">Approve tokens</span>
           </Button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { clogError } from '@/utils/logger';
@@ -50,10 +50,12 @@ const Exchange: React.FC<IExchange> = observer(
   }) => {
     const { connect, metamaskService } = useWalletConnectorContext();
     const { user } = useMst();
+    const [isSwapping, setSwapping] = useState(false);
 
     const handleSwap = async () => {
       if (tokensData.to.token && tokensData.from.token) {
         try {
+          setSwapping(true);
           await metamaskService.createTransaction({
             method: 'swapExactTokensForTokens',
             contractName: 'ROUTER',
@@ -72,6 +74,7 @@ const Exchange: React.FC<IExchange> = observer(
               settings.txDeadlineUtc,
             ],
           });
+          setSwapping(false);
           delete localStorage['refinery-finance-getAmountOut'];
           setTokensData({
             from: {
@@ -86,6 +89,7 @@ const Exchange: React.FC<IExchange> = observer(
           setPath([]);
         } catch (err) {
           clogError('swap err', err);
+          setSwapping(false);
         }
       }
     };
@@ -120,8 +124,11 @@ const Exchange: React.FC<IExchange> = observer(
             <Button
               className="exchange__btn"
               onClick={handleSwap}
-              loading={isLoadingExchange}
-              loadingText={isLoadingExchange ? 'Geting exchange' : ''}
+              loading={isLoadingExchange || isSwapping}
+              loadingText={
+                // eslint-disable-next-line no-nested-ternary
+                isLoadingExchange ? 'Geting exchange...' : isSwapping ? 'In progress...' : ''
+              }
             >
               <span className="text-white text-bold text-smd">Swap</span>
             </Button>
