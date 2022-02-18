@@ -181,7 +181,11 @@ const DaoWrapperContent: React.FC<IDaoWrapperContentProps> = observer(({ proposa
       {status !== 'pending' && (
         <DaoSection className="dao__section" title="Votes">
           <SkeletonTenRows loading={votingPowersLoading}>
-            <DaoProposalVotes votes={votes} token={tokens.rp1} />
+            {votes.length ? (
+              <DaoProposalVotes votes={votes} token={tokens.rp1} />
+            ) : (
+              <div>No result</div>
+            )}
           </SkeletonTenRows>
         </DaoSection>
       )}

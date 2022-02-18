@@ -141,16 +141,15 @@
     }
 
     &-links {
-      @include b(tablet) {
-        width: 100% !important;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-      }
+      // @include b(tablet) {
+      width: 100% !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      // }
       &-item {
         width: 100%;
-        // width: fit-content;
         margin-bottom: 15px;
         display: flex;
         flex-flow: row nowrap;
@@ -172,6 +171,11 @@
       padding: 20px 30px 40px;
       border-radius: 12px;
       background: #f8f5fe;
+      min-height: 170px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
 
       & + & {
         margin-left: 10px;
@@ -207,12 +211,15 @@
       margin-bottom: 5px;
     }
     &-badge {
-      @include b(tablet) {
-        width: 100% !important;
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: flex-start;
-      }
+      // @include b(tablet) {
+      width: 100% !important;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      // }
+    }
+    &-stake-btn {
+      margin-top: 10px;
     }
   }
 

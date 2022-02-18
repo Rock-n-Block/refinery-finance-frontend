@@ -166,7 +166,8 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
   const isNotEnoughBalanceToStake = maxStakeUnstakeValueRaw === '0';
   const hasValidationErrors = isNotEnoughBalanceToStake || inputValue.eq(0) || inputValue.isNaN();
 
-  const { addLiquidityUrl, tokenSymbol } = modal;
+  const { tokenSymbol } = modal;
+  // const { addLiquidityUrl, tokenSymbol } = modal;
 
   return (
     <Modal
@@ -230,7 +231,8 @@ const FarmsStakeUnstakeModal: React.FC = observer(() => {
           <Button
             className="farms-stake-unstake-modal__btn farms-stake-unstake-modal__btn-get-currency"
             colorScheme="outline-purple"
-            link={addLiquidityUrl}
+            link="/liquidity/add"
+            // link={addLiquidityUrl}
           >
             <span className="text-bold text-smd">Get {tokenSymbol}</span>
           </Button>

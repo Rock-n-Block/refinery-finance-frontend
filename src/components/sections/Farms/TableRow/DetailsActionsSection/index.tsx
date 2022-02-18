@@ -141,7 +141,7 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
       return (
         <>
           <DetailsSectionTitle title={`Stake ${lpSymbol}`} />
-          <Button size="lg" onClick={handleStake}>
+          <Button size="lg" onClick={handleStake} className="farms-table-row__details-stake-btn">
             <span className="text-smd text-white text-bold">Stake LP</span>
           </Button>
         </>
@@ -156,7 +156,12 @@ const DetailsActionsSection: React.FC<IDetailsActionsSectionProps> = ({ classNam
     return (
       <>
         <DetailsSectionTitle title="Enable Farm" />
-        <Button size="lg" disabled={requestedApproval} onClick={handleApprove}>
+        <Button
+          size="lg"
+          disabled={requestedApproval}
+          onClick={handleApprove}
+          className="farms-table-row__details-stake-btn"
+        >
           <span className="text-smd text-white text-bold">Enable</span>
         </Button>
       </>

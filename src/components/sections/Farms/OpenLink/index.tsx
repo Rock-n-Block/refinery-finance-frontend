@@ -11,7 +11,12 @@ interface IOpenLinkProps {
 
 const OpenLink: React.FC<IOpenLinkProps> = ({ className, href, text }) => {
   return (
-    <a href={href} className={classNames(className, 'box-f-ai-c text-purple text-ssm')}>
+    <a
+      href={href}
+      className={classNames(className, 'box-f-ai-c text-purple text-ssm')}
+      target="_blank"
+      rel="noreferrer"
+    >
       <span>{text}</span>
       <img src={OpenLinkImg} alt="" />
     </a>
