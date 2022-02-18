@@ -124,19 +124,25 @@ const TradeWrapper = (
 
       if (pathVariants.length) {
         const promisses = pathVariants.map(async (path) => {
-          const value = await this.context.metamaskService.callContractMethod(
-            'ROUTER',
-            'getAmountsOut',
-            [MetamaskService.calcTransactionAmount(+amount, tokenFromDec), path],
-          );
-          return {
-            path,
-            value: value[value.length - 1],
-          };
+          try {
+            const value = await this.context.metamaskService.callContractMethod(
+              'ROUTER',
+              'getAmountsOut',
+              [MetamaskService.calcTransactionAmount(+amount, tokenFromDec), path],
+            );
+            return {
+              path,
+              value: value[value.length - 1],
+            };
+          } catch (e) {
+            return {
+              path: [''],
+              value: '0',
+            };
+          }
         });
         const pathsWithValue: { path: string[]; value: string }[] = await Promise.all(promisses);
         const bestPath = pathsWithValue.sort((a, b) => Number(b.value) - Number(a.value))[0];
-
         lowestSwapValue = bestPath.value;
         this.setState({
           transactionPath: bestPath.path,
@@ -187,12 +193,12 @@ const TradeWrapper = (
     }
 
     async handleGetExchange(tokens: ITokens, type?: 'from' | 'to') {
+      if (!rootStore.user.address) return;
       try {
         this.setState({
           isLoadingExchange: true,
         });
-        if (!rootStore.user.address) return;
-
+        const isSwap = !window.location.pathname.includes('liquidity');
         const pairAddr = await this.context.metamaskService.callContractMethod(
           'FACTORY',
           'getPair',
@@ -252,11 +258,56 @@ const TradeWrapper = (
             (type === 'from' && tokens.from.amount) ||
             (tokens.from.token && tokens.from.amount && !tokens.to.amount)
           ) {
-            const amount = await this.handleGetBestSwapValue(
-              tokens.from.amount,
-              tokens.from.token,
-              tokens.to.token,
-            );
+            let amount: string;
+            if (!isSwap) {
+              const token0 = await this.context.metamaskService.callContractMethodFromNewContract(
+                pairAddr,
+                contracts.PAIR.ABI,
+                'token0',
+              );
+              const resurves = await this.context.metamaskService.callContractMethodFromNewContract(
+                pairAddr,
+                contracts.PAIR.ABI,
+                'getReserves',
+              );
+              this.setState({
+                tokensResurves: resurves,
+              });
+              let resurve1: number;
+              let resurve2: number;
+              if (tokens.from.token.address.toLowerCase() === token0.toLowerCase()) {
+                resurve1 = resurves['0'];
+                resurve2 = resurves['1'];
+              } else {
+                resurve1 = resurves['1'];
+                resurve2 = resurves['0'];
+              }
+
+              this.setState({
+                maxFrom: MetamaskService.amountFromGwei(resurve1, +tokens.from.token.decimals),
+                maxTo: MetamaskService.amountFromGwei(resurve2, +tokens.to.token.decimals),
+              });
+
+              amount = await this.context.metamaskService.callContractMethod(
+                'ROUTER',
+                getExchangeMethod,
+                [
+                  MetamaskService.calcTransactionAmount(
+                    tokens.from.amount,
+                    +tokens.from.token.decimals,
+                  ),
+                  resurve1,
+                  resurve2,
+                ],
+              );
+            } else {
+              amount = await this.handleGetBestSwapValue(
+                tokens.from.amount,
+                tokens.from.token,
+                tokens.to.token,
+              );
+            }
+
             this.setState({
               tokensData: {
                 from: {
@@ -273,7 +324,58 @@ const TradeWrapper = (
             (type === 'to' && tokens.to.amount) ||
             (tokens.to.token && tokens.to.amount && !tokens.from.amount)
           ) {
-            const amount = await this.handleGetBestSwapValue(
+            let amount: string;
+            if (!isSwap) {
+              const token1 = await this.context.metamaskService.callContractMethodFromNewContract(
+                pairAddr,
+                contracts.PAIR.ABI,
+                'token1',
+              );
+
+              const resurves = await this.context.metamaskService.callContractMethodFromNewContract(
+                pairAddr,
+                contracts.PAIR.ABI,
+                'getReserves',
+              );
+
+              this.setState({
+                tokensResurves: resurves,
+              });
+              let resurve1: number;
+              let resurve2: number;
+              if (tokens.to.token.address.toLowerCase() === token1.toLowerCase()) {
+                resurve1 = resurves['1'];
+                resurve2 = resurves['0'];
+              } else {
+                resurve1 = resurves['0'];
+                resurve2 = resurves['1'];
+              }
+
+              this.setState({
+                maxFrom: MetamaskService.amountFromGwei(resurve2, +tokens.from.token.decimals),
+                maxTo: MetamaskService.amountFromGwei(resurve1, +tokens.to.token.decimals),
+              });
+
+              amount = await this.context.metamaskService.callContractMethod(
+                'ROUTER',
+                getExchangeMethod,
+                [
+                  MetamaskService.calcTransactionAmount(
+                    tokens.to.amount,
+                    +tokens.to.token.decimals,
+                  ),
+                  resurve1,
+                  resurve2,
+                ],
+              );
+            } else {
+              amount = await this.handleGetBestSwapValue(
+                tokens.from.amount,
+                tokens.from.token,
+                tokens.to.token,
+              );
+            }
+            amount = await this.handleGetBestSwapValue(
               tokens.to.amount,
               tokens.to.token,
               tokens.from.token,
