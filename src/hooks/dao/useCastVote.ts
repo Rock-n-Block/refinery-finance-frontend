@@ -40,7 +40,7 @@ export const useCastVote = ({
         await snapshotClient.vote(provider, user.address, SNAPSHOT_SPACE, msg);
         // chosenOption starts from 1, 2, 3... (not from zero)
         onSuccessTx();
-        successNotification(`Success', 'Successfully voted for ${choices[chosenOption - 1]}!`);
+        successNotification(`Successfully voted for ${choices[chosenOption - 1]}!`);
       } catch (error: any) {
         clogError(error);
         const errorMessage = error?.error_description ? error.error_description : error.message;
