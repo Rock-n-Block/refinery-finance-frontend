@@ -358,13 +358,6 @@ const TradeWrapper = (
               maxTo: MetamaskService.amountFromGwei(resurve1, +tokens.to.token.decimals),
             });
 
-            console.log(
-              'maxFrom:',
-              MetamaskService.amountFromGwei(resurve2, +tokens.from.token.decimals),
-              'maxTo:',
-              MetamaskService.amountFromGwei(resurve1, +tokens.to.token.decimals),
-            );
-
             if (isLiquidityMethod) {
               estimatedAmount = await this.context.metamaskService.callContractMethod(
                 'ROUTER',
