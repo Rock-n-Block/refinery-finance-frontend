@@ -404,20 +404,16 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                   <InputNumber
                     value={tokenFromQuantity}
                     placeholder="0"
-                    max={maxFrom && maxFrom < balanceFrom ? maxFrom : balanceFrom}
+                    // max={maxFrom && maxFrom < balanceFrom ? maxFrom : balanceFrom}
                     onChange={(value: number | string) =>
                       handleChangeTokensQuantity('from', +value)
                     }
                   />
-                  {balanceFrom ? (
+                  {balanceFrom && (
                     <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${balanceFrom}`}</div>
-                  ) : (
-                    ''
                   )}
-                  {maxFrom && +tokenFromQuantity > maxFrom ? (
+                  {maxFrom && +tokenFromQuantity > maxFrom && (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxFrom}`}</div>
-                  ) : (
-                    ''
                   )}
                 </div>
               </div>
@@ -471,20 +467,16 @@ const ChooseTokens: React.FC<IChooseTokens> = observer(
                     value={tokenToQuantity}
                     placeholder="0"
                     onChange={(value: number | string) => handleChangeTokensQuantity('to', +value)}
-                    max={maxTo && maxTo < balanceTo ? maxTo : balanceTo}
+                    // max={maxTo && maxTo < balanceTo ? maxTo : balanceTo}
                   />
-                  {balanceTo ? (
+                  {balanceTo && (
                     <div className="choose-tokens__balance text-sm text-gray text-med">{`Balance: ${balanceTo}`}</div>
-                  ) : (
-                    ''
                   )}
-                  {maxTo && +tokenToQuantity > maxTo ? (
+                  {maxTo && +tokenToQuantity > maxTo && (
                     <div className="choose-tokens__err text-red text-right">{`Maximum value is ${maxTo}`}</div>
-                  ) : (
-                    ''
                   )}
                 </div>
-              </div>{' '}
+              </div>
             </>
           ) : (
             <Button
