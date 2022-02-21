@@ -31,6 +31,11 @@ interface ITradeWrapper {
   transactionPath: string[];
 }
 
+interface IPathItem {
+  path: string[];
+  value: string;
+}
+
 const TradeWrapper = (
   Component: React.FC<any>,
   getExchangeMethod: 'quote' | 'getAmountOut',
@@ -115,40 +120,40 @@ const TradeWrapper = (
       amount: string | number,
       tokenFrom: IToken,
       tokenTo: IToken,
+      typeTo: boolean,
     ): Promise<string> {
       if (!tokenFrom || !tokenTo) return '0';
 
-      const tokenFromDec = +tokenFrom.decimals;
+      let bestSwapValue = '0';
+      const tokenDecimals = !typeTo ? +tokenFrom.decimals : +tokenTo.decimals;
       const pathVariants = await pathFinder(tokenFrom.address, tokenTo.address);
-      let lowestSwapValue = '0';
-
       if (pathVariants.length) {
-        const promisses = pathVariants.map(async (path) => {
-          try {
-            const value = await this.context.metamaskService.callContractMethod(
-              'ROUTER',
-              'getAmountsOut',
-              [MetamaskService.calcTransactionAmount(+amount, tokenFromDec), path],
-            );
-            return {
+        const promisses = pathVariants.map((path) => {
+          return this.context.metamaskService
+            .callContractMethod('ROUTER', !typeTo ? 'getAmountsOut' : 'getAmountsIn', [
+              MetamaskService.calcTransactionAmount(+amount, tokenDecimals),
               path,
-              value: value[value.length - 1],
-            };
-          } catch (e) {
-            return {
-              path: [''],
-              value: '0',
-            };
-          }
-        });
-        const pathsWithValue: { path: string[]; value: string }[] = await Promise.all(promisses);
-        const bestPath = pathsWithValue.sort((a, b) => Number(b.value) - Number(a.value))[0];
-        lowestSwapValue = bestPath.value;
+            ])
+            .then((value) => ({
+              path,
+              value: value[!typeTo ? value.length - 1 : 0],
+            }))
+            .catch(() => ({ path: [], value: '0' }));
+        }, []);
+
+        const pathsWithValue: IPathItem[] = await Promise.all(promisses);
+        const clearPaths = pathsWithValue.filter(({ value }) => value !== '0');
+
+        const bestPathItem = !typeTo
+          ? clearPaths.sort((a, b) => Number(b.value) - Number(a.value))[0]
+          : clearPaths.sort((a, b) => Number(a.value) - Number(b.value))[0];
+
+        bestSwapValue = bestPathItem.value;
         this.setState({
-          transactionPath: bestPath.path,
+          transactionPath: bestPathItem.path,
         });
       }
-      return lowestSwapValue;
+      return bestSwapValue;
     }
 
     async handleApproveTokens() {
@@ -305,6 +310,7 @@ const TradeWrapper = (
                 tokens.from.amount,
                 tokens.from.token,
                 tokens.to.token,
+                type === 'to',
               );
             }
 
@@ -373,16 +379,12 @@ const TradeWrapper = (
               );
             } else {
               estimatedAmount = await this.handleGetBestSwapValue(
-                tokens.from.amount,
+                tokens.to.amount,
                 tokens.from.token,
                 tokens.to.token,
+                type === 'to',
               );
             }
-            estimatedAmount = await this.handleGetBestSwapValue(
-              tokens.to.amount,
-              tokens.to.token,
-              tokens.from.token,
-            );
             this.setState({
               tokensData: {
                 from: {

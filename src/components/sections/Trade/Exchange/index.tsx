@@ -14,7 +14,7 @@ import './Exchange.scss';
 
 interface IExchange {
   tokensData: ITokens;
-  setTokensData: (value: ITokens) => void;
+  setTokensData: (value: ITokens, type?: 'from' | 'to') => void;
   setAllowanceFrom: (value: boolean) => void;
   setAllowanceTo: (value: boolean) => void;
   isAllowanceFrom: boolean;
@@ -93,6 +93,9 @@ const Exchange: React.FC<IExchange> = observer(
         }
       }
     };
+    // React.useEffect(() => {
+    //   console.log(tokensData.from.amount > maxFrom, tokensData.to.amount, maxTo);
+    // }, [maxFrom, maxTo, tokensData]);
 
     return (
       <>
@@ -124,6 +127,7 @@ const Exchange: React.FC<IExchange> = observer(
             <Button
               className="exchange__btn"
               onClick={handleSwap}
+              disabled={+tokensData.from.amount > +maxFrom || +tokensData.to.amount > +maxTo}
               loading={isLoadingExchange || isSwapping}
               loadingText={
                 // eslint-disable-next-line no-nested-ternary
@@ -164,7 +168,12 @@ const Exchange: React.FC<IExchange> = observer(
           tokensData.from.amount &&
           tokensResurves !== null &&
           user.address ? (
-            <Button className="exchange__btn" onClick={handleApproveTokens} loading={isApproving}>
+            <Button
+              className="exchange__btn"
+              onClick={handleApproveTokens}
+              loading={isApproving}
+              disabled={tokensData.to.amount > maxTo || tokensData.from.amount > maxFrom}
+            >
               <span className="text-white text-bold text-smd">Approve tokens</span>
             </Button>
           ) : (
