@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -74,6 +75,9 @@ const Exchange: React.FC<IExchange> = observer(
               settings.txDeadlineUtc,
             ],
           });
+          successNotification(
+            `Successful exchange of  ${tokensData.from.token.symbol} for  ${tokensData.to.token.symbol}`,
+          );
           setSwapping(false);
           delete localStorage['refinery-finance-getAmountOut'];
           setTokensData({
@@ -89,6 +93,7 @@ const Exchange: React.FC<IExchange> = observer(
           setPath([]);
         } catch (err) {
           clogError('swap err', err);
+          errorNotification('Something went wrong, check your wallet');
           setSwapping(false);
         }
       }

@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { clog, clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -84,6 +85,9 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
               settings.txDeadlineUtc,
             ],
           });
+          successNotification(
+            `Successfully adding liquidity  ${tokensData.from.token.symbol} for  ${tokensData.to.token.symbol}`,
+          );
           setLoading(false);
           delete localStorage['refinery-finance-quote'];
           setTokensData({
@@ -99,6 +103,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
         }
       } catch (err) {
         setLoading(false);
+        errorNotification('Something went wrong, check your wallet');
         clogError(err);
       }
     };

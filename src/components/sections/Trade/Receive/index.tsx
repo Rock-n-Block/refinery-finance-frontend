@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 
 import BnbImg from '@/assets/img/currency/unknown.svg';
+import { errorNotification, successNotification } from '@/components/atoms/Notification';
 import { clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -48,10 +49,12 @@ const Receive: React.FC = observer(() => {
             moment.utc().add(20, 'm').valueOf(),
           ],
         });
+        successNotification('Successfully removing  liquidity');
         history.push('/liquidity');
       }
     } catch (err) {
       setIsActiveTx(false);
+      errorNotification('Something went wrong, check your wallet');
       clogError('remove liquidity', err);
     }
   };

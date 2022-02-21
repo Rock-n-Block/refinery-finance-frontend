@@ -175,7 +175,7 @@
       display: flex;
       flex-flow: column nowrap;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
 
       & + & {
         margin-left: 10px;
@@ -200,6 +200,7 @@
     }
 
     &-title {
+      padding-bottom: 13px;
       margin-bottom: 13px;
     }
 
@@ -219,7 +220,7 @@
       // }
     }
     &-stake-btn {
-      margin-top: 10px;
+      // margin-top: 10px;
     }
   }
 
