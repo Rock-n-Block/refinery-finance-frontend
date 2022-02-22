@@ -9,8 +9,12 @@
 
   &__body {
     padding: 20px;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
+
+    // display: flex;
+    // flex-flow: row nowrap;
+    // justify-content: center;
+    div {
+      text-align: center;
+    }
   }
 }
