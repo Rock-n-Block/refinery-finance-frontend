@@ -4,3 +4,6 @@ export { default as SmartRefinerInitializable } from './SmartRefinerInitializabl
 export { default as RocketPropellant } from './RocketPropellant.json';
 export { default as RocketFactory } from './RocketFactory.json';
 export { default as MasterRefiner } from './MasterRefiner.json';
+export { default as Pair } from './Pair.json';
+export { default as Erc20 } from './Erc20.json';
+export { default as Router } from './Router.json';
