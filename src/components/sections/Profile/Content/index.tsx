@@ -66,11 +66,15 @@ const Content: React.FC = observer(() => {
                   </div>
                   <div className="profile-content__table__content__item">
                     <div className="text-purple text-bold text-smd hidden-desktop">Amount 1</div>
-                    <div className="text-smd">{(+swap.amount0In).toFixed(2)}</div>
+                    <div className="text-smd">
+                      {(+swap.amount0In !== 0 ? +swap.amount0In : +swap.amount1In).toFixed(2)}
+                    </div>
                   </div>
                   <div className="profile-content__table__content__item">
                     <div className="text-purple text-bold text-smd hidden-desktop">Amount 2</div>
-                    <div className="text-smd">{(+swap.amount1Out).toFixed(2)}</div>
+                    <div className="text-smd">
+                      {(+swap.amount1Out !== 0 ? +swap.amount1Out : +swap.amount0Out).toFixed(2)}
+                    </div>
                   </div>
                   <div className="profile-content__table__content__item text-smd">
                     <div className="text-purple text-bold text-smd hidden-desktop">Data</div>
