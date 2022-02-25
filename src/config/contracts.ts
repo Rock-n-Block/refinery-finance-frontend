@@ -11,7 +11,8 @@ import {
 
 export const contracts = {
   ROUTER: {
-    ADDRESS: '0x5758356b218602fF39F227205Db4A1aa07548f7a',
+    ADDRESS: '0x7DD7FAac86C987c56F5BE16d2f62379B4C588d93',
+    // ADDRESS: '0x5758356b218602fF39F227205Db4A1aa07548f7a',
     ABI: [
       {
         inputs: [
@@ -354,7 +355,8 @@ export const contracts = {
     ],
   },
   FACTORY: {
-    ADDRESS: '0x0176783aa9160c8fFA7E8f31F51dFbfFD63A8b1c',
+    ADDRESS: '0x7A55fd36019f1d1237B7F2b20D1eFcE64d405B98',
+    // ADDRESS: '0x0176783aa9160c8fFA7E8f31F51dFbfFD63A8b1c',
     ABI: RocketFactory,
   },
   ERC20: {
