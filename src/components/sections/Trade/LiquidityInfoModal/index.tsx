@@ -30,14 +30,12 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
   const getDeposites = React.useCallback(async () => {
     try {
       if (info?.address && user.address) {
-        let lpBalance = await metamaskService.callContractMethodFromNewContract(
+        const lpBalance = await metamaskService.callContractMethodFromNewContract(
           info?.address,
           contracts.PAIR.ABI,
           'balanceOf',
           [user.address],
         );
-
-        lpBalance = +lpBalance + 1000;
 
         const supply = await metamaskService.callContractMethodFromNewContract(
           info?.address,
@@ -45,18 +43,18 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
           'totalSupply',
         );
 
-        const percent = new BigNumber(lpBalance).dividedBy(new BigNumber(supply));
-
+        const percent = new BigNumber(lpBalance).dividedBy(new BigNumber(supply)).toString(10);
+        setShare(+percent * 100);
         const depos0 = new BigNumber(
           MetamaskService.calcTransactionAmount(+info.token0.balance, +info?.token0.decimals),
         )
           .multipliedBy(percent)
-          .toString(10);
+          .toFixed(0, 1);
         const depos1 = new BigNumber(
           MetamaskService.calcTransactionAmount(+info.token1.balance, +info?.token1.decimals),
         )
           .multipliedBy(percent)
-          .toString(10);
+          .toFixed(0, 1);
 
         setDeposit0(depos0);
         setDeposit1(depos1);
@@ -74,37 +72,37 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
     info?.token1.decimals,
   ]);
 
-  const handleGetShareOfPool = React.useCallback(() => {
-    if (info && deposit0 && deposit1) {
-      const resurve0 = MetamaskService.calcTransactionAmount(
-        +info?.token0.balance,
-        +info?.token0.decimals,
-      );
-      const resurve1 = MetamaskService.calcTransactionAmount(
-        +info?.token1.balance,
-        +info?.token1.decimals,
-      );
+  // const handleGetShareOfPool = React.useCallback(() => {
+  //   if (info && deposit0 && deposit1) {
+  //     const resurve0 = MetamaskService.calcTransactionAmount(
+  //       +info?.token0.balance,
+  //       +info?.token0.decimals,
+  //     );
+  //     const resurve1 = MetamaskService.calcTransactionAmount(
+  //       +info?.token1.balance,
+  //       +info?.token1.decimals,
+  //     );
 
-      const share1 = new BigNumber(deposit0)
-        .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit0))
-        .toString(10);
-      const share2 = new BigNumber(deposit1)
-        .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit1))
-        .toString(10);
+  //     const share1 = new BigNumber(deposit1)
+  //       .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit0))
+  //       .toString(10);
+  //     const share2 = new BigNumber(deposit0)
+  //       .dividedBy(new BigNumber(resurve0).plus(resurve1).plus(deposit1))
+  //       .toString(10);
 
-      const min = BigNumber.min(share1, share2).toString(10);
+  //     const min = BigNumber.min(share1, share2).toString(10);
 
-      setShare(min);
-    }
-  }, [deposit0, deposit1, info]);
+  //     setShare(+min * 100);
+  //   }
+  // }, [deposit0, deposit1, info]);
 
   React.useEffect(() => {
     getDeposites();
   }, [getDeposites]);
 
-  React.useEffect(() => {
-    handleGetShareOfPool();
-  }, [handleGetShareOfPool, deposit0, deposit1, info]);
+  // React.useEffect(() => {
+  //   handleGetShareOfPool();
+  // }, [handleGetShareOfPool, deposit0, deposit1, info]);
 
   return (
     <Modal
@@ -128,7 +126,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
             <div className="box-f-ai-c">
               <img src={UnknownImg} alt={info.token0.symbol} />
               <span>
-                {(+MetamaskService.amountFromGwei(deposit0, +info.token0.decimals)).toFixed()}
+                {(+MetamaskService.amountFromGwei(deposit0, +info.token0.decimals)).toFixed(5)}
               </span>
             </div>
           </div>
@@ -137,7 +135,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
             <div className="box-f-ai-c">
               <img src={UnknownImg} alt={info.token1.symbol} />
               <span>
-                {(+MetamaskService.amountFromGwei(deposit1, +info.token1.decimals)).toFixed()}
+                {(+MetamaskService.amountFromGwei(deposit1, +info.token1.decimals)).toFixed(5)}
               </span>
             </div>
           </div>
@@ -155,7 +153,7 @@ const LiquidityInfoModal: React.FC<ILiquidityInfoModal> = observer(({ info, hand
           </div>
           <div className="liquidity-info__row box-f-ai-c box-f-jc-sb text-purple text-smd">
             <span>Share of Pool</span>
-            <span>{(+share).toFixed(5)}%</span>
+            <span>{(+share).toFixed(2)}%</span>
           </div>
           <Button
             colorScheme="purple"

@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { getPairPrice } from '@/utils/getPairPrice';
 import { clog, clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -130,57 +131,77 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
             ),
           ).toString(10);
           const share1 = new BigNumber(token1)
-            .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token1))
+            .dividedBy(new BigNumber(tokensResurves['1']).plus(token1))
+            // .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token1))
             .toString(10);
+
           const share2 = new BigNumber(token2)
-            .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token2))
+            // .dividedBy(new BigNumber(tokensResurves['0']).plus(tokensResurves['1']).plus(token2))
+            .dividedBy(new BigNumber(tokensResurves['0']).plus(token2))
             .toString(10);
           const min = BigNumber.min(share1, share2).toString(10);
 
           setExchange((ex) => ({
             ...ex,
-            share: +min,
+            share: +min * 100,
           }));
 
-          metamaskService
-            .callContractMethod('ROUTER', 'getAmountsOut', [
-              MetamaskService.calcTransactionAmount(
-                tokensData.from.amount,
-                +tokensData.from.token.decimals,
-              ),
-              [tokensData.to.token.address, tokensData.from.token.address],
-            ])
-            .then((res) => {
-              if (tokensData.from.token) {
-                const amount = +MetamaskService.amountFromGwei(
-                  res[1],
-                  +tokensData.from.token?.decimals,
-                );
-                setExchange((data) => ({
-                  ...data,
-                  first: amount,
-                }));
-              }
-            });
-          metamaskService
-            .callContractMethod('ROUTER', 'getAmountsOut', [
-              MetamaskService.calcTransactionAmount(
-                tokensData.to.amount,
-                +tokensData.to.token.decimals,
-              ),
-              [tokensData.from.token.address, tokensData.to.token.address],
-            ])
-            .then((res) => {
-              if (tokensData.to.token) {
-                const amount = +MetamaskService.amountFromGwei(
-                  res[1],
-                  +tokensData.to.token?.decimals,
-                );
-                setExchange((data) => ({
-                  ...data,
-                  second: amount,
-                }));
-              }
+          // metamaskService;
+          //   .callContractMethod('ROUTER', 'getAmountsOut', [
+          //     MetamaskService.calcTransactionAmount(
+          //       tokensData.from.amount,
+          //       +tokensData.from.token.decimals,
+          //     ),
+          //     [tokensData.to.token.address, tokensData.from.token.address],
+          //   ])
+          //   .then((res) => {
+          //     if (tokensData.from.token) {
+          //       const amount = +MetamaskService.amountFromGwei(
+          //         res[1],
+          //         +tokensData.from.token?.decimals,
+          //       );
+
+          //       setExchange((data) => ({
+          //         ...data,
+          //         first: amount,
+          //       }));
+          //     }
+          //   });
+          // metamaskService
+          //   .callContractMethod('ROUTER', 'getAmountsOut', [
+          //     MetamaskService.calcTransactionAmount(
+          //       tokensData.to.amount,
+          //       +tokensData.to.token.decimals,
+          //     ),
+          //     [tokensData.from.token.address, tokensData.to.token.address],
+          //   ])
+          //   .then((res) => {
+          //     if (tokensData.to.token) {
+          //       const amount = +MetamaskService.amountFromGwei(
+          //         res[1],
+          //         +tokensData.to.token?.decimals,
+          //       );
+          //       setExchange((data) => ({
+          //         ...data,
+          //         second: amount,
+          //       }));
+          //     }
+          //   });
+
+          getPairPrice(tokensData.from.token.address, tokensData.to.token.address)
+            .then((prices) => {
+              setExchange((data) => ({
+                ...data,
+                first: prices[1],
+                second: prices[0],
+              }));
+            })
+            .catch(() => {
+              setExchange((data) => ({
+                ...data,
+                first: 0,
+                second: 0,
+              }));
             });
         } catch (err) {
           clogError(err);
@@ -261,7 +282,7 @@ const AddLiquidity: React.FC<IAddLiquidity> = observer(
                   <div className="text text-center text-purple add-liquidity__info-item-title">
                     {exchange.share < 0.01
                       ? '<0.01'
-                      : new BigNumber(exchange.share).toFixed(4).toString()}
+                      : new BigNumber(exchange.share).toFixed(2).toString()}
                     %
                   </div>
                 </Popover>

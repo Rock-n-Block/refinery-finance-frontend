@@ -71,7 +71,6 @@ const RemoveLiquidity: React.FC = observer(() => {
           approvedAddress: contracts.ROUTER.ADDRESS,
           tokenAddress: liquidityInfo?.address,
         });
-
         setTokensApproving(false);
         setTokensApprove(true);
       }
@@ -123,14 +122,14 @@ const RemoveLiquidity: React.FC = observer(() => {
         <div className="r-liquidity__content">
           <div className="r-liquidity__currency box-f-ai-c box-f-jc-sb">
             <div className="r-liquidity__currency-sum text-lmd">
-              {
-                +new BigNumber(
-                  MetamaskService.amountFromGwei(
-                    liquidityInfo.token0.deposited,
-                    +liquidityInfo.token0.decimals,
-                  ),
-                ).multipliedBy(percent / 100)
-              }
+              {new BigNumber(
+                MetamaskService.amountFromGwei(
+                  liquidityInfo.token0.deposited,
+                  +liquidityInfo.token0.decimals,
+                ),
+              )
+                .multipliedBy(percent / 100)
+                .toFixed(5, 1)}
             </div>
             <div className="box-f-ai-c r-liquidity__currency-item">
               <div className="text-smd text-upper">{liquidityInfo?.token0.symbol}</div>
@@ -139,16 +138,14 @@ const RemoveLiquidity: React.FC = observer(() => {
           </div>
           <div className="r-liquidity__currency box-f-ai-c box-f-jc-sb">
             <div className="r-liquidity__currency-sum text-lmd">
-              {
-                +new BigNumber(
-                  MetamaskService.amountFromGwei(
-                    liquidityInfo.token1.deposited,
-                    +liquidityInfo.token1.decimals,
-                  ),
-                )
-                  .multipliedBy(percent / 100)
-                  .toFixed(8)
-              }
+              {new BigNumber(
+                MetamaskService.amountFromGwei(
+                  liquidityInfo.token1.deposited,
+                  +liquidityInfo.token1.decimals,
+                ),
+              )
+                .multipliedBy(percent / 100)
+                .toFixed(5, 1)}
             </div>
             <div className="box-f-ai-c r-liquidity__currency-item">
               <div className="text-smd text-upper">{liquidityInfo?.token1.symbol}</div>
@@ -196,18 +193,18 @@ const RemoveLiquidity: React.FC = observer(() => {
                 address: liquidityInfo?.address,
                 lpTokens: new BigNumber(lpBalance)
                   .multipliedBy(new BigNumber(percent).dividedBy(100))
-                  .toString(10),
+                  .toFixed(0, 1),
                 token0: {
                   ...liquidityInfo?.token0,
                   receive: new BigNumber(liquidityInfo.token0.deposited)
                     .multipliedBy(new BigNumber(percent).dividedBy(100))
-                    .toString(10),
+                    .toFixed(0, 1),
                 },
                 token1: {
                   ...liquidityInfo?.token1,
-                  receive: +new BigNumber(liquidityInfo.token1.deposited)
+                  receive: new BigNumber(liquidityInfo.token1.deposited)
                     .multipliedBy(new BigNumber(percent).dividedBy(100))
-                    .toString(10),
+                    .toFixed(0, 1),
                 },
               },
             }}
