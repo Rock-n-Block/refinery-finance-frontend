@@ -5,14 +5,14 @@ import { observer } from 'mobx-react-lite';
 import moment from 'moment';
 
 import BnbImg from '@/assets/img/currency/unknown.svg';
+import { Button, Popover } from '@/components/atoms';
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { useWalletConnectorContext } from '@/services/MetamaskConnect';
+import MetamaskService from '@/services/web3';
+import { useMst } from '@/store';
+import { ILiquidityInfo } from '@/types';
 import { clogError } from '@/utils/logger';
 
-import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
-import MetamaskService from '../../../../services/web3';
-import { useMst } from '../../../../store';
-import { ILiquidityInfo } from '../../../../types';
-import { Button, Popover } from '../../../atoms';
 import { TradeBox } from '..';
 
 import './Receive.scss';
@@ -34,7 +34,6 @@ const Receive: React.FC = observer(() => {
     try {
       if (liquidityInfo && liquidityInfo?.token0.receive && liquidityInfo?.token1.receive) {
         setIsActiveTx(true);
-        const amount = await metamaskService.getRemoveAmout(liquidityInfo?.address);
 
         await metamaskService.createTransaction({
           method: 'removeLiquidity',
@@ -42,9 +41,9 @@ const Receive: React.FC = observer(() => {
           data: [
             liquidityInfo?.token0.address,
             liquidityInfo?.token1.address,
-            Number(liquidityInfo.lpTokens).toFixed(0),
-            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(+amount).toFixed(0),
-            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(+amount).toFixed(0),
+            liquidityInfo.lpTokens,
+            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(0.95).toFixed(0, 1),
+            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(0.95).toFixed(0, 1),
             user.address,
             moment.utc().add(20, 'm').valueOf(),
           ],
