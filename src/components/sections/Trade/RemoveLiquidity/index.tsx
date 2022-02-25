@@ -129,7 +129,7 @@ const RemoveLiquidity: React.FC = observer(() => {
                 ),
               )
                 .multipliedBy(percent / 100)
-                .toString(10)}
+                .toFixed(5, 1)}
             </div>
             <div className="box-f-ai-c r-liquidity__currency-item">
               <div className="text-smd text-upper">{liquidityInfo?.token0.symbol}</div>
@@ -145,7 +145,7 @@ const RemoveLiquidity: React.FC = observer(() => {
                 ),
               )
                 .multipliedBy(percent / 100)
-                .toString(10)}
+                .toFixed(5, 1)}
             </div>
             <div className="box-f-ai-c r-liquidity__currency-item">
               <div className="text-smd text-upper">{liquidityInfo?.token1.symbol}</div>
