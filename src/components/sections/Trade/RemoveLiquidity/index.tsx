@@ -71,7 +71,6 @@ const RemoveLiquidity: React.FC = observer(() => {
           approvedAddress: contracts.ROUTER.ADDRESS,
           tokenAddress: liquidityInfo?.address,
         });
-
         setTokensApproving(false);
         setTokensApprove(true);
       }

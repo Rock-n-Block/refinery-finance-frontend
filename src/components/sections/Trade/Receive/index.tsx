@@ -42,9 +42,9 @@ const Receive: React.FC = observer(() => {
           data: [
             liquidityInfo?.token0.address,
             liquidityInfo?.token1.address,
-            liquidityInfo.lpTokens,
-            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(amount).toFixed(0),
-            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(amount).toFixed(0),
+            Number(liquidityInfo.lpTokens).toFixed(0),
+            new BigNumber(liquidityInfo?.token0.receive).multipliedBy(+amount).toFixed(0),
+            new BigNumber(liquidityInfo?.token1.receive).multipliedBy(+amount).toFixed(0),
             user.address,
             moment.utc().add(20, 'm').valueOf(),
           ],

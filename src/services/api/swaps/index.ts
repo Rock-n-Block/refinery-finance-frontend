@@ -65,3 +65,29 @@ export const getAllPairs = async () => {
     return error;
   }
 };
+
+export const fetchPairsPrices = async () => {
+  try {
+    const { data } = await axios.post(TRADE_API, {
+      query: `
+      {
+        pairs {
+          name
+          id
+          token0 {
+            id
+          }
+          token1 {
+            id
+          }
+          token0Price
+          token1Price
+        }
+      }
+      `,
+    });
+    return data.data;
+  } catch (error) {
+    return error;
+  }
+};

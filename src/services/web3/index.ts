@@ -284,7 +284,6 @@ export default class MetamaskService {
       contracts.PAIR.ABI,
       'totalSupply',
     );
-
     return new BigNumber(balanceLp).div(totalLp).toString(10);
   }
 
