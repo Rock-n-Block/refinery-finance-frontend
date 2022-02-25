@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js/bignumber';
 import { observer } from 'mobx-react-lite';
 
 import { errorNotification, successNotification } from '@/components/atoms/Notification';
+import { getPairPrice } from '@/utils/getPairPrice';
 import { clog, clogError } from '@/utils/logger';
 
 import { useWalletConnectorContext } from '../../../../services/MetamaskConnect';
@@ -13,7 +14,6 @@ import { Button, Popover } from '../../../atoms';
 import { ChooseTokens, TradeBox } from '..';
 
 import './AddLiquidity.scss';
-import { getPairPrice } from '@/utils/getPairPrice';
 
 interface IAddLiquidity {
   tokensData: ITokens;
