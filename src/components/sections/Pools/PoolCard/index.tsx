@@ -3,10 +3,14 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
+import { useAprModal } from '@/hooks/pools/useAprModal';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
+import { getFullDisplayBalance, toBigNumber } from '@/utils';
+
+import 'antd/lib/select/style/css';
 
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
@@ -16,12 +20,8 @@ import CardFooter from './CardFooter';
 import CardSubtitle from './CardSubtitle';
 import CardTitle from './CardTitle';
 import EarnedSection from './EarnedSection';
-
-import { toBigNumber, getFullDisplayBalance } from '@/utils';
-import { useAprModal } from '@/hooks/pools/useAprModal';
 import { mockData } from './utils';
 
-import 'antd/lib/select/style/css';
 import './PoolCard.scss';
 
 export interface IPoolCard {

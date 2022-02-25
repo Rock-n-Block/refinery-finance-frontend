@@ -21,7 +21,7 @@ import {
   fetchUserStakeBalances,
 } from '@/store/pools';
 import { convertSharesToRefinery } from '@/store/pools/helpers';
-import { toBigNumber, getBalanceAmount } from '@/utils';
+import { getBalanceAmount, toBigNumber } from '@/utils';
 import { getPoolApr } from '@/utils/apr';
 import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils/constants';
 import { clog, clogError } from '@/utils/logger';

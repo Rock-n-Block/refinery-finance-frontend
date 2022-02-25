@@ -12,7 +12,7 @@ import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
-import { toBigNumber, getBalanceAmount, numberWithCommas } from '@/utils';
+import { getBalanceAmount, numberWithCommas, toBigNumber } from '@/utils';
 import { clog } from '@/utils/logger';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
@@ -93,7 +93,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
       earningTokenSymbol: tokens.rp1.symbol,
       earningTokenPrice,
       stakingTokenSymbol: lpSymbol,
-      stakingTokenPrice: stakingTokenPriceAsBN.toNumber(),
+      stakingTokenPrice: stakingTokenPriceAsBN.toFixed(),
       stakingTokenBalance,
     });
   };

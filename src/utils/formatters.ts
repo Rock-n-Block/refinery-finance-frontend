@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js/bignumber';
+
 import { getFullDisplayBalance } from './bignumberFormatters';
 
 export const numberWithCommas = (number: number): string => {

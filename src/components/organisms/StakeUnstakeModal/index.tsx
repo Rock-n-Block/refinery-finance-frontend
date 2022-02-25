@@ -13,7 +13,7 @@ import { useVaultUnstake } from '@/hooks/pools/useUnstakeVault';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { Precisions } from '@/types';
-import { getTokenUsdPrice, getBalanceAmountBN, getDecimalAmount } from '@/utils';
+import { getBalanceAmountBN, getDecimalAmount, getTokenUsdPrice } from '@/utils';
 import { BIG_ZERO, DEFAULT_TOKEN_POWER } from '@/utils/constants';
 import { clog } from '@/utils/logger';
 

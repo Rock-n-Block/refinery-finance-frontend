@@ -11,6 +11,7 @@ import {
   RecentProfitColumn,
   TotalStakedColumn,
 } from '@/components/sections/Pools/TableRow/Columns';
+import { useAprModal } from '@/hooks/pools/useAprModal';
 import { useTotalStaked } from '@/hooks/pools/useTotalStaked';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useBlock } from '@/services/web3/hooks';
@@ -18,8 +19,8 @@ import { useMst } from '@/store';
 import { getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
+import { getBalanceAmount, getFullDisplayBalance, numberWithCommas, toBigNumber } from '@/utils';
 import { BIG_ZERO } from '@/utils/constants';
-import { toBigNumber, getBalanceAmount, getFullDisplayBalance, numberWithCommas } from '@/utils';
 
 import { getPoolBlockInfo, mockData, useNonAutoVaultEarnings } from '../PoolCard/utils';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
@@ -30,7 +31,6 @@ import RecentProfit from './RecentProfit';
 import TableRowSubtitle from './TableRowSubtitle';
 import TableRowTitle from './TableRowTitle';
 
-import { useAprModal } from '@/hooks/pools/useAprModal';
 import './TableRow.scss';
 
 interface ITableRowProps {
@@ -132,7 +132,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
   const recentProfitToDisplay = recentProfit.toFixed(Precisions.shortToken);
 
   const convertedRecentProfit = useMemo(() => {
-    return recentProfit * refineryUsdPrice;
+    return recentProfit * Number(refineryUsdPrice);
   }, [recentProfit, refineryUsdPrice]);
   const convertedRecentProfitToDisplay = convertedRecentProfit.toFixed(Precisions.fiat);
 

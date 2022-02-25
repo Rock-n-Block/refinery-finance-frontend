@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js/bignumber';
+
 import { BIG_ZERO } from './constants';
 /**
  * Converts value to BigNumber. If it's `undefined` returns `new BigNumber(0)`

@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js/bignumber';
+
 import { Precisions } from '@/types';
+
 import { toBigNumber } from './toBigNumber';
 /**
  * Converts tokens amount to usd amount.

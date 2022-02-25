@@ -4,6 +4,7 @@ import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
 import { useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
+import { getApy } from '@/utils/compoundApy';
 import { feeFormatter } from '@/utils/formatters';
 import { getApy } from '@/utils/compoundApy';
 

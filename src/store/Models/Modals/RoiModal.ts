@@ -3,10 +3,10 @@ import { autorun } from 'mobx';
 import { getParent, Instance, types } from 'mobx-state-tree';
 
 import { Precisions } from '@/types';
+import { getBalanceAmountBN, toBigNumber } from '@/utils';
 import { getInterestBreakdown, getPrincipalForInterest, getRoi } from '@/utils/compoundApy';
 
 import RoiOptionsModel from './RoiOptions';
-import { toBigNumber, getBalanceAmountBN } from '@/utils';
 
 // Used to track/react which currency user is editing (i.e. USD amount or Token amount)
 export enum EditingCurrency {
@@ -120,11 +120,11 @@ const RoiStateModel = types
      * Handler for principal input when in USD mode.
      * @param principalAmountAsText can be 100, 1000 or 'My Balance' @see https://github.com/Rock-n-Block/refinery-finance-frontend/blob/869937bab8e98e9e0c47165b17fcdddf88da5961/src/components/molecules/RoiModal/index.tsx#L34
      */
-    const setPrincipalFromUSDValue = (principalAmountAsText: string | number) => {
+    const setPrincipalFromUSDValue = (principalAmountAsText: string | number | null) => {
       if (!parent.options) return;
       const { stakingTokenPrice, stakingTokenBalance } = parent.options;
 
-      let principalAmountBN = toBigNumber(principalAmountAsText);
+      let principalAmountBN = toBigNumber(principalAmountAsText || '0');
       if (principalAmountBN.isNaN()) {
         // if user cliked 'my balance'
         principalAmountBN = getBalanceAmountBN(
@@ -141,10 +141,10 @@ const RoiStateModel = types
     };
 
     // Handler for principal input when in Token mode
-    const setPrincipalFromTokenValue = (amount: string | number) => {
+    const setPrincipalFromTokenValue = (amount: string | number | null) => {
       if (!parent.options) return;
       const { stakingTokenPrice } = parent.options;
-      const principalAsUsdBN = new BigNumber(amount).times(stakingTokenPrice);
+      const principalAsUsdBN = new BigNumber(amount || '0').times(stakingTokenPrice);
       const principalAsUsdString = principalAsUsdBN.gt(0)
         ? principalAsUsdBN.toFixed(Precisions.fiat)
         : DEFAULT_PRINCIPAL_AS_USD;
@@ -186,7 +186,7 @@ const RoiStateModel = types
         });
         const hasInterest = !Number.isNaN(interestBreakdown[stakingDuration]);
         const roiTokens = hasInterest ? interestBreakdown[stakingDuration] : 0;
-        const roiAsUSD = hasInterest ? roiTokens * earningTokenPrice : 0;
+        const roiAsUSD = hasInterest ? roiTokens * Number(earningTokenPrice) : 0;
         const roiPercentage = hasInterest
           ? getRoi({
               amountEarned: roiAsUSD,

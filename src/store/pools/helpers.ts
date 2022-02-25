@@ -2,11 +2,11 @@ import BigNumber from 'bignumber.js/bignumber';
 
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import {
-  toBigNumber,
   getBalanceAmount,
   getBalanceAmountBN,
   getDecimalAmount,
   getFullDisplayBalance,
+  toBigNumber,
 } from '@/utils';
 import { BIG_ZERO } from '@/utils/constants';
 

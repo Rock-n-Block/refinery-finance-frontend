@@ -10,7 +10,7 @@ import useStakeFarms from '@/hooks/farms/useStakeFarms';
 import useUnstakeFarms from '@/hooks/farms/useUnstakeFarms';
 import { useMst } from '@/store';
 import { Precisions } from '@/types';
-import { getTokenUsdPrice, getBalanceAmountBN } from '@/utils';
+import { getBalanceAmountBN, getTokenUsdPrice } from '@/utils';
 import { BIG_ZERO, DEFAULT_TOKEN_POWER } from '@/utils/constants';
 import { clog, clogError } from '@/utils/logger';
 
