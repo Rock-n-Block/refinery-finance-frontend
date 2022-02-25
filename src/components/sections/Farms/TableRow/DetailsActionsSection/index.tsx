@@ -11,7 +11,7 @@ import { getAddress, getContractData } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { useFarmUserData } from '@/store/farms/hooks';
 import { FarmWithStakedValue, Precisions } from '@/types';
-import { getBalanceAmount } from '@/utils/formatters';
+import { getBalanceAmount } from '@/utils';
 import { clog, clogError } from '@/utils/logger';
 import { getAddLiquidityUrl } from '@/utils/urlConstructors';
 

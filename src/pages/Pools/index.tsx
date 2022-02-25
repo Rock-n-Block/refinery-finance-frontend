@@ -10,12 +10,13 @@ import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg
 import { Button } from '@/components/atoms';
 import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/organisms';
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
-import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
 import useRefresh from '@/hooks/useRefresh';
+import { getAprData } from '@/hooks/pools/useAprModal';
 import { getAddress } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { getFarmMode, getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { usePools, useSelectVaultData } from '@/store/pools/hooks';
+
 import { Pool, Token } from '@/types';
 import { BIG_ZERO } from '@/utils/constants';
 import { feeFormatter } from '@/utils/formatters';

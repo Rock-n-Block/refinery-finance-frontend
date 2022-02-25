@@ -89,13 +89,15 @@ export const useSelectVaultData = () => {
   };
 };
 
+interface IUseStakedValueReturnType {
+  hasStakedValue: boolean;
+  stakedValue: BigNumber;
+}
+
 export const useStakedValue = (
   farmMode: IPoolFarmingMode,
   pool: Pool,
-): {
-  hasStakedValue: boolean;
-  stakedValue: BigNumber;
-} => {
+): IUseStakedValueReturnType => {
   const {
     pricePerFullShare,
     userData: { userShares },
@@ -105,10 +107,10 @@ export const useStakedValue = (
 
   const hasStakedValue = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
-      return userShares ? userShares.gt(0) : false;
+      return userShares ? userShares.isGreaterThan(0) : false;
     }
     const stakedBalance = toBigNumber(userData?.stakedBalance);
-    return stakedBalance.gt(0);
+    return stakedBalance.isGreaterThan(0);
   }, [farmMode, userData?.stakedBalance, userShares]);
 
   const stakedValue = useMemo(() => getStakedValue(farmMode, pool, userShares, pricePerFullShare), [

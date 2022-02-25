@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/atoms';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { IPoolFarmingMode, Pool, Precisions } from '@/types';
-import { getFullDisplayBalance } from '@/utils/formatters';
+import { getFullDisplayBalance } from '@/utils';
 
 import CollectButton from '../../CollectButton';
 import { useNonAutoVaultEarnings } from '../utils';

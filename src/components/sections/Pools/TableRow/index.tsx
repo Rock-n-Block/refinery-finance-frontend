@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
@@ -16,18 +15,13 @@ import { useTotalStaked } from '@/hooks/pools/useTotalStaked';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useBlock } from '@/services/web3/hooks';
 import { useMst } from '@/store';
-import { getRefineryVaultEarnings, getStakingBalance } from '@/store/pools/helpers';
+import { getRefineryVaultEarnings } from '@/store/pools/helpers';
 import { useSelectVaultData, useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
 import { BIG_ZERO } from '@/utils/constants';
-import {
-  feeFormatter,
-  getBalanceAmount,
-  getFullDisplayBalance,
-  numberWithCommas,
-} from '@/utils/formatters';
+import { toBigNumber, getBalanceAmount, getFullDisplayBalance, numberWithCommas } from '@/utils';
 
-import { getAprData, getPoolBlockInfo, useNonAutoVaultEarnings } from '../PoolCard/utils';
+import { getPoolBlockInfo, mockData, useNonAutoVaultEarnings } from '../PoolCard/utils';
 import StakeUnstakeButtons from '../StakeUnstakeButtons';
 import StakingSection from '../StakingSection';
 
@@ -36,6 +30,7 @@ import RecentProfit from './RecentProfit';
 import TableRowSubtitle from './TableRowSubtitle';
 import TableRowTitle from './TableRowTitle';
 
+import { useAprModal } from '@/hooks/pools/useAprModal';
 import './TableRow.scss';
 
 interface ITableRowProps {
@@ -44,18 +39,8 @@ interface ITableRowProps {
   columns: any[];
 }
 
-const mockData = {
-  currencyToConvert: 'USD',
-};
-
 const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }) => {
-  const {
-    user,
-    modals,
-    pools: {
-      fees: { performanceFee: globalPerformanceFee },
-    },
-  } = useMst();
+  const { user, modals } = useMst();
   const [currentBlock] = useBlock();
   const {
     shouldShowBlockCountdown,
@@ -68,7 +53,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     pricePerFullShare,
     userData: { userShares, refineryAtLastUserAction },
   } = useSelectVaultData();
-  const { earningToken, stakingToken, apr, earningTokenPrice, stakingTokenPrice } = pool;
+  const { earningToken, stakingToken } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
   const [isOpenDetails, setOpenDetails] = useState(false);
@@ -86,31 +71,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     }
   };
 
-  const performanceFee =
-    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(globalPerformanceFee)) : 0;
-  const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(
-    pool,
-    performanceFee,
-  );
-
   const { hasStakedValue, stakedValue } = useStakedValue(farmMode, pool);
-  const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
-
-  const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
-    e.stopPropagation();
-    modals.roi.open({
-      isFarmPage: false,
-      autoCompoundFrequency,
-      performanceFee,
-      apr: apr || 0,
-      earningTokenSymbol: earningToken.symbol,
-      earningTokenPrice: earningTokenPrice || 0,
-      stakingTokenSymbol: stakingToken.symbol,
-      stakingTokenPrice: Number(stakingTokenPrice),
-      stakingTokenBalance: stakingTokenBalance.toString(),
-    });
-  };
-
   const { totalStakedBalanceToDisplay } = useTotalStaked(pool, farmMode);
 
   const stakedValueAsString = useMemo(
@@ -142,14 +103,10 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
   const hasConnectedWallet = Boolean(user.address);
 
   const convertedStakedValue = useMemo(() => {
-    return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
+    return toBigNumber(stakedValueAsString).times(refineryUsdPrice).toFixed(Precisions.fiat);
   }, [stakedValueAsString, refineryUsdPrice]);
-  const convertedStakedValueAsString = useMemo(
-    () => convertedStakedValue.toFixed(Precisions.fiat),
-    [convertedStakedValue],
-  );
 
-  const recentProfit = useMemo(() => {
+  const recentProfit: number = useMemo(() => {
     if (farmMode === PoolFarmingMode.auto) {
       const {
         // hasAutoEarnings,
@@ -178,6 +135,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
     return recentProfit * refineryUsdPrice;
   }, [recentProfit, refineryUsdPrice]);
   const convertedRecentProfitToDisplay = convertedRecentProfit.toFixed(Precisions.fiat);
+
+  const { earningsPercentageToDisplay, handleOpenAprModal } = useAprModal(farmMode, pool);
 
   return (
     <div className="pools-table-row">
@@ -213,7 +172,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
         <AprColumn
           name={columns[1].name}
           value={earningsPercentageToDisplay}
-          modalHandler={handleOpenRoiModal}
+          modalHandler={handleOpenAprModal}
         />
         <TotalStakedColumn
           value={totalStakedBalanceToDisplay.toString()}
@@ -279,7 +238,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farmMode, pool, columns }
                           {stakedValueAsString}
                         </div>
                         <div className="text-gray text-smd">
-                          ~{convertedStakedValueAsString} {mockData.currencyToConvert}
+                          ~{convertedStakedValue} {mockData.currencyToConvert}
                         </div>
                       </div>
                       <StakeUnstakeButtons pool={pool} />

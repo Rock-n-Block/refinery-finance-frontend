@@ -12,15 +12,10 @@ import useHarvestPool from '@/hooks/pools/useHarvestPool';
 import useStakePool from '@/hooks/pools/useStakePool';
 import { useMst } from '@/store';
 import { PoolFarmingMode } from '@/types';
-import { getFullDisplayBalance } from '@/utils/formatters';
+import { getFullDisplayBalance } from '@/utils';
 import { clogError } from '@/utils/logger';
 
 import './CollectModal.scss';
-
-// interface IStakeUnstakeModal {
-//   isVisible?: boolean;
-//   handleClose: () => void;
-// }
 
 const compoundHarvestChoices = [
   {

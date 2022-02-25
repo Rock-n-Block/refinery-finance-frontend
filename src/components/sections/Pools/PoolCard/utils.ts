@@ -4,7 +4,10 @@ import moment from 'moment';
 
 import { Pool } from '@/types';
 import { toBigNumber } from '@/utils';
-import { getApy } from '@/utils/compoundApy';
+
+export const mockData = {
+  currencyToConvert: 'USD',
+};
 
 export const durationFormatter = (timeLeft: number, separator = ' : '): string => {
   const duration = moment.duration(timeLeft);
@@ -17,42 +20,6 @@ export const secondsToHoursFormatter = (seconds: number | null | undefined): str
   const ms = seconds * 1000;
   const hours = moment.duration(ms).asHours();
   return `${hours}h`;
-};
-
-const AUTO_VAULT_COMPOUND_FREQUENCY = 5000;
-const MANUAL_POOL_AUTO_COMPOUND_FREQUENCY = 0;
-
-/**
- *
- * @param pool
- * @param performanceFee as decimal (200 / 100 = 2 or 45 / 100 = 0.45)
- * @returns
- */
-export const getAprData = (
-  pool: Pool,
-  performanceFee = 0,
-): {
-  apr: number;
-  autoCompoundFrequency: number;
-} => {
-  const { isAutoVault, apr = 0 } = pool;
-
-  //   Estimate & manual for now. 288 = once every 5 mins. We can change once we have a better sense of this
-  const autoCompoundFrequency = isAutoVault
-    ? AUTO_VAULT_COMPOUND_FREQUENCY
-    : MANUAL_POOL_AUTO_COMPOUND_FREQUENCY;
-
-  if (isAutoVault) {
-    const autoApr =
-      getApy({
-        apr: Number(apr),
-        compoundFrequency: AUTO_VAULT_COMPOUND_FREQUENCY,
-        days: 365,
-        performanceFee,
-      }) * 100;
-    return { apr: autoApr, autoCompoundFrequency };
-  }
-  return { apr, autoCompoundFrequency };
 };
 
 export const getPoolBlockInfo = (

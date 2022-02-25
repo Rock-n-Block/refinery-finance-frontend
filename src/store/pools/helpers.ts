@@ -1,14 +1,14 @@
 import BigNumber from 'bignumber.js/bignumber';
 
 import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
-import { toBigNumber } from '@/utils';
-import { BIG_ZERO } from '@/utils/constants';
 import {
+  toBigNumber,
   getBalanceAmount,
   getBalanceAmountBN,
   getDecimalAmount,
   getFullDisplayBalance,
-} from '@/utils/formatters';
+} from '@/utils';
+import { BIG_ZERO } from '@/utils/constants';
 
 type UserData =
   | Pool['userData']

@@ -6,7 +6,7 @@ import OpenLink from '@/components/atoms/OpenLink';
 import { useScannerUrl } from '@/hooks/useScannerUrl';
 import { getIpfsUrl } from '@/services/api/snapshot.org';
 import { Precisions, Token } from '@/types';
-import { addressShortener, getFullDisplayBalance, numberWithCommas } from '@/utils/formatters';
+import { addressShortener, getFullDisplayBalance, numberWithCommas } from '@/utils';
 
 import './DaoProposalVotes.scss';
 

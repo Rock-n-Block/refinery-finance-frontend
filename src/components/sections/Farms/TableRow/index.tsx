@@ -1,6 +1,5 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
-import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
@@ -13,7 +12,7 @@ import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
-import { getBalanceAmount, numberWithCommas } from '@/utils/formatters';
+import { toBigNumber, getBalanceAmount, numberWithCommas } from '@/utils';
 import { clog } from '@/utils/logger';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
@@ -53,7 +52,7 @@ const TokensPair: React.FC<ITokensPairProps> = ({ lpSymbol, token, quoteToken })
 
 const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const { modals } = useMst();
-  const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
+  const [isOpenDetails, setOpenDetails] = React.useState(false);
 
   const toggleDetails = () => {
     setOpenDetails((isOpen) => !isOpen);
@@ -75,16 +74,14 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
 
   const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
   const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
-  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(
+  const earningsToDisplay = getBalanceAmount(toBigNumber(earnings), tokens.rp1.decimals).toFixed(
     Precisions.shortToken,
   );
 
   const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
   const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
-  clog(earningTokenPrice, stakingTokenPriceAsBN.toString());
-  const stakingTokenBalance = new BigNumber(stakedBalance)
-    .plus(new BigNumber(tokenBalance))
-    .toString();
+  clog(earningTokenPrice, stakingTokenPriceAsBN.toFixed());
+  const stakingTokenBalance = toBigNumber(stakedBalance).plus(tokenBalance).toFixed();
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
