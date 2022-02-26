@@ -144,9 +144,9 @@ const TradeWrapper = (
         const pathsWithValue: IPathItem[] = await Promise.all(promisses);
         const clearPaths = pathsWithValue.filter(({ value }) => value !== '0');
 
-        const bestPathItem = !typeTo
-          ? clearPaths.sort((a, b) => Number(b.value) - Number(a.value))[0]
-          : clearPaths.sort((a, b) => Number(a.value) - Number(b.value))[0];
+        const [bestPathItem] = !typeTo
+          ? clearPaths.sort((a, b) => Number(b.value) - Number(a.value))
+          : clearPaths.sort((a, b) => Number(a.value) - Number(b.value));
 
         bestSwapValue = bestPathItem.value;
         this.setState({

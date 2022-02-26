@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
@@ -53,6 +54,14 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
 
   const { earningsPercentageToDisplay, handleOpenAprModal } = useAprModal(farmMode, pool);
 
+  const openAprCalculator = (
+    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
+  ) => {
+    if (!stakedValue.isNaN()) {
+      handleOpenAprModal(e);
+    }
+  };
+
   return (
     <div className={classNames('p-card box-shadow', className)}>
       <div className="p-card__head box-f-ai-c box-f-jc-sb">
@@ -84,8 +93,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         </span>
         <div
           className="p-card__apr-percent box-pointer"
-          onClick={handleOpenAprModal}
-          onKeyDown={handleOpenAprModal}
+          onClick={openAprCalculator}
           role="button"
           tabIndex={0}
         >

@@ -13,7 +13,6 @@ import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
 import { getBalanceAmount, numberWithCommas, toBigNumber } from '@/utils';
-import { clog } from '@/utils/logger';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
@@ -80,7 +79,6 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
 
   const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
   const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
-  clog(earningTokenPrice, stakingTokenPriceAsBN.toFixed());
   const stakingTokenBalance = toBigNumber(stakedBalance).plus(tokenBalance).toFixed();
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
@@ -121,8 +119,8 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
           </span>
           <div
             className="farms-table-row__apr-button"
-            onClick={handleOpenRoiModal}
-            onKeyDown={handleOpenRoiModal}
+            onClick={stakingTokenBalance !== '0' ? handleOpenRoiModal : undefined}
+            onKeyDown={stakingTokenBalance !== '0' ? handleOpenRoiModal : undefined}
             role="button"
             tabIndex={0}
           >

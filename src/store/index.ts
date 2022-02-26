@@ -3,7 +3,15 @@ import { Instance, types } from 'mobx-state-tree';
 
 // import { clogData } from '@/utils/logger';
 import { initialState as roiInitialState } from './Models/Modals/RoiModal';
-import { DaoModel, FarmsModel, ModalsModel, PoolsModel, TokensModel, UserModel } from './Models';
+import {
+  DaoModel,
+  FarmsModel,
+  ModalsModel,
+  PoolsModel,
+  TokenPricesModel,
+  TokensModel,
+  UserModel,
+} from './Models';
 
 const RootModel = types.model({
   user: UserModel,
@@ -12,6 +20,7 @@ const RootModel = types.model({
   pools: PoolsModel,
   farms: FarmsModel,
   dao: DaoModel,
+  tokenPrices: TokenPricesModel,
 });
 export const Store = RootModel.create({
   user: {
@@ -49,6 +58,7 @@ export const Store = RootModel.create({
     extended: [],
     imported: [],
   },
+  tokenPrices: {},
   pools: {
     userData: {
       isLoading: true,

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import nextId from 'react-id-generator';
 import { Link, NavLink } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
 import DaoImg from '@/assets/img/icons/dao.svg';
 import LogoImg from '@/assets/img/icons/logo.svg';
+import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
+import { Precisions } from '@/types';
 
 // import CollectiblesImg from '../../../assets/img/icons/collectibles.svg';
 import FarmsImg from '../../../assets/img/icons/farms.svg';
@@ -26,90 +28,93 @@ import './Menu.scss';
 interface IMenuProps {
   onClick?: () => void;
 }
-
+const navItems = [
+  // {
+  //   text: 'Home',
+  //   link: '/',
+  //   img: HomeImg,
+  // },
+  {
+    text: 'Trade',
+    link: '/',
+    activePaths: [
+      '/',
+      '/liquidity',
+      '/liquidity/settings',
+      '/liquidity/history',
+      '/liquidity/find',
+      '/liquidity/add',
+      '/liquidity/remove',
+      '/liquidity/receive',
+      '/bridge',
+      '/settings',
+      '/history',
+    ],
+    img: TradeImg,
+  },
+  // {
+  //   text: 'Trade',
+  //   link: '/trade/swap',
+  //   activePaths: [
+  //     '/trade/swap',
+  //     '/trade/liquidity',
+  //     '/trade/liquidity/settings',
+  //     '/trade/liquidity/history',
+  //     '/trade/liquidity/find',
+  //     '/trade/liquidity/add',
+  //     '/trade/liquidity/remove',
+  //     '/trade/liquidity/receive',
+  //     '/trade/bridge',
+  //     '/trade/swap/settings',
+  //     '/trade/swap/history',
+  //   ],
+  //   img: TradeImg,
+  // },
+  {
+    text: 'Farms',
+    link: '/farms',
+    img: FarmsImg,
+  },
+  // {
+  //   text: 'Lottery',
+  //   link: '/lottery',
+  //   img: LotteryImg,
+  // },
+  {
+    text: 'Pools',
+    link: '/pools',
+    img: PoolsImg,
+  },
+  // {
+  //   text: 'Collectibles',
+  //   link: '/collectibles',
+  //   img: CollectiblesImg,
+  // },
+  {
+    text: ' Profile',
+    link: '/profile',
+    img: TeamsImg,
+  },
+  // {
+  //   text: 'Teams & Profile',
+  //   link: '/teams',
+  //   img: TeamsImg,
+  // },
+  {
+    text: 'DAO',
+    link: '/dao',
+    img: DaoImg,
+  },
+];
 const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
   const { connect } = useWalletConnectorContext();
   const { user } = useMst();
-  const navItems = [
-    // {
-    //   text: 'Home',
-    //   link: '/',
-    //   img: HomeImg,
-    // },
-    {
-      text: 'Trade',
-      link: '/',
-      activePaths: [
-        '/',
-        '/liquidity',
-        '/liquidity/settings',
-        '/liquidity/history',
-        '/liquidity/find',
-        '/liquidity/add',
-        '/liquidity/remove',
-        '/liquidity/receive',
-        '/bridge',
-        '/settings',
-        '/history',
-      ],
-      img: TradeImg,
-    },
-    // {
-    //   text: 'Trade',
-    //   link: '/trade/swap',
-    //   activePaths: [
-    //     '/trade/swap',
-    //     '/trade/liquidity',
-    //     '/trade/liquidity/settings',
-    //     '/trade/liquidity/history',
-    //     '/trade/liquidity/find',
-    //     '/trade/liquidity/add',
-    //     '/trade/liquidity/remove',
-    //     '/trade/liquidity/receive',
-    //     '/trade/bridge',
-    //     '/trade/swap/settings',
-    //     '/trade/swap/history',
-    //   ],
-    //   img: TradeImg,
-    // },
-    {
-      text: 'Farms',
-      link: '/farms',
-      img: FarmsImg,
-    },
-    // {
-    //   text: 'Lottery',
-    //   link: '/lottery',
-    //   img: LotteryImg,
-    // },
-    {
-      text: 'Pools',
-      link: '/pools',
-      img: PoolsImg,
-    },
-    // {
-    //   text: 'Collectibles',
-    //   link: '/collectibles',
-    //   img: CollectiblesImg,
-    // },
-    {
-      text: ' Profile',
-      link: '/profile',
-      img: TeamsImg,
-    },
-    // {
-    //   text: 'Teams & Profile',
-    //   link: '/teams',
-    //   img: TeamsImg,
-    // },
-    {
-      text: 'DAO',
-      link: '/dao',
-      img: DaoImg,
-    },
-  ];
 
-  const [isWalletModalVisible, setWalletModalVisible] = React.useState<boolean>(false);
+  const [isWalletModalVisible, setWalletModalVisible] = React.useState(false);
+  const { tokenUsdPrice } = useRefineryUsdPrice();
+  const priceToDisplay = useMemo(() => `$${Number(tokenUsdPrice).toFixed(Precisions.shortToken)}`, [
+    tokenUsdPrice,
+  ]);
 
   return (
     <>
@@ -157,7 +162,7 @@ const Menu: React.FC<IMenuProps> = observer(({ onClick }) => {
         </div>
         <div className="menu__balance box-purple-l box-f-ai-c">
           <img src={LogoMiniImg} alt="refinery finance" className="menu__balance-img" />
-          <span className="text-purple">$37.166</span>
+          <span className="text-purple">{priceToDisplay}</span>
         </div>
         <div className="menu__socials box-f-ai-c">
           <a href="/" className="menu__socials-item menu__socials-item-tg box-f-c">
