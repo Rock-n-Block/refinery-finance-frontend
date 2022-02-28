@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
@@ -72,7 +73,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const [lpSymbolWithoutLPString] = lpSymbol.split(' ');
 
   const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
-  const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
+  const { earnings = '0', stakedBalance, tokenBalance = '' } = userData || {};
   const earningsToDisplay = getBalanceAmount(toBigNumber(earnings), tokens.rp1.decimals).toFixed(
     Precisions.shortToken,
   );
@@ -83,11 +84,15 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
+    if (stakingTokenBalance === 'NaN') {
+      // if user has opened roi modal before loading stakingToken balance
+      return;
+    }
     modals.roi.open({
       isFarmPage: true,
       autoCompoundFrequency: 0, // is not used for farms
       performanceFee: 0, // is not used for farms
-      apr,
+      apr: 13, // TODO: somehow fetch APR
       earningTokenSymbol: tokens.rp1.symbol,
       earningTokenPrice,
       stakingTokenSymbol: lpSymbol,
@@ -119,8 +124,7 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
           </span>
           <div
             className="farms-table-row__apr-button"
-            onClick={stakingTokenBalance !== '0' ? handleOpenRoiModal : undefined}
-            onKeyDown={stakingTokenBalance !== '0' ? handleOpenRoiModal : undefined}
+            onClick={handleOpenRoiModal}
             role="button"
             tabIndex={0}
           >

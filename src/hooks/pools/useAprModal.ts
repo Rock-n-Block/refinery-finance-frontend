@@ -7,7 +7,7 @@ import { IPoolFarmingMode, Pool, PoolFarmingMode } from '@/types';
 import { getApy } from '@/utils/compoundApy';
 import { feeFormatter } from '@/utils/formatters';
 
-import { useRefineryUsdPrice } from '../useTokenUsdPrice';
+// import { useRefineryUsdPrice } from '../useTokenUsdPrice';
 
 const AUTO_VAULT_COMPOUND_FREQUENCY = 5000;
 const MANUAL_POOL_AUTO_COMPOUND_FREQUENCY = 0;
@@ -57,7 +57,9 @@ export const useAprModal = (farmMode: IPoolFarmingMode, pool: Pool) => {
   const {
     earningToken,
     stakingToken,
-    // apr, earningTokenPrice, stakingTokenPrice // TODO: use it
+    // apr, // TODO: use it
+    earningTokenPrice = '0',
+    stakingTokenPrice = '0',
   } = pool;
   const performanceFee =
     farmMode === PoolFarmingMode.auto ? Number(feeFormatter(globalPerformanceFee)) : 0;
@@ -69,10 +71,10 @@ export const useAprModal = (farmMode: IPoolFarmingMode, pool: Pool) => {
   const { stakedValue } = useStakedValue(farmMode, pool);
   const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
 
-  const { tokenUsdPrice } = useRefineryUsdPrice();
+  // const { tokenUsdPrice } = useRefineryUsdPrice();
 
   // console.log({
-  //   apr,
+  //   // apr,
   //   earningTokenPrice,
   //   stakingTokenPrice,
   // });
@@ -86,20 +88,21 @@ export const useAprModal = (farmMode: IPoolFarmingMode, pool: Pool) => {
         performanceFee,
         apr: 13, // TODO: somehow fetch apr (github actions) apr || 0,   <----
         earningTokenSymbol: earningToken.symbol,
-        earningTokenPrice: '10', //                                      <----
+        earningTokenPrice, //                                      <----
         stakingTokenSymbol: stakingToken.symbol,
-        stakingTokenPrice: tokenUsdPrice, //                             <---- 12.0529 (RP1 -> USDT)
+        stakingTokenPrice, //                             <---- 12.0529 (RP1 -> USDT)
         stakingTokenBalance: stakingTokenBalance.toFixed(),
       });
     },
     [
       autoCompoundFrequency,
       earningToken.symbol,
+      earningTokenPrice,
       modals.roi,
       performanceFee,
       stakingToken.symbol,
       stakingTokenBalance,
-      tokenUsdPrice,
+      stakingTokenPrice,
     ],
   );
 

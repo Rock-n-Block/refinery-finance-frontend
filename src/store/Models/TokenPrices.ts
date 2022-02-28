@@ -1,5 +1,8 @@
 import { types } from 'mobx-state-tree';
 
+import { getPairPrice } from '@/utils/getPairPrice';
+import { clog } from '@/utils/logger';
+
 const TokenPriceValueModel = types.model({
   id: types.identifier,
   value: types.string,
@@ -37,8 +40,21 @@ const TokenPricesModel = types
       // TODO: on update of rates
     };
 
+    const fetchUsdPrice = async (path: [string, string]) => {
+      try {
+        const [amountFrom, amountTo] = await getPairPrice(...path);
+        setTokenPrice(...path, amountTo);
+        setTokenPrice(...(path.reverse() as [string, string]), amountFrom);
+        return amountTo;
+      } catch (err) {
+        clog(err);
+        return undefined;
+      }
+    };
+
     return {
       setTokenPrice,
+      fetchUsdPrice,
     };
   })
   .views((self) => {
