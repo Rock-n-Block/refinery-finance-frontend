@@ -4,10 +4,20 @@ import { contracts } from './contracts';
 
 const NO_LOGO = 'https://kovan.etherscan.io/images/main/empty-token.png';
 
-export const tokens: Record<
-  'tst' | 'rp1' | 'fuel' | 'wbnb' | 'tmpt' | 'bbshk' | 'busd' | 'mana' | 'avoog' | 'ugbg',
-  Token
-> = {
+export type TTokenKey =
+  | 'tst'
+  | 'rp1'
+  | 'fuel'
+  | 'wbnb'
+  | 'tmpt'
+  | 'bbshk'
+  | 'usdt'
+  | 'busd'
+  | 'mana'
+  | 'avoog'
+  | 'ugbg';
+
+export const tokens: Record<TTokenKey, Token> = {
   tst: {
     symbol: 'TST',
     address: {
@@ -57,7 +67,8 @@ export const tokens: Record<
   bbshk: {
     symbol: 'BBSHK',
     address: {
-      42: '0xF1776D2e185151FC178ecd9D9E8304eBB0922e7b',
+      42: '0xa37aeb4daa87ebe5d469cc786f6b008306459e23',
+      // '0xF1776D2e185151FC178ecd9D9E8304eBB0922e7b',
     },
     decimals: 18,
     projectLink: 'https://www.example.com/',
@@ -94,6 +105,15 @@ export const tokens: Record<
     symbol: 'UGBG',
     address: {
       42: '0x426EBD1856E8dB98c3E1e79262a6615f9F6c61a0',
+    },
+    decimals: 18,
+    projectLink: 'https://www.example.com/',
+    logoURI: NO_LOGO,
+  },
+  usdt: {
+    symbol: 'USDT',
+    address: {
+      42: '0x7ce8e7595CD474D859f5d00c4E6a63228004F701',
     },
     decimals: 18,
     projectLink: 'https://www.example.com/',

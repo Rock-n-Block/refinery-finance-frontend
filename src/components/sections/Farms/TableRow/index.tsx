@@ -1,6 +1,6 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
-import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
@@ -13,8 +13,7 @@ import { useLpTokenPrice } from '@/hooks/farms/useFarmsPrices';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { FarmWithStakedValue, Precisions, Token } from '@/types';
-import { getBalanceAmount, numberWithCommas } from '@/utils/formatters';
-import { clog } from '@/utils/logger';
+import { getBalanceAmount, numberWithCommas, toBigNumber } from '@/utils';
 
 import { LiquidityPopover, MultiplierPopover } from '../Popovers';
 
@@ -53,7 +52,7 @@ const TokensPair: React.FC<ITokensPairProps> = ({ lpSymbol, token, quoteToken })
 
 const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const { modals } = useMst();
-  const [isOpenDetails, setOpenDetails] = React.useState<boolean>(false);
+  const [isOpenDetails, setOpenDetails] = React.useState(false);
 
   const toggleDetails = () => {
     setOpenDetails((isOpen) => !isOpen);
@@ -74,29 +73,30 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
   const [lpSymbolWithoutLPString] = lpSymbol.split(' ');
 
   const { userData, token, quoteToken, multiplier, liquidity, apr = 0 } = farm;
-  const { earnings = '0', stakedBalance = '0', tokenBalance = '0' } = userData || {};
-  const earningsToDisplay = getBalanceAmount(new BigNumber(earnings), tokens.rp1.decimals).toFixed(
+  const { earnings = '0', stakedBalance, tokenBalance = '' } = userData || {};
+  const earningsToDisplay = getBalanceAmount(toBigNumber(earnings), tokens.rp1.decimals).toFixed(
     Precisions.shortToken,
   );
 
   const { tokenUsdPrice: earningTokenPrice } = useRefineryUsdPrice();
   const stakingTokenPriceAsBN = useLpTokenPrice(lpSymbol);
-  clog(earningTokenPrice, stakingTokenPriceAsBN.toString());
-  const stakingTokenBalance = new BigNumber(stakedBalance)
-    .plus(new BigNumber(tokenBalance))
-    .toString();
+  const stakingTokenBalance = toBigNumber(stakedBalance).plus(tokenBalance).toFixed();
 
   const handleOpenRoiModal = (e: React.MouseEvent | React.KeyboardEvent): void => {
     e.stopPropagation();
+    if (stakingTokenBalance === 'NaN') {
+      // if user has opened roi modal before loading stakingToken balance
+      return;
+    }
     modals.roi.open({
       isFarmPage: true,
       autoCompoundFrequency: 0, // is not used for farms
       performanceFee: 0, // is not used for farms
-      apr,
+      apr: 13, // TODO: somehow fetch APR
       earningTokenSymbol: tokens.rp1.symbol,
       earningTokenPrice,
       stakingTokenSymbol: lpSymbol,
-      stakingTokenPrice: stakingTokenPriceAsBN.toNumber(),
+      stakingTokenPrice: stakingTokenPriceAsBN.toFixed(),
       stakingTokenBalance,
     });
   };
@@ -125,7 +125,6 @@ const TableRow: React.FC<ITableRowProps> = observer(({ farm }) => {
           <div
             className="farms-table-row__apr-button"
             onClick={handleOpenRoiModal}
-            onKeyDown={handleOpenRoiModal}
             role="button"
             tabIndex={0}
           >

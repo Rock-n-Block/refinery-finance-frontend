@@ -3,8 +3,8 @@ import { autorun } from 'mobx';
 import { getParent, Instance, types } from 'mobx-state-tree';
 
 import { Precisions } from '@/types';
+import { getBalanceAmountBN, toBigNumber } from '@/utils';
 import { getInterestBreakdown, getPrincipalForInterest, getRoi } from '@/utils/compoundApy';
-import { getBalanceAmount } from '@/utils/formatters';
 
 import RoiOptionsModel from './RoiOptions';
 
@@ -116,32 +116,35 @@ const RoiStateModel = types
       self.controls.mode = CalculatorMode.ROI_BASED_ON_PRINCIPAL;
     };
 
-    // Handler for principal input when in USD mode
-    const setPrincipalFromUSDValue = (principalAmountAsText: string | number) => {
+    /**
+     * Handler for principal input when in USD mode.
+     * @param principalAmountAsText can be 100, 1000 or 'My Balance' @see https://github.com/Rock-n-Block/refinery-finance-frontend/blob/869937bab8e98e9e0c47165b17fcdddf88da5961/src/components/molecules/RoiModal/index.tsx#L34
+     */
+    const setPrincipalFromUSDValue = (principalAmountAsText: string | number | null) => {
       if (!parent.options) return;
       const { stakingTokenPrice, stakingTokenBalance } = parent.options;
-      const principalAmount = Number(principalAmountAsText);
 
-      let amount: number;
-      if (Number.isNaN(principalAmount)) {
-        amount = getBalanceAmount(new BigNumber(stakingTokenBalance).times(stakingTokenPrice));
-      } else {
-        amount = principalAmount;
+      let principalAmountBN = toBigNumber(principalAmountAsText || '0');
+      if (principalAmountBN.isNaN()) {
+        // if user cliked 'my balance'
+        principalAmountBN = getBalanceAmountBN(
+          toBigNumber(stakingTokenBalance).times(stakingTokenPrice),
+        );
       }
 
-      const principalAsTokenBN = new BigNumber(amount).div(stakingTokenPrice);
-      const principalAsToken = principalAsTokenBN.gt(0)
+      const principalAsTokenBN = principalAmountBN.dividedBy(stakingTokenPrice);
+      const principalAsToken = principalAsTokenBN.isGreaterThan(0)
         ? principalAsTokenBN.toFixed(Precisions.token)
         : DEFAULT_PRINCIPAL_AS_TOKEN;
 
-      setPrincipal(String(amount), principalAsToken);
+      setPrincipal(principalAmountBN.toFixed(), principalAsToken);
     };
 
     // Handler for principal input when in Token mode
-    const setPrincipalFromTokenValue = (amount: string | number) => {
+    const setPrincipalFromTokenValue = (amount: string | number | null) => {
       if (!parent.options) return;
       const { stakingTokenPrice } = parent.options;
-      const principalAsUsdBN = new BigNumber(amount).times(stakingTokenPrice);
+      const principalAsUsdBN = new BigNumber(amount || '0').times(stakingTokenPrice);
       const principalAsUsdString = principalAsUsdBN.gt(0)
         ? principalAsUsdBN.toFixed(Precisions.fiat)
         : DEFAULT_PRINCIPAL_AS_USD;
@@ -153,7 +156,7 @@ const RoiStateModel = types
     const setTargetRoi = (amount: string | number) => {
       if (!parent.options) return;
       const { earningTokenPrice } = parent.options;
-      const targetRoiAsTokens = new BigNumber(amount).div(earningTokenPrice);
+      const targetRoiAsTokens = new BigNumber(amount).dividedBy(earningTokenPrice);
 
       self.data.roiUSD = Number(amount);
       self.data.roiTokens = targetRoiAsTokens.isNaN() ? 0 : targetRoiAsTokens.toNumber();
@@ -183,7 +186,7 @@ const RoiStateModel = types
         });
         const hasInterest = !Number.isNaN(interestBreakdown[stakingDuration]);
         const roiTokens = hasInterest ? interestBreakdown[stakingDuration] : 0;
-        const roiAsUSD = hasInterest ? roiTokens * earningTokenPrice : 0;
+        const roiAsUSD = hasInterest ? roiTokens * Number(earningTokenPrice) : 0;
         const roiPercentage = hasInterest
           ? getRoi({
               amountEarned: roiAsUSD,
@@ -220,7 +223,7 @@ const RoiStateModel = types
         const principalUSD = !Number.isNaN(principalForExpectedRoi[stakingDuration])
           ? principalForExpectedRoi[stakingDuration]
           : 0;
-        const principalToken = new BigNumber(principalUSD).div(stakingTokenPrice);
+        const principalToken = new BigNumber(principalUSD).dividedBy(stakingTokenPrice);
         const roiPercentage = getRoi({
           amountEarned: roiUSD,
           amountInvested: principalUSD,

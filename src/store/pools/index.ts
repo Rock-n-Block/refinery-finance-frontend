@@ -1,12 +1,37 @@
 import BigNumber from 'bignumber.js/bignumber';
 
 // import { convertSharesToRefinery } from './helpers';
-import { pools as poolsConfig } from '@/config';
+import { pools as poolsConfig, tokens } from '@/config';
 import { SmartRefinerInitializable as smartRefinerInitializableAbi } from '@/config/abi';
 import { metamaskService } from '@/services/MetamaskConnect';
 import { getAddress, getContract, getContractData } from '@/services/web3/contractHelpers';
 import { BIG_ZERO } from '@/utils/constants';
 import { multicall } from '@/utils/multicall';
+
+import rootStore from '..';
+
+export const fetchPoolsTokensPrices = async () => {
+  const set = new Set<string>();
+  poolsConfig.forEach(({ stakingToken, earningToken }) => {
+    const stakingTokenAddress = getAddress(stakingToken.address);
+    const earningTokenAddress = getAddress(earningToken.address);
+    set.add(stakingTokenAddress);
+    set.add(earningTokenAddress);
+  });
+
+  const tokensArray = Array.from(set);
+  const pricesArr = await Promise.all(
+    tokensArray.map((tokenAddress) => {
+      return rootStore.tokenPrices.fetchUsdPrice([tokenAddress, getAddress(tokens.usdt.address)]);
+    }),
+  );
+  return pricesArr.reduce((accumulator, priceValue, index) => {
+    return {
+      ...accumulator,
+      [tokensArray[index].toLowerCase()]: priceValue?.toString(),
+    };
+  }, {} as Record<string, string>);
+};
 
 export const fetchPoolsBlockLimits = async (): Promise<
   {

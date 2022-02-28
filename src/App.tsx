@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
 import { MetamaskErrModal, RoiModal } from './components/molecules';
 import { Header } from './components/sections';
+import { useRefineryUsdPrice } from './hooks/useTokenUsdPrice';
 import {
   // CollectiblesPage,
   // CreateProfilePage,
@@ -25,12 +26,17 @@ import './styles/index.scss';
 const App: React.FC = observer(() => {
   const { tokens } = useMst();
 
-  React.useEffect(() => {
+  useEffect(() => {
     tokens.getTokens('default');
     tokens.getTokens('top');
     tokens.getTokens('extended');
     tokens.getTokens('imported');
   }, [tokens]);
+
+  const { fetchUsdPrice } = useRefineryUsdPrice();
+  useEffect(() => {
+    fetchUsdPrice();
+  }, [fetchUsdPrice]);
 
   return (
     <div className="ref-finance">

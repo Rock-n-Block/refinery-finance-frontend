@@ -70,7 +70,7 @@ export const getInterestBreakdown = ({
 }: {
   principalInUSD: number;
   apr: number;
-  earningTokenPrice: number;
+  earningTokenPrice: string;
   compoundFrequency?: number;
   performanceFee?: number;
 }): number[] => {
@@ -81,13 +81,13 @@ export const getInterestBreakdown = ({
 
   // special handling for tokens like tBTC or BIFI where the daily token rewards for $1000 dollars will be less than 0.001 of that token
   // and also cause rounding errors
-  const isHighValueToken = Math.round(earningTokenPrice / 1000) > 0;
+  const isHighValueToken = Math.round(Number(earningTokenPrice) / 1000) > 0;
   const roundingDecimalsNew = isHighValueToken ? 5 : 3;
 
   return DAYS_TO_CALCULATE_AGAINST.map((days) => {
     const daysAsDecimalOfYear = days / 365;
     // Calculate the starting TOKEN balance with a dollar balance of principalInUSD.
-    const principal = principalInUSD / earningTokenPrice;
+    const principal = principalInUSD / Number(earningTokenPrice);
     let interestEarned = principal * aprAsDecimal * (days / 365);
     if (timesCompounded !== 0) {
       // This is a translation of the typical mathematical compounding APY formula. Details here: https://www.calculatorsoup.com/calculators/financial/compound-interest-calculator.php

@@ -1,10 +1,15 @@
+import { useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js/bignumber';
 
+import { tokens } from '@/config';
+import { getAddress } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';
 import { Farm } from '@/types';
+import { getBalanceAmount } from '@/utils';
 import { BIG_ZERO } from '@/utils/constants';
-import { getBalanceAmount } from '@/utils/formatters';
-import { clog } from '@/utils/logger';
+
+import { useRefineryUsdPrice } from '../useTokenUsdPrice';
+// import { clog } from '@/utils/logger';
 
 export const useFarmFromLpSymbol = (lpSymbol: string): Farm => {
   const { farms } = useMst();
@@ -21,10 +26,21 @@ export const useFarmFromPid = (pid: number): Farm => {
 // Return the base token price for a farm, from a given pid
 export const useBusdPriceFromPid = (pid: number): BigNumber => {
   const farm = useFarmFromPid(pid);
-  if (farm.token?.busdPrice) {
-    return new BigNumber(farm.token.busdPrice);
-  }
-  return BIG_ZERO;
+  const { tokenUsdPrice, fetchUsdPrice } = useRefineryUsdPrice({
+    tokenAddress1: getAddress(farm.token.address),
+    tokenAddress2: getAddress(tokens.usdt.address),
+  });
+  const price = useMemo(() => {
+    // if (farm.token?.busdPrice) {
+    //   return new BigNumber(farm.token.busdPrice);
+    // }
+    return new BigNumber(tokenUsdPrice);
+  }, [tokenUsdPrice]);
+
+  useEffect(() => {
+    fetchUsdPrice();
+  }, [fetchUsdPrice]);
+  return price;
 };
 
 export const useLpTokenPrice = (symbol: string) => {
@@ -39,9 +55,14 @@ export const useLpTokenPrice = (symbol: string) => {
     const overallValueOfAllTokensInFarm = valueOfBaseTokenInFarm.times(2);
     // Divide total value of all tokens, by the number of LP tokens
     const totalLpTokens = getBalanceAmount(new BigNumber(farm.lpTotalSupply));
-    lpTokenPrice = overallValueOfAllTokensInFarm.div(totalLpTokens);
+    // console.log(
+    //   'overallValueOfAllTokensInFarm',
+    //   overallValueOfAllTokensInFarm.toFixed(),
+    //   totalLpTokens.toFixed(),
+    // );
+    lpTokenPrice = overallValueOfAllTokensInFarm.dividedBy(totalLpTokens);
 
-    clog('TEST1', farmTokenPriceInUsd, farm.tokenAmountTotal, overallValueOfAllTokensInFarm);
+    // clog('TEST1', farmTokenPriceInUsd, farm.tokenAmountTotal, overallValueOfAllTokensInFarm);
   }
 
   return lpTokenPrice;

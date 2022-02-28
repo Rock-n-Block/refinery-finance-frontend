@@ -10,7 +10,7 @@ import { ReactComponent as ListViewIcon } from '@/assets/img/icons/list-view.svg
 import { Button } from '@/components/atoms';
 import { CollectModal, ItemsController, StakeUnstakeModal } from '@/components/organisms';
 import { PoolCard, PoolsPreview, PoolTable } from '@/components/sections/Pools';
-import { getAprData } from '@/components/sections/Pools/PoolCard/utils';
+import { getAprData } from '@/hooks/pools/useAprModal';
 import useRefresh from '@/hooks/useRefresh';
 import { getAddress } from '@/services/web3/contractHelpers';
 import { useMst } from '@/store';

@@ -9,22 +9,21 @@ import {
   getContractAddress,
   getContractData,
 } from '@/services/web3/contractHelpers';
-import { getTokenPricesFromFarms } from '@/store/farms';
 import {
   fetchPoolsAllowance,
   // fetch block limits (ends in)
   fetchPoolsBlockLimits,
   fetchPoolsStakingLimits,
+  fetchPoolsTokensPrices,
   fetchPoolsTotalStaking,
   fetchUserBalances,
   fetchUserPendingRewards,
   fetchUserStakeBalances,
 } from '@/store/pools';
 import { convertSharesToRefinery } from '@/store/pools/helpers';
-import { toBigNumber } from '@/utils';
+import { getBalanceAmount, toBigNumber } from '@/utils';
 import { getPoolApr } from '@/utils/apr';
 import { BIG_ZERO, DEFAULT_TOKEN_DECIMAL } from '@/utils/constants';
-import { getBalanceAmount } from '@/utils/formatters';
 import { clog, clogError } from '@/utils/logger';
 import { multicall } from '@/utils/multicall';
 
@@ -54,8 +53,8 @@ const PoolModel = types.model({
   startBlock: types.optional(types.number, 0),
   endBlock: types.optional(types.number, 0),
   apr: types.optional(types.number, 0),
-  stakingTokenPrice: types.optional(types.number, 0),
-  earningTokenPrice: types.optional(types.number, 0),
+  stakingTokenPrice: types.optional(types.string, '0'),
+  earningTokenPrice: types.optional(types.string, '0'),
   isAutoVault: types.optional(types.boolean, false),
   userData: types.optional(UserDataModel, {
     allowance: '',
@@ -241,9 +240,9 @@ const PoolsModel = types
       const blockLimits = await fetchPoolsBlockLimits();
       const totalStakings = await fetchPoolsTotalStaking();
 
-      const prices = getTokenPricesFromFarms();
+      const prices = await fetchPoolsTokensPrices();
 
-      clog(Object.freeze(prices));
+      clog('TokenPricesFromFarms', Object.freeze(prices));
 
       const livePoolsData = poolsConfig.map((pool) => {
         const blockLimit = blockLimits.find((entry) => entry.id === pool.id);
@@ -287,8 +286,8 @@ const PoolsModel = types
     // @note livePoolsData type just copied from type derivation
     setPoolsPublicData(
       livePoolsData: Array<{
-        stakingTokenPrice: number;
-        earningTokenPrice: number;
+        stakingTokenPrice: string;
+        earningTokenPrice: string;
         apr: number;
         isFinished: boolean;
         id?: number;

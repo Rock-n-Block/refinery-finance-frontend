@@ -130,8 +130,8 @@ export interface Pool extends PoolConfig {
   startBlock?: number;
   endBlock?: number;
   apr?: number;
-  stakingTokenPrice?: number;
-  earningTokenPrice?: number;
+  stakingTokenPrice?: string;
+  earningTokenPrice?: string;
   isAutoVault?: boolean;
   userData?: PoolUserData;
 }

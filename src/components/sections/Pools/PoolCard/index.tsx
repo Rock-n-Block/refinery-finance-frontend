@@ -1,15 +1,16 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useMemo } from 'react';
-import BigNumber from 'bignumber.js/bignumber';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 
 import CalcImg from '@/assets/img/icons/calc.svg';
+import { useAprModal } from '@/hooks/pools/useAprModal';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
 import { getStakingBalance } from '@/store/pools/helpers';
 import { useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
-import { feeFormatter, getFullDisplayBalance } from '@/utils/formatters';
+import { getFullDisplayBalance, toBigNumber } from '@/utils';
 
 import 'antd/lib/select/style/css';
 
@@ -21,7 +22,7 @@ import CardFooter from './CardFooter';
 import CardSubtitle from './CardSubtitle';
 import CardTitle from './CardTitle';
 import EarnedSection from './EarnedSection';
-import { getAprData } from './utils';
+import { mockData } from './utils';
 
 import './PoolCard.scss';
 
@@ -31,52 +32,13 @@ export interface IPoolCard {
   pool: Pool;
 }
 
-const mockData = {
-  currencyToConvert: 'USD',
-};
-
 const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) => {
-  const {
-    modals,
-    user,
-    pools: {
-      fees: { performanceFee: globalPerformanceFee },
-    },
-  } = useMst();
-  const {
-    earningToken,
-    stakingToken,
-    apr,
-    earningTokenPrice,
-    stakingTokenPrice,
-    isFinished,
-  } = pool;
+  const { user } = useMst();
+  const hasConnectedWallet = Boolean(user.address);
+  const { earningToken, stakingToken, isFinished } = pool;
   const { tokenUsdPrice: refineryUsdPrice } = useRefineryUsdPrice();
 
-  const performanceFee =
-    farmMode === PoolFarmingMode.auto ? Number(feeFormatter(globalPerformanceFee)) : 0;
-  const { apr: earningsPercentageToDisplay, autoCompoundFrequency } = getAprData(
-    pool,
-    performanceFee,
-  );
-
   const { hasStakedValue, stakedValue } = useStakedValue(farmMode, pool);
-  const stakingTokenBalance = stakedValue.plus(getStakingBalance(pool));
-
-  const handleOpenApr = (e: any): void => {
-    e.stopPropagation();
-    modals.roi.open({
-      isFarmPage: false,
-      autoCompoundFrequency,
-      performanceFee,
-      apr: apr || 0,
-      earningTokenSymbol: earningToken.symbol,
-      earningTokenPrice: earningTokenPrice || 0,
-      stakingTokenSymbol: stakingToken.symbol,
-      stakingTokenPrice: Number(stakingTokenPrice),
-      stakingTokenBalance: stakingTokenBalance.toString(),
-    });
-  };
 
   const stakedValueAsString = useMemo(
     () =>
@@ -87,16 +49,19 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
       }).toString(),
     [stakedValue, stakingToken.decimals],
   );
-
-  const hasConnectedWallet = Boolean(user.address);
-
   const convertedStakedValue = useMemo(() => {
-    return new BigNumber(stakedValueAsString).times(refineryUsdPrice);
+    return toBigNumber(stakedValueAsString).times(refineryUsdPrice).toFixed(Precisions.fiat);
   }, [stakedValueAsString, refineryUsdPrice]);
-  const convertedStakedValueAsString = useMemo(
-    () => convertedStakedValue.toFixed(Precisions.fiat),
-    [convertedStakedValue],
-  );
+
+  const { earningsPercentageToDisplay, handleOpenAprModal } = useAprModal(farmMode, pool);
+
+  const openAprCalculator = (
+    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
+  ) => {
+    if (!stakedValue.isNaN() && !getStakingBalance(pool).isNaN()) {
+      handleOpenAprModal(e);
+    }
+  };
 
   return (
     <div className={classNames('p-card box-shadow', className)}>
@@ -129,8 +94,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
         </span>
         <div
           className="p-card__apr-percent box-pointer"
-          onClick={handleOpenApr}
-          onKeyDown={handleOpenApr}
+          onClick={openAprCalculator}
           role="button"
           tabIndex={0}
         >
@@ -157,7 +121,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
                   {stakedValueAsString}
                 </div>
                 <div className="text-gray text-smd">
-                  ~{convertedStakedValueAsString} {mockData.currencyToConvert}
+                  ~{convertedStakedValue} {mockData.currencyToConvert}
                 </div>
               </div>
               <StakeUnstakeButtons pool={pool} />

@@ -9,7 +9,7 @@ import { tokens } from '@/config/tokens';
 import { useHarvestFarm } from '@/hooks/farms/useHarvestFarm';
 import { useMst } from '@/store';
 import { FarmWithStakedValue } from '@/types';
-import { getBalanceAmount } from '@/utils/formatters';
+import { getBalanceAmount } from '@/utils';
 
 import DetailsSectionTitle from '../DetailsSectionTitle';
 import { EARNING_TOKEN_SYMBOL } from '../utils';

@@ -134,6 +134,7 @@ const RoiModal: React.FC = observer(() => {
                     ~{principalAsUSD} <span>{FIAT}</span>
                   </span>
                 }
+                stringMode
                 prefixPosition="button"
                 min={0}
                 // max={getBalanceAmount(new BigNumber(modal.maxStakingValue), modal.stakingToken?.decimals)}
@@ -154,6 +155,7 @@ const RoiModal: React.FC = observer(() => {
                     ~<span>{principalAsToken}</span> <span>{stakingTokenSymbol}</span>
                   </span>
                 }
+                stringMode
                 prefixPosition="button"
                 min={0}
                 // max={getBalanceAmount(new BigNumber(modal.maxStakingValue), modal.stakingToken?.decimals)}
