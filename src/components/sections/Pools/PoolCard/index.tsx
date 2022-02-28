@@ -7,6 +7,7 @@ import CalcImg from '@/assets/img/icons/calc.svg';
 import { useAprModal } from '@/hooks/pools/useAprModal';
 import { useRefineryUsdPrice } from '@/hooks/useTokenUsdPrice';
 import { useMst } from '@/store';
+import { getStakingBalance } from '@/store/pools/helpers';
 import { useStakedValue } from '@/store/pools/hooks';
 import { IPoolFarmingMode, Pool, PoolFarmingMode, Precisions } from '@/types';
 import { getFullDisplayBalance, toBigNumber } from '@/utils';
@@ -57,7 +58,7 @@ const PoolCard: React.FC<IPoolCard> = observer(({ className, farmMode, pool }) =
   const openAprCalculator = (
     e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>,
   ) => {
-    if (!stakedValue.isNaN()) {
+    if (!stakedValue.isNaN() && !getStakingBalance(pool).isNaN()) {
       handleOpenAprModal(e);
     }
   };
