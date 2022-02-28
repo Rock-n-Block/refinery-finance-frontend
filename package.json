@@ -140,7 +140,7 @@
     "ts-jest": "^26.5.3"
   },
   "engines": {
-    "node": "=14.19.0"
+    "node": "^14"
   },
   "browserslist": {
     "production": [
