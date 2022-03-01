@@ -205,7 +205,7 @@
     }
 
     &-staked-values-group {
-      margin-right: 10px;
+      margin-right: 10px !important; // probably remove !important FIX: https://github.com/Rock-n-Block/refinery-finance-frontend/blob/f84102fb92b4903547cbf666e83307c09fcbe280/src/pages/Farms/Farms.scss#L31
     }
 
     &-staked-value {
