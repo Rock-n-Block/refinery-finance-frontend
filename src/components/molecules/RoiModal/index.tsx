@@ -246,7 +246,7 @@ const RoiModal: React.FC = observer(() => {
             ROI at current rates
           </div>
           <InputNumber
-            className="m-roi__staked-row-input"
+            // className="m-roi__staked-row-input"
             value={roiUSD}
             placeholder={DEFAULT_PRINCIPAL_AS_TOKEN}
             colorScheme="outline"
@@ -263,6 +263,7 @@ const RoiModal: React.FC = observer(() => {
                 %)
               </span>
             }
+            stringMode
             prefixPosition="button"
             min={0}
             onFocus={setIndirectCalculatorMode}

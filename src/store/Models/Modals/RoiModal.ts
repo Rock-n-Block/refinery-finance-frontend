@@ -124,6 +124,7 @@ const RoiStateModel = types
       if (!parent.options) return;
       const { stakingTokenPrice, stakingTokenBalance } = parent.options;
 
+      // calculation value in 'tokens'
       let principalAmountBN = toBigNumber(principalAmountAsText || '0');
       if (principalAmountBN.isNaN()) {
         // if user cliked 'my balance'
@@ -132,12 +133,13 @@ const RoiStateModel = types
         );
       }
 
+      // calculation value in 'tokens'
       const principalAsTokenBN = principalAmountBN.dividedBy(stakingTokenPrice);
       const principalAsToken = principalAsTokenBN.isGreaterThan(0)
         ? principalAsTokenBN.toFixed(Precisions.token)
         : DEFAULT_PRINCIPAL_AS_TOKEN;
 
-      setPrincipal(principalAmountBN.toFixed(), principalAsToken);
+      setPrincipal(principalAmountBN.toFixed(Precisions.fiat), principalAsToken);
     };
 
     // Handler for principal input when in Token mode
@@ -145,7 +147,7 @@ const RoiStateModel = types
       if (!parent.options) return;
       const { stakingTokenPrice } = parent.options;
       const principalAsUsdBN = new BigNumber(amount || '0').times(stakingTokenPrice);
-      const principalAsUsdString = principalAsUsdBN.gt(0)
+      const principalAsUsdString = principalAsUsdBN.isGreaterThan(0)
         ? principalAsUsdBN.toFixed(Precisions.fiat)
         : DEFAULT_PRINCIPAL_AS_USD;
 
